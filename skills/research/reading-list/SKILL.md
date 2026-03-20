@@ -32,6 +32,7 @@ Use this skill for:
    - move to strongest methods
    - finish with edges, critiques, or adjacent work
 6. Write the final list as a durable markdown artifact in `outputs/`.
+7. For every paper, include a direct URL.
 
 ## Pitfalls
 

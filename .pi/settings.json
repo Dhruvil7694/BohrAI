@@ -5,7 +5,6 @@
     "npm:pi-web-access",
     "npm:pi-markdown-preview",
     "npm:@aliou/pi-processes",
-    "npm:pi-wandb",
     "npm:pi-zotero"
   ]
 }

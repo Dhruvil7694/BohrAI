@@ -7,3 +7,9 @@ dist
 *.tgz
 outputs/*
 !outputs/.gitkeep
+papers/*
+!papers/.gitkeep
+notes/*
+!notes/.gitkeep
+experiments/*
+!experiments/.gitkeep

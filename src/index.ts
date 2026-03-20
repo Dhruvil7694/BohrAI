@@ -33,6 +33,8 @@ function printHelp(): void {
 	  /lit-review <topic>       Expand the literature review prompt template
 	  /replicate <paper>        Expand the replication prompt template
 	  /reading-list <topic>     Expand the reading list prompt template
+	  /research-memo <topic>    Expand the general research memo prompt template
+	  /compare-sources <topic>  Expand the source comparison prompt template
 	  /paper-code-audit <item>  Expand the paper/code audit prompt template
 	  /paper-draft <topic>      Expand the paper-style writing prompt template
 
@@ -156,6 +158,7 @@ function normalizeFeynmanSettings(
 	if (!settings.defaultThinkingLevel) {
 		settings.defaultThinkingLevel = defaultThinkingLevel;
 	}
+	settings.theme = "feynman";
 
 	const authStorage = AuthStorage.create(authPath);
 	const modelRegistry = new ModelRegistry(authStorage);
@@ -173,6 +176,19 @@ function normalizeFeynmanSettings(
 	}
 
 	writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + "\n", "utf8");
+}
+
+function syncFeynmanTheme(appRoot: string, agentDir: string): void {
+	const sourceThemePath = resolve(appRoot, ".pi", "themes", "feynman.json");
+	const targetThemeDir = resolve(agentDir, "themes");
+	const targetThemePath = resolve(targetThemeDir, "feynman.json");
+
+	if (!existsSync(sourceThemePath)) {
+		return;
+	}
+
+	mkdirSync(targetThemeDir, { recursive: true });
+	writeFileSync(targetThemePath, readFileSync(sourceThemePath, "utf8"), "utf8");
 }
 
 async function main(): Promise<void> {
@@ -209,6 +225,7 @@ async function main(): Promise<void> {
 	const sessionDir = resolve(values["session-dir"] ?? resolve(homedir(), ".feynman", "sessions"));
 	mkdirSync(sessionDir, { recursive: true });
 	mkdirSync(feynmanAgentDir, { recursive: true });
+	syncFeynmanTheme(appRoot, feynmanAgentDir);
 	const feynmanSettingsPath = resolve(feynmanAgentDir, "settings.json");
 	const feynmanAuthPath = resolve(feynmanAgentDir, "auth.json");
 	const thinkingLevel = normalizeThinkingLevel(values.thinking ?? process.env.FEYNMAN_THINKING) ?? "medium";

@@ -10,4 +10,5 @@ Requirements:
 - Prefer primary sources and note when something appears to be a preprint or secondary summary.
 - Separate consensus, disagreements, and open questions.
 - When useful, propose concrete next experiments or follow-up reading.
+- End with a `Sources` section containing direct URLs for every paper or source used.
 - If the user wants an artifact, write the review to disk as markdown.

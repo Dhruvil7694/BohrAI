@@ -32,6 +32,7 @@ Use this skill for:
 6. Record concrete mismatches, not vibes.
 7. Save the audit in `outputs/`.
 8. If you find a durable gotcha, save it with `alpha_annotate_paper`.
+9. End with a `Sources` section for the paper and repository.
 
 ## Pitfalls
 
@@ -48,3 +49,4 @@ Include:
 - mismatches or omissions
 - reproducibility risks
 - recommended next actions
+- sources

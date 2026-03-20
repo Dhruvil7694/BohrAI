@@ -1,0 +1,83 @@
+{
+  "$schema": "https://raw.githubusercontent.com/badlogic/pi-mono/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json",
+  "name": "feynman",
+  "vars": {
+    "ink": "#d9d3c7",
+    "paper": "#1f1c19",
+    "paper2": "#26221e",
+    "paper3": "#2f2a25",
+    "stone": "#8c8378",
+    "ash": "#6c655d",
+    "oxide": "#b76e4c",
+    "gold": "#d0a85c",
+    "sage": "#88a88a",
+    "teal": "#7aa6a1",
+    "rose": "#c97b84",
+    "violet": "#a98dc6",
+    "selection": "#3a342e"
+  },
+  "colors": {
+    "accent": "gold",
+    "border": "ash",
+    "borderAccent": "gold",
+    "borderMuted": "ash",
+    "success": "sage",
+    "error": "rose",
+    "warning": "oxide",
+    "muted": "stone",
+    "dim": "ash",
+    "text": "ink",
+    "thinkingText": "stone",
+
+    "selectedBg": "selection",
+    "userMessageBg": "paper3",
+    "userMessageText": "ink",
+    "customMessageBg": "paper3",
+    "customMessageText": "ink",
+    "customMessageLabel": "violet",
+    "toolPendingBg": "paper2",
+    "toolSuccessBg": "#243028",
+    "toolErrorBg": "#362725",
+    "toolTitle": "gold",
+    "toolOutput": "ink",
+
+    "mdHeading": "gold",
+    "mdLink": "teal",
+    "mdLinkUrl": "stone",
+    "mdCode": "teal",
+    "mdCodeBlock": "ink",
+    "mdCodeBlockBorder": "ash",
+    "mdQuote": "stone",
+    "mdQuoteBorder": "ash",
+    "mdHr": "ash",
+    "mdListBullet": "gold",
+
+    "toolDiffAdded": "sage",
+    "toolDiffRemoved": "rose",
+    "toolDiffContext": "stone",
+
+    "syntaxComment": "stone",
+    "syntaxKeyword": "gold",
+    "syntaxFunction": "teal",
+    "syntaxVariable": "ink",
+    "syntaxString": "sage",
+    "syntaxNumber": "oxide",
+    "syntaxType": "violet",
+    "syntaxOperator": "ink",
+    "syntaxPunctuation": "stone",
+
+    "thinkingOff": "ash",
+    "thinkingMinimal": "stone",
+    "thinkingLow": "teal",
+    "thinkingMedium": "gold",
+    "thinkingHigh": "violet",
+    "thinkingXhigh": "rose",
+
+    "bashMode": "oxide"
+  },
+  "export": {
+    "pageBg": "#171411",
+    "cardBg": "#211d19",
+    "infoBg": "#312821"
+  }
+}

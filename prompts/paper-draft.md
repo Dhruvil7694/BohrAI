@@ -16,4 +16,5 @@ Requirements:
   - limitations
   - conclusion
 - If citations are available, include citation placeholders or references clearly enough to convert later.
+- Add a `Sources` appendix with direct URLs for all primary references used while drafting.
 - Save the draft to `papers/` as markdown.

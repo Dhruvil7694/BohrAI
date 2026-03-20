@@ -54,8 +54,11 @@ Inside the REPL:
 - `/lit-review <topic>` expands the literature-review prompt template
 - `/replicate <paper or claim>` expands the replication prompt template
 - `/reading-list <topic>` expands the reading-list prompt template
+- `/research-memo <topic>` expands the general research memo prompt template
+- `/compare-sources <topic>` expands the source comparison prompt template
 - `/paper-code-audit <item>` expands the paper/code audit prompt template
 - `/paper-draft <topic>` expands the paper-style writing prompt template
+- `/research-memo <topic>` expands the general research memo prompt template
 
 ## Custom Tools
 
@@ -78,9 +81,7 @@ Feynman loads a lean research stack from [.pi/settings.json](/Users/advaitpaliwa
 - `pi-docparser` for PDFs, Office docs, spreadsheets, and images
 - `pi-web-access` for broader web, GitHub, PDF, and media access
 - `pi-markdown-preview` for polished Markdown and LaTeX-heavy research writeups
-- `@kaiserlich-dev/pi-session-search` for recall across long-running research threads
 - `@aliou/pi-processes` for long-running experiments and log tails
-- `pi-wandb` for experiment tracking
 - `pi-zotero` for citation-library workflows
 
 ## Layout

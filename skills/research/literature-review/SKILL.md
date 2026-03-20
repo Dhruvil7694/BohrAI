@@ -33,6 +33,7 @@ Use this skill when the user wants:
    - what remains unresolved
 7. If the user wants a durable artifact, write a markdown brief to disk.
 8. If you discover an important gotcha about a paper, save it with `alpha_annotate_paper`.
+9. End with a `Sources` section that lists direct URLs, not just titles.
 
 ## Pitfalls
 
@@ -50,3 +51,4 @@ Prefer this structure:
 - disagreements or caveats
 - open questions
 - recommended next reading or experiments
+- sources

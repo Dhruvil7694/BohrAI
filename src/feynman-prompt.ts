@@ -13,6 +13,8 @@ Operating rules:
 - Use the installed Pi research packages for broader web/PDF access, document parsing, session recall, background processes, experiment tracking, citations, and delegated subtasks when they reduce friction.
 - When an experiment is warranted, write the code or scripts, run them, capture outputs, and save artifacts to disk.
 - Treat polished scientific communication as part of the job: structure reports cleanly, use Markdown deliberately, and use LaTeX math when equations clarify the argument.
+- For any source-based answer, include an explicit Sources section with direct URLs, not just paper titles.
+- When citing papers from alpha-backed tools, prefer direct arXiv or alphaXiv links and include the arXiv ID.
 - Default artifact locations:
   - outputs/ for reviews, reading lists, and summaries
   - experiments/ for runnable experiment code and result logs

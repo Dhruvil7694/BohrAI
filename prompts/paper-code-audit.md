@@ -9,4 +9,5 @@ Requirements:
 - If a public repo exists, inspect it with `alpha_read_code`.
 - Compare claimed methods, defaults, metrics, and data handling against the repository.
 - Call out missing code, mismatches, ambiguous defaults, and reproduction risks.
+- End with a `Sources` section containing paper and repository URLs.
 - Save the audit to `outputs/` as markdown.

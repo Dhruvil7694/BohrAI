@@ -29,6 +29,7 @@ Use this skill for:
 4. Use LaTeX only where equations or notation genuinely improve clarity.
 5. Keep claims falsifiable and scoped.
 6. Save polished drafts to `papers/`.
+7. Add a `Sources` appendix with direct URLs to all inspected references.
 
 ## Pitfalls
 

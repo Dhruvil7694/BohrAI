@@ -13,7 +13,7 @@ order: 1
 ## Recommended install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/getcompanion-ai/feynman/main/scripts/install/install.sh | bash
+curl -fsSL https://feynman.companion.ai/install | bash
 ```
 
 ## Verify
@@ -25,7 +25,7 @@ feynman --version
 ## Windows PowerShell
 
 ```powershell
-irm https://raw.githubusercontent.com/getcompanion-ai/feynman/main/scripts/install/install.ps1 | iex
+irm https://feynman.companion.ai/install.ps1 | iex
 ```
 
 ## npm fallback

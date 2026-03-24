@@ -19,6 +19,7 @@ import { launchPiChat } from "./pi/launch.js";
 import { CORE_PACKAGE_SOURCES, getOptionalPackagePresetSources, listOptionalPackagePresets } from "./pi/package-presets.js";
 import { normalizeFeynmanSettings, normalizeThinkingLevel, parseModelSpec } from "./pi/settings.js";
 import {
+	getCurrentModelSpec,
 	loginModelProvider,
 	logoutModelProvider,
 	printModelList,
@@ -422,6 +423,22 @@ export async function main(): Promise<void> {
 		if (!explicitModel) {
 			throw new Error(`Unknown model: ${explicitModelSpec}`);
 		}
+	}
+
+	if (!explicitModelSpec && !getCurrentModelSpec(feynmanSettingsPath) && process.stdin.isTTY && process.stdout.isTTY) {
+		await runSetup({
+			settingsPath: feynmanSettingsPath,
+			bundledSettingsPath,
+			authPath: feynmanAuthPath,
+			workingDir,
+			sessionDir,
+			appRoot,
+			defaultThinkingLevel: thinkingLevel,
+		});
+		if (!getCurrentModelSpec(feynmanSettingsPath)) {
+			return;
+		}
+		normalizeFeynmanSettings(feynmanSettingsPath, bundledSettingsPath, thinkingLevel, feynmanAuthPath);
 	}
 
 	await launchPiChat({

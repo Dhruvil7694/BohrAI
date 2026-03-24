@@ -191,33 +191,23 @@ export function setDefaultModelSpec(settingsPath: string, authPath: string, spec
 }
 
 export async function runModelSetup(settingsPath: string, authPath: string): Promise<void> {
-	const status = collectModelStatus(settingsPath, authPath);
+	let status = collectModelStatus(settingsPath, authPath);
 
 	if (status.availableModels.length === 0) {
-		printWarning("No Pi models are currently authenticated for Feynman.");
-		for (const line of status.guidance) {
-			printInfo(line);
+		await loginModelProvider(authPath, undefined, settingsPath);
+		status = collectModelStatus(settingsPath, authPath);
+		if (status.availableModels.length === 0) {
+			return;
 		}
-		printInfo("Tip: run `feynman model login <provider>` if your provider supports Pi OAuth login.");
+	}
+
+	if (status.currentValid) {
+		printInfo(`Model: ${status.current}`);
 		return;
 	}
 
-	const choices = status.availableModels.map((spec) => {
-		const markers = [
-			spec === status.recommended ? "recommended" : undefined,
-			spec === status.current ? "current" : undefined,
-		].filter(Boolean);
-		return `${spec}${markers.length > 0 ? ` (${markers.join(", ")})` : ""}`;
-	});
-	choices.push(`Keep current (${status.current ?? "unset"})`);
-
-	const defaultIndex = status.current ? Math.max(0, status.availableModels.indexOf(status.current)) : 0;
-	const selection = await promptChoice("Select your default research model:", choices, defaultIndex >= 0 ? defaultIndex : 0);
-
-	if (selection >= status.availableModels.length) {
-		printInfo("Skipped (keeping current model)");
-		return;
+	const recommended = status.recommended ?? status.availableModels[0];
+	if (recommended) {
+		setDefaultModelSpec(settingsPath, authPath, recommended);
 	}
-
-	setDefaultModelSpec(settingsPath, authPath, status.availableModels[selection]!);
 }

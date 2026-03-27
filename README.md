@@ -25,6 +25,8 @@ curl -fsSL https://feynman.is/install | bash
 irm https://feynman.is/install.ps1 | iex
 ```
 
+The one-line installer fetches the latest tagged release. To pin a version, pass it explicitly, for example `curl -fsSL https://feynman.is/install | bash -s -- 0.2.14`.
+
 If you install via `pnpm` or `bun` instead of the standalone bundle, Feynman requires Node.js `20.19.0` or newer.
 
 ### Skills Only

@@ -1,5 +1,5 @@
 param(
-  [string]$Version = "edge"
+  [string]$Version = "latest"
 )
 
 $ErrorActionPreference = "Stop"
@@ -8,15 +8,25 @@ function Normalize-Version {
   param([string]$RequestedVersion)
 
   if (-not $RequestedVersion) {
-    return "edge"
+    return "latest"
   }
 
   switch ($RequestedVersion.ToLowerInvariant()) {
-    "edge" { return "edge" }
     "latest" { return "latest" }
     "stable" { return "latest" }
+    "edge" { throw "The edge channel has been removed. Use the default installer for the latest tagged release or pass an exact version." }
     default { return $RequestedVersion.TrimStart("v") }
   }
+}
+
+function Resolve-LatestReleaseVersion {
+  $page = Invoke-WebRequest -Uri "https://github.com/getcompanion-ai/feynman/releases/latest"
+  $match = [regex]::Match($page.Content, 'releases/tag/v([0-9][^"''<>\s]*)')
+  if (-not $match.Success) {
+    throw "Failed to resolve the latest Feynman release version."
+  }
+
+  return $match.Groups[1].Value
 }
 
 function Resolve-ReleaseMetadata {
@@ -28,34 +38,8 @@ function Resolve-ReleaseMetadata {
 
   $normalizedVersion = Normalize-Version -RequestedVersion $RequestedVersion
 
-  if ($normalizedVersion -eq "edge") {
-    $release = Invoke-RestMethod -Uri "https://api.github.com/repos/getcompanion-ai/feynman/releases/tags/edge"
-    $asset = $release.assets | Where-Object { $_.name -like "feynman-*-$AssetTarget.$BundleExtension" } | Select-Object -First 1
-    if (-not $asset) {
-      throw "Failed to resolve the latest Feynman edge bundle."
-    }
-
-    $archiveName = $asset.name
-    $suffix = ".$BundleExtension"
-    $bundleName = $archiveName.Substring(0, $archiveName.Length - $suffix.Length)
-    $resolvedVersion = $bundleName.Substring("feynman-".Length)
-    $resolvedVersion = $resolvedVersion.Substring(0, $resolvedVersion.Length - ("-$AssetTarget").Length)
-
-    return [PSCustomObject]@{
-      ResolvedVersion = $resolvedVersion
-      BundleName = $bundleName
-      ArchiveName = $archiveName
-      DownloadUrl = $asset.browser_download_url
-    }
-  }
-
   if ($normalizedVersion -eq "latest") {
-    $release = Invoke-RestMethod -Uri "https://api.github.com/repos/getcompanion-ai/feynman/releases/latest"
-    if (-not $release.tag_name) {
-      throw "Failed to resolve the latest Feynman release version."
-    }
-
-    $resolvedVersion = $release.tag_name.TrimStart("v")
+    $resolvedVersion = Resolve-LatestReleaseVersion
   } else {
     $resolvedVersion = $normalizedVersion
   }

@@ -62,13 +62,13 @@ These installers download only the `skills/` tree from the Feynman repository. T
 The one-line installer already targets the latest tagged release. To pin an exact version, pass it explicitly:
 
 ```bash
-curl -fsSL https://feynman.is/install | bash -s -- 0.2.15
+curl -fsSL https://feynman.is/install | bash -s -- 0.2.16
 ```
 
 On Windows:
 
 ```powershell
-& ([scriptblock]::Create((irm https://feynman.is/install.ps1))) -Version 0.2.15
+& ([scriptblock]::Create((irm https://feynman.is/install.ps1))) -Version 0.2.16
 ```
 
 ## pnpm

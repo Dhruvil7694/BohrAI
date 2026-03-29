@@ -86,3 +86,12 @@ Use this file to track chronology, not release notes. Keep entries short, factua
 - Failed / learned: The earlier `0.2.15` fix only proved that Feynman exported `PI_CODING_AGENT_DIR` to the top-level Pi child; it did not cover vendored extension code that still hardcoded `.pi` paths internally.
 - Blockers: Users still need a release containing this patch before tagged installs benefit from it.
 - Next: Cut the next release and verify a tagged install exercises subagents without reading from `~/.pi/agent`.
+
+### 2026-03-28 21:46 PDT — release-0.2.16
+
+- Objective: Ship the vendored `pi-subagents` agent-dir compatibility fix to tagged installs.
+- Changed: Bumped the package version from `0.2.15` to `0.2.16` in `package.json` and `package-lock.json`; updated pinned installer examples in `README.md` and `website/src/content/docs/getting-started/installation.md`.
+- Verified: Re-ran `npm test`, `npm run typecheck`, and `npm run build`; ran `cd website && npm run build`; ran `npm pack` and confirmed the `0.2.16` tarball includes the new `scripts/lib/pi-subagents-patch.*` files.
+- Failed / learned: An initial local `build:native-bundle` check failed because `npm pack` and `build:native-bundle` were run in parallel, and `prepack` intentionally removes `dist/release`; rerunning `npm run build:native-bundle` sequentially succeeded.
+- Blockers: None in the repo; publishing still depends on the GitHub workflow running on the bumped version.
+- Next: Push the `0.2.16` release bump and monitor npm/GitHub release publication.

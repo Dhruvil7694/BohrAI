@@ -79,7 +79,7 @@ export function readJson(path: string): Record<string, unknown> {
 	}
 }
 
-export function normalizeFeynmanSettings(
+export function normalizeBohrSettings(
 	settingsPath: string,
 	bundledSettingsPath: string,
 	defaultThinkingLevel: ThinkingLevel,
@@ -107,7 +107,7 @@ export function normalizeFeynmanSettings(
 	if (settings.editorPaddingX === undefined) {
 		settings.editorPaddingX = 1;
 	}
-	settings.theme = "feynman";
+	settings.theme = "bohr";
 	settings.quietStartup = true;
 	settings.collapseChangelog = true;
 	if (!Array.isArray(settings.packages) || settings.packages.length === 0) {

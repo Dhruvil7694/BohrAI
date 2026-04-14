@@ -6,6 +6,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 const workflows = [
   { command: "/deepresearch", description: "Multi-agent investigation across papers, web, and code" },
   { command: "/lit", description: "Literature review from primary sources with consensus mapping" },
+  { command: "/lit-review", description: "Full literature pipeline: collect, score, theme, contradict, gap, validate" },
+  { command: "/paper", description: "Publication-grade pipeline with formal methods, figures, and compliance checks" },
   { command: "/review", description: "Simulated peer review with severity scores and a revision plan" },
   { command: "/audit", description: "Paper-to-code mismatch audit for reproducibility claims" },
   { command: "/replicate", description: "Replication plan and execution in a sandboxed Docker container" },
@@ -13,13 +15,33 @@ const workflows = [
   { command: "/draft", description: "Polished paper-style draft with inline citations from findings" },
   { command: "/autoresearch", description: "Autonomous loop: hypothesize, experiment, measure, repeat" },
   { command: "/watch", description: "Recurring monitor for new papers, code, or product updates" },
+  { command: "/hypothesis", description: "Generate falsifiable hypotheses and prioritize decisive tests" },
+  { command: "/contradict", description: "Adversarially stress-test claims with counter-evidence" },
+  { command: "/evidence-score", description: "Score claim support strength with a transparent rubric" },
+  { command: "/experiment", description: "Design and run minimal experiments to resolve uncertainty" },
+  { command: "/citation-check", description: "Validate citation-to-claim alignment sentence by sentence" },
+  { command: "/memory-log", description: "Consolidate durable decisions, assumptions, and next actions" },
+  { command: "/plan-research", description: "Plan orchestration: agent order, checkpoints, and stop criteria" },
+  { command: "/knowledge-graph", description: "Build reusable entity-relation graph from findings" },
+  { command: "/reasoning-validate", description: "Check if conclusions logically follow from evidence" },
+  { command: "/iterate", description: "Run looped research until confidence and contradiction goals are met" },
 ]
 
 const agents = [
   { name: "Researcher", description: "Hunts for evidence across papers, the web, repos, and docs" },
-  { name: "Reviewer", description: "Grades claims by severity, flags gaps, and suggests revisions" },
   { name: "Writer", description: "Structures notes into briefs, drafts, and paper-style output" },
-  { name: "Verifier", description: "Checks every citation, verifies URLs, removes dead links" },
+  { name: "Hypothesis", description: "Builds testable hypotheses and clear falsification criteria" },
+  { name: "Experiment", description: "Designs minimal experiments and records reproducible results" },
+  { name: "Research Planner", description: "Chooses agent sequence, checkpoints, and stop conditions" },
+  { name: "Knowledge Graph", description: "Structures research into reusable entities and relations" },
+  { name: "Memory", description: "Maintains durable decisions, assumptions, and open questions" },
+  { name: "Literature Collector", description: "Collects paper candidates with structured metadata" },
+  { name: "Literature Quality", description: "Scores and filters papers for inclusion quality" },
+  { name: "Literature Synthesizer", description: "Clusters included papers into thematic groups" },
+  { name: "Literature Gap", description: "Identifies open problems and underexplored areas" },
+  { name: "Literature Review Writer", description: "Produces survey-style thematic literature reviews" },
+  { name: "Method Math", description: "Formalizes equations, notation, and method sections" },
+  { name: "Figures Tables", description: "Builds publication-ready figures, tables, and captions" },
 ]
 
 const sources = [
@@ -35,12 +57,66 @@ const compute = [
   { name: "RunPod", description: "Persistent GPU pods with SSH access for long-running runs", href: "https://www.runpod.io/" },
 ]
 
-const terminalCommands = [
-  { command: 'bohr "what do we know about scaling laws"', description: "Cited research brief from papers and web" },
-  { command: 'bohr deepresearch "mechanistic interpretability"', description: "Multi-agent deep dive with synthesis and verification" },
-  { command: 'bohr lit "RLHF alternatives"', description: "Literature review with consensus and open questions" },
-  { command: "bohr audit 2401.12345", description: "Paper claims vs. what the code actually does" },
-  { command: 'bohr replicate "chain-of-thought improves math"', description: "Replication plan, compute target, experiment execution" },
+const scenarioExamples = [
+  {
+    audience: "Startup",
+    title: "Validate a feature bet before roadmap commitment",
+    command: 'bohr deepresearch "AI sales assistant market for SMB, pricing benchmarks, retention risks"',
+    outcome: "Decision brief with competitor matrix, pricing bands, and go/no-go risks.",
+  },
+  {
+    audience: "AI/ML Research",
+    title: "Map consensus before starting a new experiment track",
+    command: 'bohr lit "test-time compute scaling for reasoning models"',
+    outcome: "Literature synthesis with agreements, conflicts, and open questions.",
+  },
+  {
+    audience: "Product",
+    title: "Choose between two architecture directions",
+    command: 'bohr compare "RAG vs long-context fine-tuning for customer support QA"',
+    outcome: "Trade-off report covering latency, cost, implementation complexity, and risk.",
+  },
+  {
+    audience: "Research Engineering",
+    title: "Pressure-test a headline paper claim before adoption",
+    command: 'bohr replicate "chain-of-thought improves grade-school math under strict eval"',
+    outcome: "Replication protocol with experiment checklist and failure-mode log.",
+  },
+  {
+    audience: "Analyst",
+    title: "Build an executive-ready landscape memo quickly",
+    command: 'bohr draft "foundation model vendor positioning for enterprise procurement"',
+    outcome: "Clean memo with source-grounded positioning and recommendation paths.",
+  },
+  {
+    audience: "Leadership",
+    title: "Monitor fast-moving topics without manual tracking",
+    command: 'bohr watch "open-source reasoning model releases and benchmark shifts"',
+    outcome: "Recurring update stream with notable changes and implication notes.",
+  },
+]
+
+const templates = [
+  {
+    name: "Fast Research Brief",
+    steps: ['bohr plan-research "topic"', 'bohr deepresearch "topic"', "bohr citation-check outputs/<slug>.md"],
+    output: "Plan + cited brief + citation integrity report",
+  },
+  {
+    name: "Claim Stress Test",
+    steps: ['bohr hypothesis "claim"', "bohr contradict outputs/<slug>-hypotheses.md", "bohr reasoning-validate outputs/<slug>-contradictions.md"],
+    output: "Hypotheses + contradictions + logic validation",
+  },
+  {
+    name: "Evidence-Weighted Comparison",
+    steps: ['bohr compare "A vs B on topic"', "bohr evidence-score outputs/<slug>.md", "bohr knowledge-graph outputs/<slug>.md"],
+    output: "Comparison brief + support scores + reusable graph",
+  },
+  {
+    name: "Iterative Convergence",
+    steps: ['bohr plan-research "topic"', 'bohr iterate "topic"', 'bohr memory-log "topic"'],
+    output: "Iterative brief + loop log + durable memory",
+  },
 ]
 
 const installCommands = [
@@ -49,98 +125,129 @@ const installCommands = [
 ---
 
 <Layout title="Bohr AI — Private AI research system" active="home">
-  <div class="mx-auto max-w-5xl px-6">
+  <div class="w-full px-4 sm:px-6 lg:px-10 2xl:px-16">
 
-    <section class="flex flex-col items-center gap-8 pb-16 pt-20 text-center">
-      <div class="flex max-w-3xl flex-col gap-4">
-        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-          Bohr AI<br />private research system
-        </h1>
-        <p class="mx-auto max-w-2xl text-lg text-muted-foreground">
-          Built for internal research workflows: gather evidence, run structured analysis, and produce decision-ready outputs.
-        </p>
-      </div>
-
-      <div class="flex w-full max-w-3xl flex-col items-center gap-4">
-        <div class="flex w-full max-w-full flex-col">
-          <div class="flex max-w-full self-start overflow-x-auto">
-            {installCommands.map((entry, i) => (
-              <button
-                class:list={[
-                  "install-toggle shrink-0 px-4 py-2 text-sm font-medium transition-colors cursor-pointer",
-                  i === 0 ? "rounded-tl-lg" : "",
-                  i === installCommands.length - 1 ? "rounded-tr-lg" : "",
-                  entry.label === installCommands[0].label
-                    ? "bg-muted text-foreground"
-                    : "bg-muted/30 text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                ]}
-                data-command={entry.command}
-                aria-label={`Show ${entry.label} install command`}
-              >
-                {entry.label}
-              </button>
-            ))}
+    <section class="w-full pb-16 pt-16 sm:pt-20">
+      <div class="mx-auto grid w-full max-w-[1600px] items-center gap-10 lg:grid-cols-2 lg:gap-16">
+        <div class="flex flex-col gap-6 text-left">
+          <p class="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">Private Research Infrastructure</p>
+          <h1 class="max-w-3xl text-5xl font-bold leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
+            Bohr AI for serious research teams
+          </h1>
+          <p class="max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+            Run source-grounded research workflows with structured analysis, reproducible outputs, and agent-driven verification.
+          </p>
+          <div class="flex flex-wrap items-center gap-3 pt-2">
+            <a href="/docs/getting-started/installation">
+              <Button client:load size="lg">Get Started</Button>
+            </a>
+            <a
+              href="/docs/getting-started/installation"
+              class="inline-flex h-11 items-center justify-center rounded-md border border-border px-5 text-sm font-medium text-foreground transition-colors hover:bg-card"
+            >
+              View Docs
+            </a>
           </div>
-          <button
-            id="install-cmd"
-            class="group flex w-full min-w-0 max-w-full items-start justify-between gap-3 rounded-b-lg rounded-tr-lg bg-muted px-4 py-3 text-left font-mono text-xs transition-colors hover:bg-muted/80 cursor-pointer sm:items-center sm:text-sm"
-            data-command={installCommands[0].command}
-            aria-label="Copy install command"
-          >
-            <span id="install-command" class="flex-1 min-w-0 break-all whitespace-normal leading-relaxed sm:overflow-hidden sm:text-ellipsis sm:whitespace-nowrap">{installCommands[0].command}</span>
-            <svg id="install-copy" class="mt-0.5 size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground sm:mt-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            <svg id="install-check" class="mt-0.5 hidden size-4 shrink-0 text-primary sm:mt-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-          </button>
+          <p class="text-sm text-muted-foreground">
+            Need just the skills? <a href="/docs/getting-started/installation" class="text-primary hover:underline">Install the skills-only bundle</a>.
+          </p>
         </div>
 
-        <div class="flex flex-wrap items-center justify-center gap-3">
-          <a href="/docs/getting-started/installation">
-            <Button client:load size="lg">Get Started</Button>
-          </a>
-        </div>
-
-        <p class="text-sm text-muted-foreground">
-          Need just the skills? <a href="/docs/getting-started/installation" class="text-primary hover:underline">Install the skills-only bundle</a>.
-        </p>
-      </div>
-
-      <div class="w-full rounded-xl border border-border bg-card px-6 py-10 text-left">
-        <p class="text-xs uppercase tracking-[0.2em] text-muted-foreground">Bohr AI</p>
-        <h2 class="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Research with clarity, not noise.</h2>
-        <p class="mt-3 max-w-3xl text-muted-foreground">
-          This deployment is private and tailored for your team. Use the workflows below to run deep research, compare sources, and maintain verifiable outputs.
-        </p>
-      </div>
-    </section>
-
-    <section class="py-16">
-      <div class="flex flex-col items-center gap-8 text-center">
-        <div class="flex flex-col gap-2">
-          <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">What you type &rarr; what happens</h2>
-          <p class="text-muted-foreground">Ask a question or run a workflow. Every answer is cited.</p>
-        </div>
-        <Card client:load className="w-full text-left">
-          <CardContent client:load>
-            <div class="flex flex-col gap-3 font-mono text-sm">
-              {terminalCommands.map((cmd) => (
-                <div class="flex flex-col gap-0.5">
-                  <span class="text-primary">{cmd.command}</span>
-                  <span class="text-xs text-muted-foreground">{cmd.description}</span>
-                </div>
+        <div class="w-full rounded-2xl border border-border bg-card/70 p-4 sm:p-5">
+          <div class="flex w-full max-w-full flex-col">
+            <div class="flex max-w-full self-start overflow-x-auto">
+              {installCommands.map((entry, i) => (
+                <button
+                  class:list={[
+                    "install-toggle shrink-0 px-4 py-2 text-sm font-medium transition-colors cursor-pointer",
+                    i === 0 ? "rounded-tl-lg" : "",
+                    i === installCommands.length - 1 ? "rounded-tr-lg" : "",
+                    entry.label === installCommands[0].label
+                      ? "bg-muted text-foreground"
+                      : "bg-muted/30 text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                  ]}
+                  data-command={entry.command}
+                  aria-label={`Show ${entry.label} install command`}
+                >
+                  {entry.label}
+                </button>
               ))}
             </div>
-          </CardContent>
-        </Card>
+            <button
+              id="install-cmd"
+              class="group flex w-full min-w-0 max-w-full items-start justify-between gap-3 rounded-b-lg rounded-tr-lg border border-border bg-background px-4 py-3 text-left font-mono text-xs transition-colors hover:bg-muted/30 cursor-pointer sm:items-center sm:text-sm"
+              data-command={installCommands[0].command}
+              aria-label="Copy install command"
+            >
+              <span id="install-command" class="flex-1 min-w-0 break-all whitespace-normal leading-relaxed sm:overflow-hidden sm:text-ellipsis sm:whitespace-nowrap">{installCommands[0].command}</span>
+              <svg id="install-copy" class="mt-0.5 size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground sm:mt-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <svg id="install-check" class="mt-0.5 hidden size-4 shrink-0 text-primary sm:mt-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+          </div>
+          <div class="mt-4 grid gap-2 text-sm text-muted-foreground">
+            <p>Private deployment configured for internal teams.</p>
+            <p>Every workflow is designed for evidence-first outputs.</p>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="py-16">
+    <section class="w-full py-16">
+      <div class="flex flex-col items-center gap-8 text-center">
+        <div class="flex flex-col gap-2">
+          <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">What you ask &rarr; what Bohr delivers</h2>
+          <p class="text-muted-foreground">Real-world requests with concrete, source-grounded outputs.</p>
+        </div>
+        <div class="grid w-full max-w-6xl gap-4 text-left md:grid-cols-2">
+          {scenarioExamples.map((example) => (
+            <Card client:load size="sm" className="h-full">
+              <CardHeader client:load className="gap-3">
+                <p class="text-[11px] font-medium uppercase tracking-[0.15em] text-muted-foreground">{example.audience}</p>
+                <CardTitle client:load className="text-base leading-tight">{example.title}</CardTitle>
+                <p class="rounded-md border border-border bg-background px-3 py-2 font-mono text-xs text-primary">
+                  {example.command}
+                </p>
+                <CardDescription client:load className="text-sm leading-relaxed">{example.outcome}</CardDescription>
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="w-full py-16">
+      <div class="flex flex-col items-center gap-8 text-center">
+        <div class="flex flex-col gap-2">
+          <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Research &amp; Review Templates</h2>
+          <p class="text-muted-foreground">Step-by-step command paths users can run one-by-one.</p>
+        </div>
+        <div class="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-2">
+          {templates.map((tpl) => (
+            <Card client:load size="sm">
+              <CardHeader client:load>
+                <CardTitle client:load>{tpl.name}</CardTitle>
+                <CardContent client:load className="p-0">
+                  <div class="mt-3 space-y-2">
+                    {tpl.steps.map((step) => (
+                      <p class="rounded-md border border-border bg-background px-3 py-2 font-mono text-xs text-primary">{step}</p>
+                    ))}
+                  </div>
+                  <p class="mt-3 text-sm text-muted-foreground">{tpl.output}</p>
+                </CardContent>
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="w-full py-16">
       <div class="flex flex-col items-center gap-8 text-center">
         <div class="flex flex-col gap-2">
           <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Workflows</h2>
           <p class="text-muted-foreground">Slash commands or natural language. Your call.</p>
         </div>
-        <div class="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {workflows.map((wf) => (
             <Card client:load size="sm">
               <CardHeader client:load>
@@ -153,13 +260,13 @@ const installCommands = [
       </div>
     </section>
 
-    <section class="py-16">
+    <section class="w-full py-16">
       <div class="flex flex-col items-center gap-8 text-center">
         <div class="flex flex-col gap-2">
           <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Agents</h2>
           <p class="text-muted-foreground">You ask a question. The right team assembles.</p>
         </div>
-        <div class="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
           {agents.map((agent) => (
             <Card client:load size="sm" className="text-center">
               <CardHeader client:load className="items-center">
@@ -172,13 +279,13 @@ const installCommands = [
       </div>
     </section>
 
-    <section class="py-16">
+    <section class="w-full py-16">
       <div class="flex flex-col items-center gap-8 text-center">
         <div class="flex flex-col gap-2">
           <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Skills &amp; Tools</h2>
           <p class="text-muted-foreground">How Bohr AI searches, remembers, and exports work.</p>
         </div>
-        <div class="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
           {sources.map((source) => (
             <Card client:load size="sm" className="text-center">
               <CardHeader client:load className="items-center">
@@ -199,13 +306,13 @@ const installCommands = [
       </div>
     </section>
 
-    <section class="py-16">
+    <section class="w-full py-16">
       <div class="flex flex-col items-center gap-8 text-center">
         <div class="flex flex-col gap-2">
           <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Compute</h2>
           <p class="text-muted-foreground">Run experiments locally or burst onto managed GPU infrastructure when needed.</p>
         </div>
-        <div class="grid w-full gap-4 sm:grid-cols-3">
+        <div class="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {compute.map((provider) => (
             <Card client:load size="sm" className="text-center">
               <CardHeader client:load className="items-center">

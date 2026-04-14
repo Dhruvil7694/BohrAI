@@ -2,18 +2,38 @@
 
 `AGENTS.md` is the repo-level contract for agents working in this repository.
 
-Pi subagent behavior does **not** live here. The source of truth for bundled Pi subagents is `.feynman/agents/*.md`, which the runtime syncs into the Pi agent directory. If you need to change how `researcher`, `reviewer`, `writer`, or `verifier` behave, edit the corresponding file in `.feynman/agents/` instead of duplicating those prompts here.
+Pi subagent behavior does **not** live here. The source of truth for bundled Pi subagents is `.bohr/agents/*.md`, which the runtime syncs into the Pi agent directory. If you need to change bundled subagent behavior, edit the corresponding file in `.bohr/agents/` instead of duplicating those prompts here.
 
 ## Pi subagents
 
-Feynman ships four bundled research subagents:
+Bohr ships twenty-four bundled research subagents:
 
 - `researcher`
 - `reviewer`
 - `writer`
 - `verifier`
+- `hypothesis`
+- `contradiction`
+- `evidence-scorer`
+- `experiment`
+- `citation-integrity`
+- `memory`
+- `research-planner`
+- `knowledge-graph`
+- `reasoning-validator`
+- `iteration-controller`
+- `literature-collector`
+- `literature-quality`
+- `literature-synthesizer`
+- `literature-contradiction`
+- `literature-gap`
+- `literature-review-writer`
+- `literature-review-validator`
+- `method-math`
+- `figures-tables`
+- `paper-compliance`
 
-They are defined in `.feynman/agents/` and invoked via the Pi `subagent` tool.
+They are defined in `.bohr/agents/` and invoked via the Pi `subagent` tool.
 
 ## What belongs here
 

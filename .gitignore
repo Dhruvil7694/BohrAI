@@ -1,9 +1,9 @@
 node_modules
 .env
-.feynman/npm
-.feynman/git
-.feynman/sessions
-.feynman/schedule-prompts.json
+.bohr/npm
+.bohr/git
+.bohr/sessions
+.bohr/schedule-prompts.json
 dist
 *.tgz
 outputs/*

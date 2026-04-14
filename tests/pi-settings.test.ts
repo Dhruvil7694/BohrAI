@@ -5,7 +5,7 @@ import { join } from "node:path";
 import test from "node:test";
 
 import { CORE_PACKAGE_SOURCES, getOptionalPackagePresetSources, shouldPruneLegacyDefaultPackages } from "../src/pi/package-presets.js";
-import { normalizeFeynmanSettings, normalizeThinkingLevel } from "../src/pi/settings.js";
+import { normalizeBohrSettings, normalizeThinkingLevel } from "../src/pi/settings.js";
 
 test("normalizeThinkingLevel accepts the latest Pi thinking levels", () => {
 	assert.equal(normalizeThinkingLevel("off"), "off");
@@ -21,8 +21,8 @@ test("normalizeThinkingLevel rejects unknown values", () => {
 	assert.equal(normalizeThinkingLevel(undefined), undefined);
 });
 
-test("normalizeFeynmanSettings seeds the fast core package set", () => {
-	const root = mkdtempSync(join(tmpdir(), "feynman-settings-"));
+test("normalizeBohrSettings seeds the fast core package set", () => {
+	const root = mkdtempSync(join(tmpdir(), "bohr-settings-"));
 	const settingsPath = join(root, "settings.json");
 	const bundledSettingsPath = join(root, "bundled-settings.json");
 	const authPath = join(root, "auth.json");
@@ -30,14 +30,14 @@ test("normalizeFeynmanSettings seeds the fast core package set", () => {
 	writeFileSync(bundledSettingsPath, "{}\n", "utf8");
 	writeFileSync(authPath, "{}\n", "utf8");
 
-	normalizeFeynmanSettings(settingsPath, bundledSettingsPath, "medium", authPath);
+	normalizeBohrSettings(settingsPath, bundledSettingsPath, "medium", authPath);
 
 	const settings = JSON.parse(readFileSync(settingsPath, "utf8")) as { packages?: string[] };
 	assert.deepEqual(settings.packages, [...CORE_PACKAGE_SOURCES]);
 });
 
-test("normalizeFeynmanSettings prunes the legacy slow default package set", () => {
-	const root = mkdtempSync(join(tmpdir(), "feynman-settings-"));
+test("normalizeBohrSettings prunes the legacy slow default package set", () => {
+	const root = mkdtempSync(join(tmpdir(), "bohr-settings-"));
 	const settingsPath = join(root, "settings.json");
 	const bundledSettingsPath = join(root, "bundled-settings.json");
 	const authPath = join(root, "auth.json");
@@ -59,7 +59,7 @@ test("normalizeFeynmanSettings prunes the legacy slow default package set", () =
 	writeFileSync(bundledSettingsPath, "{}\n", "utf8");
 	writeFileSync(authPath, "{}\n", "utf8");
 
-	normalizeFeynmanSettings(settingsPath, bundledSettingsPath, "medium", authPath);
+	normalizeBohrSettings(settingsPath, bundledSettingsPath, "medium", authPath);
 
 	const settings = JSON.parse(readFileSync(settingsPath, "utf8")) as { packages?: string[] };
 	assert.deepEqual(settings.packages, [...CORE_PACKAGE_SOURCES]);

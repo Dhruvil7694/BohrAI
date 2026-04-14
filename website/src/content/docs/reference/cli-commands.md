@@ -62,11 +62,19 @@ All research workflow slash commands can also be invoked directly from the CLI:
 ```bash
 bohr deepresearch "topic"
 bohr lit "topic"
+bohr lit-review "topic"
+bohr paper "topic"
 bohr review artifact.md
 bohr audit 2401.12345
 bohr replicate "claim"
 bohr compare "topic"
 bohr draft "topic"
+bohr hypothesis "topic"
+bohr contradict artifact.md
+bohr evidence-score artifact.md
+bohr experiment "hypothesis"
+bohr citation-check artifact.md
+bohr memory-log "project"
 ```
 
 These are equivalent to launching the REPL and typing the corresponding slash command.

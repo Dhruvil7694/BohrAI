@@ -107,9 +107,7 @@ async function buildAgentCatalogSummary(): Promise<{ agents: string[]; chains: s
 	const chains: string[] = [];
 	try {
 		const bohrAgentsDir = resolvePath(APP_ROOT, ".bohr", "agents");
-		const legacyAgentsDir = resolvePath(APP_ROOT, ".feynman", "agents");
-		const agentsDir = existsSync(bohrAgentsDir) ? bohrAgentsDir : legacyAgentsDir;
-		const entries = await readdir(agentsDir, { withFileTypes: true });
+		const entries = await readdir(bohrAgentsDir, { withFileTypes: true });
 		for (const entry of entries) {
 			if (!entry.isFile() || !entry.name.endsWith(".md")) continue;
 			if (entry.name.endsWith(".chain.md")) {
@@ -245,7 +243,7 @@ export function installBohrHeader(
 				const gapL = Math.floor(gap / 2);
 				push(
 					border(`╭${"─".repeat(gapL)}`) +
-					theme.fg("dim", versionTag) +
+					theme.fg("version" as any, versionTag) +
 					border(`${"─".repeat(gap - gapL)}╮`),
 				);
 

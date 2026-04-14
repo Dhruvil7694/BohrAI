@@ -17,7 +17,7 @@ import { syncBundledAssets } from "./bootstrap/sync.js";
 import { ensureBohrHome, getBohrAgentDir, getBohrHome, getDefaultSessionDir } from "./config/paths.js";
 import { launchPiChat } from "./pi/launch.js";
 import { CORE_PACKAGE_SOURCES, getOptionalPackagePresetSources, listOptionalPackagePresets } from "./pi/package-presets.js";
-import { normalizeFeynmanSettings, normalizeThinkingLevel, parseModelSpec } from "./pi/settings.js";
+import { normalizeBohrSettings, normalizeThinkingLevel, parseModelSpec } from "./pi/settings.js";
 import { applyBohrPackageManagerEnv } from "./pi/runtime.js";
 import { getConfiguredServiceTier, normalizeServiceTier, setConfiguredServiceTier } from "./model/service-tier.js";
 import {
@@ -122,25 +122,25 @@ async function handleAlphaCommand(action: string | undefined): Promise<void> {
 	throw new Error(`Unknown alpha command: ${action}`);
 }
 
-async function handleModelCommand(subcommand: string | undefined, args: string[], feynmanSettingsPath: string, feynmanAuthPath: string): Promise<void> {
+async function handleModelCommand(subcommand: string | undefined, args: string[], bohrSettingsPath: string, bohrAuthPath: string): Promise<void> {
 	if (!subcommand || subcommand === "list") {
-		printModelList(feynmanSettingsPath, feynmanAuthPath);
+		printModelList(bohrSettingsPath, bohrAuthPath);
 		return;
 	}
 
 	if (subcommand === "login") {
 		if (args[0]) {
 			// Specific provider given - resolve OAuth vs API-key setup automatically
-			await loginModelProvider(feynmanAuthPath, args[0], feynmanSettingsPath);
+			await loginModelProvider(bohrAuthPath, args[0], bohrSettingsPath);
 		} else {
 			// No provider specified - show auth method choice
-			await authenticateModelProvider(feynmanAuthPath, feynmanSettingsPath);
+			await authenticateModelProvider(bohrAuthPath, bohrSettingsPath);
 		}
 		return;
 	}
 
 	if (subcommand === "logout") {
-		await logoutModelProvider(feynmanAuthPath, args[0]);
+		await logoutModelProvider(bohrAuthPath, args[0]);
 		return;
 	}
 
@@ -149,19 +149,19 @@ async function handleModelCommand(subcommand: string | undefined, args: string[]
 		if (!spec) {
 			throw new Error("Usage: bohr model set <provider/model|provider:model>");
 		}
-		setDefaultModelSpec(feynmanSettingsPath, feynmanAuthPath, spec);
+		setDefaultModelSpec(bohrSettingsPath, bohrAuthPath, spec);
 		return;
 	}
 
 	if (subcommand === "tier") {
 		const requested = args[0];
 		if (!requested) {
-			console.log(getConfiguredServiceTier(feynmanSettingsPath) ?? "not set");
+			console.log(getConfiguredServiceTier(bohrSettingsPath) ?? "not set");
 			return;
 		}
 
 		if (requested === "unset" || requested === "clear" || requested === "off") {
-			setConfiguredServiceTier(feynmanSettingsPath, undefined);
+			setConfiguredServiceTier(bohrSettingsPath, undefined);
 			console.log("Cleared service tier override");
 			return;
 		}
@@ -171,7 +171,7 @@ async function handleModelCommand(subcommand: string | undefined, args: string[]
 			throw new Error("Usage: bohr model tier <auto|default|flex|priority|standard_only|unset>");
 		}
 
-		setConfiguredServiceTier(feynmanSettingsPath, tier);
+		setConfiguredServiceTier(bohrSettingsPath, tier);
 		console.log(`Service tier set to ${tier}`);
 		return;
 	}
@@ -179,12 +179,12 @@ async function handleModelCommand(subcommand: string | undefined, args: string[]
 	throw new Error(`Unknown model command: ${subcommand}`);
 }
 
-async function handleUpdateCommand(workingDir: string, feynmanAgentDir: string, source?: string): Promise<void> {
-	applyBohrPackageManagerEnv(feynmanAgentDir);
-	const settingsManager = SettingsManager.create(workingDir, feynmanAgentDir);
+async function handleUpdateCommand(workingDir: string, bohrAgentDir: string, source?: string): Promise<void> {
+	applyBohrPackageManagerEnv(bohrAgentDir);
+	const settingsManager = SettingsManager.create(workingDir, bohrAgentDir);
 	const packageManager = new DefaultPackageManager({
 		cwd: workingDir,
-		agentDir: feynmanAgentDir,
+		agentDir: bohrAgentDir,
 		settingsManager,
 	});
 
@@ -203,9 +203,9 @@ async function handleUpdateCommand(workingDir: string, feynmanAgentDir: string, 
 	console.log("All packages up to date.");
 }
 
-async function handlePackagesCommand(subcommand: string | undefined, args: string[], workingDir: string, feynmanAgentDir: string): Promise<void> {
-	applyBohrPackageManagerEnv(feynmanAgentDir);
-	const settingsManager = SettingsManager.create(workingDir, feynmanAgentDir);
+async function handlePackagesCommand(subcommand: string | undefined, args: string[], workingDir: string, bohrAgentDir: string): Promise<void> {
+	applyBohrPackageManagerEnv(bohrAgentDir);
+	const settingsManager = SettingsManager.create(workingDir, bohrAgentDir);
 	const configuredSources = new Set(
 		settingsManager
 			.getPackages()
@@ -246,7 +246,7 @@ async function handlePackagesCommand(subcommand: string | undefined, args: strin
 
 	const packageManager = new DefaultPackageManager({
 		cwd: workingDir,
-		agentDir: feynmanAgentDir,
+		agentDir: bohrAgentDir,
 		settingsManager,
 	});
 	packageManager.setProgressCallback((event) => {
@@ -329,13 +329,13 @@ export function resolveInitialPrompt(
 export async function main(): Promise<void> {
 	const here = dirname(fileURLToPath(import.meta.url));
 	const appRoot = resolve(here, "..");
-	const feynmanVersion = loadPackageVersion(appRoot).version;
-	const bundledSettingsPath = resolve(appRoot, ".feynman", "settings.json");
-	const feynmanHome = getBohrHome();
-	const feynmanAgentDir = getBohrAgentDir(feynmanHome);
+	const bohrVersion = loadPackageVersion(appRoot).version;
+	const bundledSettingsPath = resolve(appRoot, ".bohr", "settings.json");
+	const bohrHome = getBohrHome();
+	const bohrAgentDir = getBohrAgentDir(bohrHome);
 
-	ensureBohrHome(feynmanHome);
-	syncBundledAssets(appRoot, feynmanAgentDir);
+	ensureBohrHome(bohrHome);
+	syncBundledAssets(appRoot, bohrAgentDir);
 
 	const { values, positionals } = parseArgs({
 		args: process.argv.slice(2),
@@ -365,25 +365,25 @@ export async function main(): Promise<void> {
 	}
 
 	if (values.version) {
-		if (feynmanVersion) {
-			console.log(feynmanVersion);
+		if (bohrVersion) {
+			console.log(bohrVersion);
 			return;
 		}
 		throw new Error("Unable to determine the installed Bohr version.");
 	}
 
 	const workingDir = resolve(values.cwd ?? process.cwd());
-	const sessionDir = resolve(values["session-dir"] ?? getDefaultSessionDir(feynmanHome));
-	const feynmanSettingsPath = resolve(feynmanAgentDir, "settings.json");
-	const feynmanAuthPath = resolve(feynmanAgentDir, "auth.json");
+	const sessionDir = resolve(values["session-dir"] ?? getDefaultSessionDir(bohrHome));
+	const bohrSettingsPath = resolve(bohrAgentDir, "settings.json");
+	const bohrAuthPath = resolve(bohrAgentDir, "auth.json");
 	const thinkingLevel = normalizeThinkingLevel(values.thinking ?? process.env.BOHR_THINKING) ?? "medium";
 
-	normalizeFeynmanSettings(feynmanSettingsPath, bundledSettingsPath, thinkingLevel, feynmanAuthPath);
+	normalizeBohrSettings(bohrSettingsPath, bundledSettingsPath, thinkingLevel, bohrAuthPath);
 
 	if (values.doctor) {
 		runDoctor({
-			settingsPath: feynmanSettingsPath,
-			authPath: feynmanAuthPath,
+			settingsPath: bohrSettingsPath,
+			authPath: bohrAuthPath,
 			sessionDir,
 			workingDir,
 			appRoot,
@@ -420,9 +420,9 @@ export async function main(): Promise<void> {
 
 	if (command === "setup") {
 		await runSetup({
-			settingsPath: feynmanSettingsPath,
+			settingsPath: bohrSettingsPath,
 			bundledSettingsPath,
-			authPath: feynmanAuthPath,
+			authPath: bohrAuthPath,
 			workingDir,
 			sessionDir,
 			appRoot,
@@ -433,8 +433,8 @@ export async function main(): Promise<void> {
 
 	if (command === "doctor") {
 		runDoctor({
-			settingsPath: feynmanSettingsPath,
-			authPath: feynmanAuthPath,
+			settingsPath: bohrSettingsPath,
+			authPath: bohrAuthPath,
 			sessionDir,
 			workingDir,
 			appRoot,
@@ -444,8 +444,8 @@ export async function main(): Promise<void> {
 
 	if (command === "status") {
 		runStatus({
-			settingsPath: feynmanSettingsPath,
-			authPath: feynmanAuthPath,
+			settingsPath: bohrSettingsPath,
+			authPath: bohrAuthPath,
 			sessionDir,
 			workingDir,
 			appRoot,
@@ -454,7 +454,7 @@ export async function main(): Promise<void> {
 	}
 
 	if (command === "model") {
-		await handleModelCommand(rest[0], rest.slice(1), feynmanSettingsPath, feynmanAuthPath);
+		await handleModelCommand(rest[0], rest.slice(1), bohrSettingsPath, bohrAuthPath);
 		return;
 	}
 
@@ -464,12 +464,12 @@ export async function main(): Promise<void> {
 	}
 
 	if (command === "packages") {
-		await handlePackagesCommand(rest[0], rest.slice(1), workingDir, feynmanAgentDir);
+		await handlePackagesCommand(rest[0], rest.slice(1), workingDir, bohrAgentDir);
 		return;
 	}
 
 	if (command === "update") {
-		await handleUpdateCommand(workingDir, feynmanAgentDir, rest[0]);
+		await handleUpdateCommand(workingDir, bohrAgentDir, rest[0]);
 		return;
 	}
 
@@ -491,35 +491,35 @@ export async function main(): Promise<void> {
 		process.env.BOHR_SERVICE_TIER = explicitServiceTier;
 	}
 	if (explicitModelSpec) {
-		const modelRegistry = createModelRegistry(feynmanAuthPath);
+		const modelRegistry = createModelRegistry(bohrAuthPath);
 		const explicitModel = parseModelSpec(explicitModelSpec, modelRegistry);
 		if (!explicitModel) {
 			throw new Error(`Unknown model: ${explicitModelSpec}`);
 		}
 	}
 
-	if (!explicitModelSpec && !getCurrentModelSpec(feynmanSettingsPath) && process.stdin.isTTY && process.stdout.isTTY) {
+	if (!explicitModelSpec && !getCurrentModelSpec(bohrSettingsPath) && process.stdin.isTTY && process.stdout.isTTY) {
 		await runSetup({
-			settingsPath: feynmanSettingsPath,
+			settingsPath: bohrSettingsPath,
 			bundledSettingsPath,
-			authPath: feynmanAuthPath,
+			authPath: bohrAuthPath,
 			workingDir,
 			sessionDir,
 			appRoot,
 			defaultThinkingLevel: thinkingLevel,
 		});
-		if (!getCurrentModelSpec(feynmanSettingsPath)) {
+		if (!getCurrentModelSpec(bohrSettingsPath)) {
 			return;
 		}
-		normalizeFeynmanSettings(feynmanSettingsPath, bundledSettingsPath, thinkingLevel, feynmanAuthPath);
+		normalizeBohrSettings(bohrSettingsPath, bundledSettingsPath, thinkingLevel, bohrAuthPath);
 	}
 
 	await launchPiChat({
 		appRoot,
 		workingDir,
 		sessionDir,
-		bohrAgentDir: feynmanAgentDir,
-		bohrVersion: feynmanVersion,
+		bohrAgentDir,
+		bohrVersion,
 		mode,
 		thinkingLevel,
 		explicitModelSpec,

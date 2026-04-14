@@ -3,13 +3,13 @@ import { resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 
 const appRoot = resolve(import.meta.dirname, "..");
-const settingsPath = resolve(appRoot, ".feynman", "settings.json");
-const feynmanDir = resolve(appRoot, ".feynman");
-const workspaceDir = resolve(appRoot, ".feynman", "npm");
+const settingsPath = resolve(appRoot, ".bohr", "settings.json");
+const bohrDir = resolve(appRoot, ".bohr");
+const workspaceDir = resolve(appRoot, ".bohr", "npm");
 const workspaceNodeModulesDir = resolve(workspaceDir, "node_modules");
 const manifestPath = resolve(workspaceDir, ".runtime-manifest.json");
 const workspacePackageJsonPath = resolve(workspaceDir, "package.json");
-const workspaceArchivePath = resolve(feynmanDir, "runtime-workspace.tgz");
+const workspaceArchivePath = resolve(bohrDir, "runtime-workspace.tgz");
 const PRUNE_VERSION = 3;
 
 function readPackageSpecs() {
@@ -133,7 +133,7 @@ function archiveIsCurrent() {
 function createWorkspaceArchive() {
 	rmSync(workspaceArchivePath, { force: true });
 
-	const result = spawnSync("tar", ["-czf", workspaceArchivePath, "-C", feynmanDir, "npm"], {
+	const result = spawnSync("tar", ["-czf", workspaceArchivePath, "-C", bohrDir, "npm"], {
 		stdio: "inherit",
 	});
 	if (result.status !== 0) {

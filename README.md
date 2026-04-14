@@ -99,6 +99,8 @@ Ask naturally or use slash commands as shortcuts.
 | --- | --- |
 | `/deepresearch <topic>` | Source-heavy multi-agent investigation |
 | `/lit <topic>` | Literature review from paper search and primary sources |
+| `/lit-review <topic>` | Full literature pipeline with themes, contradictions, gaps, and validator pass |
+| `/paper <topic-or-artifact>` | Publication-grade paper pipeline with method, figures, and compliance |
 | `/review <artifact>` | Simulated peer review with severity and revision plan |
 | `/audit <item>` | Paper vs. codebase mismatch audit |
 | `/replicate <paper>` | Replicate experiments on local or cloud GPUs |
@@ -106,18 +108,48 @@ Ask naturally or use slash commands as shortcuts.
 | `/draft <topic>` | Paper-style draft from research findings |
 | `/autoresearch <idea>` | Autonomous experiment loop |
 | `/watch <topic>` | Recurring research watch |
+| `/hypothesis <topic-or-artifact>` | Ranked, testable hypotheses with explicit falsifiers |
+| `/contradict <claim-or-artifact>` | Adversarial contradiction analysis for conclusions |
+| `/evidence-score <artifact-or-topic>` | Claim-level evidence strength scoring |
+| `/experiment <hypothesis-or-goal>` | Minimal decisive experiment workflow |
+| `/citation-check <artifact>` | Sentence-level citation integrity validation |
+| `/memory-log <project-or-topic>` | Durable memory consolidation for long-running work |
+| `/plan-research <topic-or-goal>` | Planner workflow for agent ordering and stop criteria |
+| `/knowledge-graph <artifact-or-topic>` | Build reusable knowledge graph for cross-topic reasoning |
+| `/reasoning-validate <artifact>` | Validate logic chain from evidence to conclusions |
+| `/iterate <topic-or-artifact>` | Iterative loop controller until confidence/contradiction targets |
 | `/outputs` | Browse all research artifacts |
 
 ---
 
 ### Agents
 
-Four bundled research agents, dispatched automatically.
+Ten bundled research agents, dispatched automatically.
 
 - **Researcher** — gather evidence across papers, web, repos, docs
 - **Reviewer** — simulated peer review with severity-graded feedback
 - **Writer** — structured drafts from research notes
 - **Verifier** — inline citations, source URL verification, dead link cleanup
+- **Hypothesis** — generate testable hypotheses and ranked falsifiers
+- **Contradiction** — find counter-evidence, edge cases, and fragile assumptions
+- **Evidence Scorer** — score claim support quality with a transparent rubric
+- **Experiment** — design and run minimal experiments to reduce uncertainty
+- **Citation Integrity** — validate claim-to-citation alignment at sentence level
+- **Memory** — maintain durable project memory across sessions
+- **Research Planner** — orchestration brain for agent selection, ordering, and stop rules
+- **Knowledge Graph** — convert findings into reusable entities and relations
+- **Reasoning Validator** — detect invalid inference chains and logic drift
+- **Iteration Controller** — drive multi-loop convergence with explicit thresholds
+- **Literature Collector** — collect paper candidates and metadata
+- **Literature Quality** — score/filter papers by relevance and recency
+- **Literature Synthesizer** — cluster papers into structured themes
+- **Literature Contradiction** — detect conflicting claims across papers
+- **Literature Gap** — identify missing areas and open problems
+- **Literature Review Writer** — write survey-style thematic review
+- **Literature Review Validator** — validate completeness, flow, and perspective balance
+- **Method Math** — formalize notation, equations, and derivation consistency
+- **Figures Tables** — produce publication-ready visuals and captions
+- **Paper Compliance** — enforce manuscript structure and submission-style checks
 
 ---
 
@@ -153,4 +185,4 @@ npm run typecheck
 npm run build
 ```
 
-[Docs](https://bohr-ai.internal/docs) · [MIT License](LICENSE)
+[Docs](https://bohr-ai.internal/docs) · [Proprietary License](LICENSE)

@@ -13,7 +13,7 @@ import {
 } from "../src/pi/web-access.js";
 
 test("loadPiWebAccessConfig returns empty config when Pi web config is missing", () => {
-	const root = mkdtempSync(join(tmpdir(), "feynman-pi-web-"));
+	const root = mkdtempSync(join(tmpdir(), "bohr-pi-web-"));
 	const configPath = getPiWebSearchConfigPath(root);
 
 	assert.deepEqual(loadPiWebAccessConfig(configPath), {});
@@ -24,7 +24,7 @@ test("getPiWebSearchConfigPath respects BOHR_HOME semantics", () => {
 });
 
 test("savePiWebAccessConfig merges updates and deletes undefined values", () => {
-	const root = mkdtempSync(join(tmpdir(), "feynman-pi-web-"));
+	const root = mkdtempSync(join(tmpdir(), "bohr-pi-web-"));
 	const configPath = getPiWebSearchConfigPath(root);
 
 	savePiWebAccessConfig({
@@ -44,7 +44,7 @@ test("savePiWebAccessConfig merges updates and deletes undefined values", () => 
 });
 
 test("getPiWebAccessStatus reads Pi web-access config directly", () => {
-	const root = mkdtempSync(join(tmpdir(), "feynman-pi-web-"));
+	const root = mkdtempSync(join(tmpdir(), "bohr-pi-web-"));
 	const configPath = getPiWebSearchConfigPath(root);
 	mkdirSync(root, { recursive: true });
 	writeFileSync(
@@ -70,7 +70,7 @@ test("getPiWebAccessStatus reads Pi web-access config directly", () => {
 });
 
 test("getPiWebAccessStatus reads Gemini routes directly", () => {
-	const root = mkdtempSync(join(tmpdir(), "feynman-pi-web-"));
+	const root = mkdtempSync(join(tmpdir(), "bohr-pi-web-"));
 	const configPath = getPiWebSearchConfigPath(root);
 	mkdirSync(root, { recursive: true });
 	writeFileSync(

@@ -38,8 +38,8 @@ const {
     </script>
   </head>
   <body class="flex min-h-screen flex-col bg-background text-foreground antialiased">
-    <nav class="sticky top-0 z-50 bg-background">
-      <div class="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+    <nav class="fixed left-0 right-0 top-0 z-50 w-full px-3 pt-3 sm:px-4 lg:px-6">
+      <div class="flex h-14 w-full items-center justify-between gap-4 rounded-xl bg-black/45 px-4 shadow-[0_10px_30px_rgba(0,0,0,0.45)] backdrop-blur-md sm:px-6">
         <a href="/" class="flex items-center gap-2">
           <span class="font-['VT323'] text-2xl text-primary">bohr ai</span>
         </a>
@@ -85,7 +85,7 @@ const {
       </div>
     </nav>
 
-    <main class="flex flex-1 flex-col">
+    <main class="flex flex-1 flex-col pt-20">
       <slot />
     </main>
 

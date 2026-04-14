@@ -298,7 +298,7 @@ function validateBundle(bundleRoot, target) {
 			? resolve(bundleRoot, "node", "node.exe")
 			: resolve(bundleRoot, "node", "bin", "node");
 
-	run(nodeExecutable, ["-e", "require('./app/.feynman/npm/node_modules/better-sqlite3'); console.log('better-sqlite3 ok')"], {
+	run(nodeExecutable, ["-e", "require('./app/.bohr/npm/node_modules/better-sqlite3'); console.log('better-sqlite3 ok')"], {
 		cwd: bundleRoot,
 	});
 }
@@ -341,9 +341,9 @@ function main() {
 	copyPackageFiles(appDir);
 	installAppDependencies(appDir, stagingRoot);
 
-	const appFeynmanDir = resolve(appDir, ".feynman");
-	extractTarball(resolve(appFeynmanDir, "runtime-workspace.tgz"), appFeynmanDir, "-xzf");
-	rmSync(resolve(appFeynmanDir, "runtime-workspace.tgz"), { force: true });
+	const appBohrDir = resolve(appDir, ".bohr");
+	extractTarball(resolve(appBohrDir, "runtime-workspace.tgz"), appBohrDir, "-xzf");
+	rmSync(resolve(appBohrDir, "runtime-workspace.tgz"), { force: true });
 	run(process.execPath, [resolve(appDir, "scripts", "patch-embedded-pi.mjs")], { cwd: appDir });
 
 	installBundledNode(bundleRoot, target, stagingRoot);

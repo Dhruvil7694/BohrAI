@@ -5,7 +5,7 @@ section: Workflows
 order: 1
 ---
 
-Deep research is the flagship Bohr AI workflow. It dispatches multiple researcher agents in parallel to search academic papers, web sources, and code repositories, then synthesizes everything into a structured research brief with inline citations.
+Deep research is the flagship Bohr AI workflow. It now runs a planner-led, iterative architecture that combines evidence gathering, contradiction checks, reasoning validation, and citation verification before final delivery.
 
 ## Usage
 
@@ -25,24 +25,49 @@ Both forms are equivalent. The workflow begins immediately and streams progress 
 
 ## How it works
 
-The deep research workflow proceeds through four phases. First, the researcher agents fan out to search AlphaXiv for relevant papers and the web for non-academic sources like blog posts, documentation, and code repositories. Each agent tackles a different angle of the topic to maximize coverage.
+The workflow runs through an orchestrated pipeline:
 
-Second, the agents read and extract key findings from the most relevant sources. They pull claims, methodology details, results, and limitations from each paper or article. For academic papers, they access the full PDF through AlphaXiv when available.
+1. **Planning** -- `research-planner` creates the execution strategy, agent order, and stop criteria.
+2. **Hypothesis + research fan-out** -- `hypothesis` frames testable lines of inquiry, then parallel `researcher` agents gather evidence across papers, docs, and code.
+3. **Scoring + structure** -- `evidence-scorer` assesses claim strength and `knowledge-graph` captures reusable entity-relation structure.
+4. **Adversarial checks** -- `contradiction` finds conflicts and edge cases; `reasoning-validator` checks whether conclusions logically follow from evidence.
+5. **Draft + citation + review** -- `writer` synthesizes, `verifier` anchors citations, `reviewer` pressure-tests quality.
+6. **Iteration loop** -- `iteration-controller` decides whether to continue another loop (Research -> Review -> Improve) until convergence criteria are met.
 
-Third, a synthesis step cross-references findings across sources, identifies areas of consensus and disagreement, and organizes the material into a coherent narrative. The writer agent structures the output as a research brief with sections for background, key findings, open questions, and references.
+Default convergence policy targets high confidence and resolved critical contradictions before final output promotion.
 
-Finally, the verifier agent spot-checks claims against their cited sources to flag any misattributions or unsupported assertions. The finished report is saved to your session directory and can be previewed as rendered HTML with `/preview`.
+## Expected output
 
-## Output format
+Deep research produces multiple durable artifacts:
 
-The research brief follows a consistent structure:
+- `outputs/.plans/<slug>.md` -- orchestration plan and verification ledger
+- `outputs/<slug>-knowledge-graph.md` -- reusable structured knowledge
+- `outputs/.drafts/<slug>-draft.md` -- synthesis draft
+- `outputs/<slug>.md` (or `papers/<slug>.md`) -- final cited and verified deliverable
+- `<slug>.provenance.md` sidecar -- source and verification accounting
 
-- **Summary** -- A concise overview of the topic and key takeaways
-- **Background** -- Context and motivation for the research area
-- **Key Findings** -- The main results organized by theme, with inline citations
-- **Open Questions** -- Unresolved issues and promising research directions
-- **References** -- Full citation list with links to source papers and articles
+The final brief typically includes:
+
+- executive summary
+- key findings by theme
+- contradictions and caveats
+- open questions
+- inline citations with source links
 
 ## Customization
 
-You can steer the research by being specific in your prompt. Narrow topics produce more focused briefs. Broad topics produce survey-style overviews. You can also specify constraints like "focus on papers from 2024" or "only consider empirical results" to guide the agents.
+You can steer deep research by specifying:
+
+- **scope** -- "focus on enterprise production deployments only"
+- **time range** -- "use sources from 2023 onward"
+- **evidence policy** -- "prioritize peer-reviewed + official docs"
+- **convergence targets** -- "stop only when confidence > 0.85 and no critical contradictions"
+- **output style** -- "brief for executives" vs "technical deep dive"
+
+### Real example
+
+```bash
+bohr deepresearch "Do long-context models reduce RAG complexity for regulated-domain QA in production?"
+```
+
+Typical output: a cited brief with trade-offs, contradiction handling, confidence-calibrated recommendations, and a reusable knowledge-graph artifact.

@@ -2,7 +2,7 @@ import { isLoggedIn as isAlphaLoggedIn, login as loginAlpha } from "@companion-a
 
 import { getBohrHome, getDefaultSessionDir } from "../config/paths.js";
 import { getPiWebAccessStatus, getPiWebSearchConfigPath } from "../pi/web-access.js";
-import { normalizeFeynmanSettings } from "../pi/settings.js";
+import { normalizeBohrSettings } from "../pi/settings.js";
 import type { ThinkingLevel } from "../pi/settings.js";
 import { getCurrentModelSpec, runModelSetup } from "../model/commands.js";
 import { buildModelStatusSnapshotFromRecords, getAvailableModelRecords, getSupportedModelRecords } from "../model/catalog.js";
@@ -50,7 +50,7 @@ export async function runSetup(options: SetupOptions): Promise<void> {
 	const result = setupPreviewDependencies();
 	printSuccess(result.message);
 
-	normalizeFeynmanSettings(
+	normalizeBohrSettings(
 		options.settingsPath,
 		options.bundledSettingsPath,
 		options.defaultThinkingLevel ?? "medium",

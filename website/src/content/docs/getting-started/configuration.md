@@ -71,7 +71,7 @@ Bohr AI bundled subagents inherit the main default model unless you override the
 This opens an interactive picker where you can either:
 
 - change the main default model for the session environment
-- assign a different model to a specific bundled subagent such as `researcher`, `reviewer`, `writer`, or `verifier`
+- assign a different model to any bundled subagent such as `researcher`, `reviewer`, `writer`, `verifier`, `hypothesis`, `contradiction`, `evidence-scorer`, `experiment`, `citation-integrity`, or `memory`
 
 Per-subagent overrides are persisted in the synced agent files under `~/.bohr/agent/agents/` with a `model:` frontmatter field. Removing that field makes the subagent inherit the main default model again.
 

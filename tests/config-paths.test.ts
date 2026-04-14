@@ -65,7 +65,7 @@ test("getBootstrapStatePath resolves to <home>/.state/bootstrap.json", () => {
 });
 
 test("ensureBohrHome creates all required subdirectories", () => {
-	const root = mkdtempSync(join(tmpdir(), "feynman-paths-"));
+	const root = mkdtempSync(join(tmpdir(), "bohr-paths-"));
 	try {
 		const home = join(root, "home");
 		ensureBohrHome(home);
@@ -81,7 +81,7 @@ test("ensureBohrHome creates all required subdirectories", () => {
 });
 
 test("ensureBohrHome is idempotent when dirs already exist", () => {
-	const root = mkdtempSync(join(tmpdir(), "feynman-paths-"));
+	const root = mkdtempSync(join(tmpdir(), "bohr-paths-"));
 	try {
 		const home = join(root, "home");
 		ensureBohrHome(home);

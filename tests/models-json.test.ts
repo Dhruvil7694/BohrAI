@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { upsertProviderConfig } from "../src/model/models-json.js";
 
 test("upsertProviderConfig creates models.json and merges provider config", () => {
-	const dir = mkdtempSync(join(tmpdir(), "feynman-models-"));
+	const dir = mkdtempSync(join(tmpdir(), "bohr-models-"));
 	const modelsPath = join(dir, "models.json");
 
 	const first = upsertProviderConfig(modelsPath, "custom", {

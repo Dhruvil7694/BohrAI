@@ -42,7 +42,7 @@ export async function launchPiChat(options: PiRuntimeOptions): Promise<void> {
 		child.on("error", reject);
 		child.on("exit", (code, signal) => {
 			if (signal) {
-				console.error(`feynman terminated because the Pi child exited with ${signal}.`);
+				console.error(`bohr terminated because the Pi child exited with ${signal}.`);
 				process.exitCode = exitCodeFromSignal(signal);
 				resolvePromise();
 				return;

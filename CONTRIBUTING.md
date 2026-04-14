@@ -14,12 +14,12 @@ Bohr is a research-first CLI built on Pi and alphaXiv. This guide is for humans 
 - CLI/runtime code: `src/`
 - Bundled prompt templates: `prompts/`
 - Bundled Pi skills: `skills/`
-- Bundled Pi subagent prompts: `.feynman/agents/`
+- Bundled Pi subagent prompts: `.bohr/agents/`
 - Docs site: `website/`
 - Build/release scripts: `scripts/`
 - Generated research artifacts: `outputs/`, `papers/`, `notes/`
 
-If you need to change how bundled subagents behave, edit `.feynman/agents/*.md`. Do not duplicate that behavior in `AGENTS.md`.
+If you need to change how bundled subagents behave, edit `.bohr/agents/*.md`. Do not duplicate that behavior in `AGENTS.md`.
 
 ## Before You Open a PR
 

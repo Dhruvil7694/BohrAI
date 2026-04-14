@@ -43,8 +43,8 @@ export function resolvePiPaths(appRoot: string) {
 		tsxLoaderPath: resolve(appRoot, "node_modules", "tsx", "dist", "loader.mjs"),
 		researchToolsPath: resolve(appRoot, "extensions", "research-tools.ts"),
 		promptTemplatePath: resolve(appRoot, "prompts"),
-		systemPromptPath: resolve(appRoot, ".feynman", "SYSTEM.md"),
-		piWorkspaceNodeModulesPath: resolve(appRoot, ".feynman", "npm", "node_modules"),
+		systemPromptPath: resolve(appRoot, ".bohr", "SYSTEM.md"),
+		piWorkspaceNodeModulesPath: resolve(appRoot, ".bohr", "npm", "node_modules"),
 		nodeModulesBinPath: resolve(appRoot, "node_modules", ".bin"),
 	};
 }

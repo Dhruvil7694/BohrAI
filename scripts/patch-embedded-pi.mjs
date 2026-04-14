@@ -12,13 +12,13 @@ import { PI_SUBAGENTS_PATCH_TARGETS, patchPiSubagentsSource } from "./lib/pi-sub
 
 const here = dirname(fileURLToPath(import.meta.url));
 const appRoot = resolve(here, "..");
-const feynmanHome = process.env.BOHR_HOME?.trim()
+const bohrHome = process.env.BOHR_HOME?.trim()
 	? resolve(process.env.BOHR_HOME.trim())
 	: resolve(homedir(), ".bohr");
-const feynmanNpmPrefix = resolve(feynmanHome, "npm-global");
-process.env.BOHR_NPM_PREFIX = feynmanNpmPrefix;
-process.env.NPM_CONFIG_PREFIX = feynmanNpmPrefix;
-process.env.npm_config_prefix = feynmanNpmPrefix;
+const bohrNpmPrefix = resolve(bohrHome, "npm-global");
+process.env.BOHR_NPM_PREFIX = bohrNpmPrefix;
+process.env.NPM_CONFIG_PREFIX = bohrNpmPrefix;
+process.env.npm_config_prefix = bohrNpmPrefix;
 const appRequire = createRequire(resolve(appRoot, "package.json"));
 const isGlobalInstall = process.env.npm_config_global === "true" || process.env.npm_config_location === "global";
 
@@ -66,7 +66,7 @@ const interactiveThemePath = piPackageRoot ? resolve(piPackageRoot, "dist", "mod
 const extensionLoaderPath = piPackageRoot ? resolve(piPackageRoot, "dist", "core", "extensions", "loader.js") : null;
 const terminalPath = piTuiRoot ? resolve(piTuiRoot, "dist", "terminal.js") : null;
 const editorPath = piTuiRoot ? resolve(piTuiRoot, "dist", "components", "editor.js") : null;
-const workspaceRoot = resolve(appRoot, ".feynman", "npm", "node_modules");
+const workspaceRoot = resolve(appRoot, ".bohr", "npm", "node_modules");
 const workspaceExtensionLoaderPath = resolve(
 	workspaceRoot,
 	"@mariozechner",
@@ -86,10 +86,10 @@ const sessionSearchIndexerPath = resolve(
 	"indexer.ts",
 );
 const piMemoryPath = resolve(workspaceRoot, "@samfp", "pi-memory", "src", "index.ts");
-const settingsPath = resolve(appRoot, ".feynman", "settings.json");
-const workspaceDir = resolve(appRoot, ".feynman", "npm");
+const settingsPath = resolve(appRoot, ".bohr", "settings.json");
+const workspaceDir = resolve(appRoot, ".bohr", "npm");
 const workspacePackageJsonPath = resolve(workspaceDir, "package.json");
-const workspaceArchivePath = resolve(appRoot, ".feynman", "runtime-workspace.tgz");
+const workspaceArchivePath = resolve(appRoot, ".bohr", "runtime-workspace.tgz");
 
 function createInstallCommand(packageManager, packageSpecs) {
 	switch (packageManager) {
@@ -165,9 +165,9 @@ function restorePackagedWorkspace(packageSpecs) {
 	if (!existsSync(workspaceArchivePath)) return false;
 
 	rmSync(workspaceDir, { recursive: true, force: true });
-	mkdirSync(resolve(appRoot, ".feynman"), { recursive: true });
+	mkdirSync(resolve(appRoot, ".bohr"), { recursive: true });
 
-	const result = spawnSync("tar", ["-xzf", workspaceArchivePath, "-C", resolve(appRoot, ".feynman")], {
+	const result = spawnSync("tar", ["-xzf", workspaceArchivePath, "-C", resolve(appRoot, ".bohr")], {
 		stdio: ["ignore", "ignore", "pipe"],
 		timeout: 300000,
 	});
@@ -311,7 +311,7 @@ for (const entryPath of [cliPath, bunCliPath].filter(Boolean)) {
 		cliSource = cliSource.replace('process.title = "pi";', 'process.title = "bohr";');
 	}
 	const stdinErrorGuard = [
-		"const feynmanHandleStdinError = (error) => {",
+		"const bohrHandleStdinError = (error) => {",
 		'    if (error && typeof error === "object") {',
 		'        const code = "code" in error ? error.code : undefined;',
 		'        const syscall = "syscall" in error ? error.syscall : undefined;',
@@ -320,9 +320,9 @@ for (const entryPath of [cliPath, bunCliPath].filter(Boolean)) {
 		"        }",
 		"    }",
 		"};",
-		'process.stdin?.on?.("error", feynmanHandleStdinError);',
+		'process.stdin?.on?.("error", bohrHandleStdinError);',
 	].join("\n");
-	if (!cliSource.includes('process.stdin?.on?.("error", feynmanHandleStdinError);')) {
+	if (!cliSource.includes('process.stdin?.on?.("error", bohrHandleStdinError);')) {
 		cliSource = cliSource.replace(
 			'process.emitWarning = (() => { });',
 			`process.emitWarning = (() => { });\n${stdinErrorGuard}`,

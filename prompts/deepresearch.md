@@ -8,6 +8,18 @@ Run a deep research workflow for: $@
 
 You are the Lead Researcher. You plan, delegate, evaluate, verify, write, and cite. Internal orchestration is invisible to the user unless they ask.
 
+Default architecture for `/deepresearch`:
+1. `research-planner`
+2. `hypothesis`
+3. parallel `researcher` batch
+4. `evidence-scorer` + `knowledge-graph`
+5. `contradiction`
+6. `reasoning-validator`
+7. `writer`
+8. `reviewer`
+9. `citation-integrity` / `verifier`
+10. `iteration-controller`
+
 ## 1. Plan
 
 Analyze the research question using extended thinking. Develop a research strategy:
@@ -50,6 +62,8 @@ If `CHANGELOG.md` exists, read the most recent relevant entries before finalizin
 ```
 
 Also save the plan with `memory_remember` (type: `fact`, key: `deepresearch.<slug>.plan`) so it survives context truncation.
+
+Before finalizing the plan, spawn `research-planner` to produce a structured orchestration pass (agent ordering, checkpoint policy, and stop criteria). Merge the planner output into `outputs/.plans/<slug>.md` and keep this plan as the run's source of truth.
 
 Present the plan to the user, then continue automatically. Do not block the workflow waiting for approval. If the user actively asks for changes, revise the plan first before proceeding.
 
@@ -98,6 +112,15 @@ After researchers return, read their output files and critically assess:
 - Is any key angle missing entirely?
 - Did every assigned ledger task actually get completed, blocked, or explicitly superseded?
 
+Run `evidence-scorer` on the current claim set and save to `<slug>-evidence-scores.md`.
+Run `contradiction` on the current synthesis and save to `<slug>-contradictions.md`.
+Run `reasoning-validator` on the synthesis draft and save to `<slug>-reasoning-validation.md`.
+
+Use `iteration-controller` to govern loop continuation. Default stop policy:
+- confidence score >= 0.80
+- unresolved critical contradictions = 0
+- reasoning validator has no invalid high-impact claim chains
+
 If gaps are significant, spawn another targeted batch of researchers. No fixed cap on rounds — iterate until evidence is sufficient or sources are exhausted.
 
 Update the plan artifact (`outputs/.plans/<slug>.md`) task ledger, verification log, and decision log after each round.
@@ -105,7 +128,11 @@ When the work spans multiple rounds, also append a concise chronological entry t
 
 Most topics need 1-2 rounds. Stop when additional rounds would not materially change conclusions.
 
-## 5. Write the report
+## 5. Structure reusable knowledge
+
+Before final drafting, spawn `knowledge-graph` and save to `<slug>-knowledge-graph.md` with entity/relation/claim-link structure. Ensure major conclusions in the brief can be traced to graph nodes or links.
+
+## 6. Write the report
 
 Once evidence is sufficient, YOU write the full research brief directly. Do not delegate writing to another agent. Read the research files, synthesize the findings, and produce a complete document:
 
@@ -134,7 +161,7 @@ Before finalizing the draft, do a claim sweep:
 
 Save this draft to `outputs/.drafts/<slug>-draft.md`.
 
-## 6. Cite
+## 7. Cite
 
 Spawn the `verifier` agent to post-process YOUR draft. The verifier agent adds inline citations, verifies every source URL, and produces the final output:
 
@@ -144,7 +171,7 @@ Spawn the `verifier` agent to post-process YOUR draft. The verifier agent adds i
 
 The verifier agent does not rewrite the report — it only anchors claims to sources and builds the numbered Sources section.
 
-## 7. Verify
+## 8. Verify
 
 Spawn the `reviewer` agent against the cited draft. The reviewer checks for:
 - Unsupported claims that slipped past citation
@@ -159,7 +186,9 @@ Spawn the `reviewer` agent against the cited draft. The reviewer checks for:
 If the reviewer flags FATAL issues, fix them in the brief before delivering. MAJOR issues get noted in the Open Questions section. MINOR issues are accepted.
 After fixes, run at least one more review-style verification pass if any FATAL issues were found. Do not assume one fix solved everything.
 
-## 8. Deliver
+Before delivery, run one final `reasoning-validator` pass on `<slug>-brief.md`. If the validator reports invalid high-impact claim chains, resolve them before promotion.
+
+## 9. Deliver
 
 Copy the final cited and verified output to the appropriate folder:
 - Paper-style drafts → `papers/`

@@ -1,8 +1,8 @@
 {
-  "name": "@companion-ai/feynman",
+  "name": "@companion-ai/bohr",
   "version": "0.2.17",
   "description": "Research-first CLI agent built on Pi and alphaXiv",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "type": "module",
   "engines": {
     "node": ">=20.19.0"
@@ -14,11 +14,11 @@
     "bin/",
     "dist/",
     "metadata/",
-    ".feynman/agents/",
-    ".feynman/runtime-workspace.tgz",
-    ".feynman/settings.json",
-    ".feynman/SYSTEM.md",
-    ".feynman/themes/",
+    ".bohr/agents/",
+    ".bohr/runtime-workspace.tgz",
+    ".bohr/settings.json",
+    ".bohr/SYSTEM.md",
+    ".bohr/themes/",
     "extensions/",
     "prompts/",
     "logo.mjs",
@@ -94,10 +94,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/getcompanion-ai/feynman.git"
+    "url": "git+https://github.com/Dhruvil7694/BohrAI.git"
   },
-  "homepage": "https://github.com/getcompanion-ai/feynman#readme",
+  "homepage": "https://github.com/Dhruvil7694/BohrAI#readme",
   "bugs": {
-    "url": "https://github.com/getcompanion-ai/feynman/issues"
+    "url": "https://github.com/Dhruvil7694/BohrAI/issues"
   }
 }

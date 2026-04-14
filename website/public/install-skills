@@ -3,8 +3,8 @@
 set -eu
 
 VERSION="latest"
-SCOPE="${FEYNMAN_SKILLS_SCOPE:-user}"
-TARGET_DIR="${FEYNMAN_SKILLS_DIR:-}"
+SCOPE="${BOHR_SKILLS_SCOPE:-user}"
+TARGET_DIR="${BOHR_SKILLS_DIR:-}"
 
 step() {
   printf '==> %s\n' "$1"
@@ -53,7 +53,7 @@ download_file() {
     return
   fi
 
-  echo "curl or wget is required to install Feynman skills." >&2
+  echo "curl or wget is required to install Bohr skills." >&2
   exit 1
 }
 
@@ -70,7 +70,7 @@ download_text() {
     return
   fi
 
-  echo "curl or wget is required to install Feynman skills." >&2
+  echo "curl or wget is required to install Bohr skills." >&2
   exit 1
 }
 
@@ -78,11 +78,11 @@ resolve_version() {
   normalized_version="$(normalize_version "$VERSION")"
 
   if [ "$normalized_version" = "latest" ]; then
-    release_page="$(download_text "https://github.com/getcompanion-ai/feynman/releases/latest")"
+    release_page="$(download_text "https://github.com/your-org/bohr-ai/releases/latest")"
     resolved_version="$(printf '%s\n' "$release_page" | sed -n 's@.*releases/tag/v\([0-9][^"<>[:space:]]*\).*@\1@p' | head -n 1)"
 
     if [ -z "$resolved_version" ]; then
-      echo "Failed to resolve the latest Feynman release version." >&2
+      echo "Failed to resolve the latest Bohr release version." >&2
       exit 1
     fi
 
@@ -101,11 +101,11 @@ resolve_target_dir() {
 
   case "$SCOPE" in
     repo)
-      printf '%s/.agents/skills/feynman\n' "$PWD"
+      printf '%s/.agents/skills/bohr\n' "$PWD"
       ;;
     user)
       codex_home="${CODEX_HOME:-$HOME/.codex}"
-      printf '%s/skills/feynman\n' "$codex_home"
+      printf '%s/skills/bohr\n' "$codex_home"
       ;;
     *)
       echo "Unknown scope: $SCOPE (expected --user or --repo)" >&2
@@ -146,14 +146,14 @@ archive_metadata="$(resolve_version)"
 resolved_version="$(printf '%s\n' "$archive_metadata" | sed -n '1p')"
 git_ref="$(printf '%s\n' "$archive_metadata" | sed -n '2p')"
 
-archive_url="${FEYNMAN_INSTALL_SKILLS_ARCHIVE_URL:-}"
+archive_url="${BOHR_INSTALL_SKILLS_ARCHIVE_URL:-}"
 if [ -z "$archive_url" ]; then
   case "$git_ref" in
     main)
-      archive_url="https://github.com/getcompanion-ai/feynman/archive/refs/heads/main.tar.gz"
+      archive_url="https://github.com/your-org/bohr-ai/archive/refs/heads/main.tar.gz"
       ;;
     v*)
-      archive_url="https://github.com/getcompanion-ai/feynman/archive/refs/tags/${git_ref}.tar.gz"
+      archive_url="https://github.com/your-org/bohr-ai/archive/refs/tags/${git_ref}.tar.gz"
       ;;
   esac
 fi
@@ -165,7 +165,7 @@ fi
 
 install_dir="$(resolve_target_dir)"
 
-step "Installing Feynman skills ${resolved_version} (${SCOPE})"
+step "Installing Bohr skills ${resolved_version} (${SCOPE})"
 
 tmp_dir="$(mktemp -d)"
 cleanup() {
@@ -173,7 +173,7 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-archive_path="$tmp_dir/feynman-skills.tar.gz"
+archive_path="$tmp_dir/bohr-skills.tar.gz"
 step "Downloading skills archive"
 download_file "$archive_url" "$archive_path"
 
@@ -207,4 +207,4 @@ case "$SCOPE" in
     ;;
 esac
 
-printf 'Feynman skills %s installed successfully.\n' "$resolved_version"
+printf 'Bohr skills %s installed successfully.\n' "$resolved_version"

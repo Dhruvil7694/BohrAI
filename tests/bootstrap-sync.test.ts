@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, sep } from "node:path";
 
 import { syncBundledAssets } from "../src/bootstrap/sync.js";
 
@@ -18,7 +18,7 @@ function createAppRoot(): string {
 test("syncBundledAssets copies missing bundled files", () => {
 	const appRoot = createAppRoot();
 	const home = mkdtempSync(join(tmpdir(), "feynman-home-"));
-	process.env.FEYNMAN_HOME = home;
+	process.env.BOHR_HOME = home;
 	const agentDir = join(home, "agent");
 	mkdirSync(agentDir, { recursive: true });
 
@@ -32,7 +32,7 @@ test("syncBundledAssets copies missing bundled files", () => {
 test("syncBundledAssets preserves user-modified files and updates managed files", () => {
 	const appRoot = createAppRoot();
 	const home = mkdtempSync(join(tmpdir(), "feynman-home-"));
-	process.env.FEYNMAN_HOME = home;
+	process.env.BOHR_HOME = home;
 	const agentDir = join(home, "agent");
 	mkdirSync(agentDir, { recursive: true });
 
@@ -53,7 +53,7 @@ test("syncBundledAssets preserves user-modified files and updates managed files"
 test("syncBundledAssets removes deleted managed files but preserves user-modified stale files", () => {
 	const appRoot = createAppRoot();
 	const home = mkdtempSync(join(tmpdir(), "feynman-home-"));
-	process.env.FEYNMAN_HOME = home;
+	process.env.BOHR_HOME = home;
 	const agentDir = join(home, "agent");
 	mkdirSync(agentDir, { recursive: true });
 
@@ -66,7 +66,7 @@ test("syncBundledAssets removes deleted managed files but preserves user-modifie
 	writeFileSync(join(appRoot, "skills", "eli5", "SKILL.md"), "# new skill\n", "utf8");
 
 	const firstResult = syncBundledAssets(appRoot, agentDir);
-	assert.deepEqual(firstResult.copied, ["eli5/SKILL.md"]);
+	assert.deepEqual(firstResult.copied, [`eli5${sep}SKILL.md`]);
 	assert.equal(existsSync(join(agentDir, "skills", "paper-eli5", "SKILL.md")), false);
 	assert.equal(readFileSync(join(agentDir, "skills", "eli5", "SKILL.md"), "utf8"), "# new skill\n");
 
@@ -77,6 +77,6 @@ test("syncBundledAssets removes deleted managed files but preserves user-modifie
 	rmSync(join(appRoot, "skills", "legacy"), { recursive: true, force: true });
 
 	const secondResult = syncBundledAssets(appRoot, agentDir);
-	assert.deepEqual(secondResult.skipped, ["legacy/SKILL.md"]);
+	assert.deepEqual(secondResult.skipped, [`legacy${sep}SKILL.md`]);
 	assert.equal(readFileSync(join(agentDir, "skills", "legacy", "SKILL.md"), "utf8"), "# user legacy override\n");
 });

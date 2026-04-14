@@ -14,11 +14,11 @@ import {
 import { DefaultPackageManager, SettingsManager } from "@mariozechner/pi-coding-agent";
 
 import { syncBundledAssets } from "./bootstrap/sync.js";
-import { ensureFeynmanHome, getDefaultSessionDir, getFeynmanAgentDir, getFeynmanHome } from "./config/paths.js";
+import { ensureBohrHome, getBohrAgentDir, getBohrHome, getDefaultSessionDir } from "./config/paths.js";
 import { launchPiChat } from "./pi/launch.js";
 import { CORE_PACKAGE_SOURCES, getOptionalPackagePresetSources, listOptionalPackagePresets } from "./pi/package-presets.js";
 import { normalizeFeynmanSettings, normalizeThinkingLevel, parseModelSpec } from "./pi/settings.js";
-import { applyFeynmanPackageManagerEnv } from "./pi/runtime.js";
+import { applyBohrPackageManagerEnv } from "./pi/runtime.js";
 import { getConfiguredServiceTier, normalizeServiceTier, setConfiguredServiceTier } from "./model/service-tier.js";
 import {
 	authenticateModelProvider,
@@ -58,15 +58,15 @@ function printHelp(appRoot: string): void {
 
 	printAsciiHeader([
 		"Research-first agent shell built on Pi.",
-		"Use `feynman setup` first if this is a new machine.",
+		"Use `bohr setup` first if this is a new machine.",
 	]);
 
 	printSection("Getting Started");
-	printInfo("feynman");
-	printInfo("feynman setup");
-	printInfo("feynman doctor");
-	printInfo("feynman model");
-	printInfo("feynman search status");
+	printInfo("bohr");
+	printInfo("bohr setup");
+	printInfo("bohr doctor");
+	printInfo("bohr model");
+	printInfo("bohr search status");
 
 	printSection("Commands");
 	for (const section of cliCommandSections) {
@@ -147,7 +147,7 @@ async function handleModelCommand(subcommand: string | undefined, args: string[]
 	if (subcommand === "set") {
 		const spec = args[0];
 		if (!spec) {
-			throw new Error("Usage: feynman model set <provider/model|provider:model>");
+			throw new Error("Usage: bohr model set <provider/model|provider:model>");
 		}
 		setDefaultModelSpec(feynmanSettingsPath, feynmanAuthPath, spec);
 		return;
@@ -168,7 +168,7 @@ async function handleModelCommand(subcommand: string | undefined, args: string[]
 
 		const tier = normalizeServiceTier(requested);
 		if (!tier) {
-			throw new Error("Usage: feynman model tier <auto|default|flex|priority|standard_only|unset>");
+			throw new Error("Usage: bohr model tier <auto|default|flex|priority|standard_only|unset>");
 		}
 
 		setConfiguredServiceTier(feynmanSettingsPath, tier);
@@ -180,7 +180,7 @@ async function handleModelCommand(subcommand: string | undefined, args: string[]
 }
 
 async function handleUpdateCommand(workingDir: string, feynmanAgentDir: string, source?: string): Promise<void> {
-	applyFeynmanPackageManagerEnv(feynmanAgentDir);
+	applyBohrPackageManagerEnv(feynmanAgentDir);
 	const settingsManager = SettingsManager.create(workingDir, feynmanAgentDir);
 	const packageManager = new DefaultPackageManager({
 		cwd: workingDir,
@@ -204,7 +204,7 @@ async function handleUpdateCommand(workingDir: string, feynmanAgentDir: string, 
 }
 
 async function handlePackagesCommand(subcommand: string | undefined, args: string[], workingDir: string, feynmanAgentDir: string): Promise<void> {
-	applyFeynmanPackageManagerEnv(feynmanAgentDir);
+	applyBohrPackageManagerEnv(feynmanAgentDir);
 	const settingsManager = SettingsManager.create(workingDir, feynmanAgentDir);
 	const configuredSources = new Set(
 		settingsManager
@@ -214,7 +214,7 @@ async function handlePackagesCommand(subcommand: string | undefined, args: strin
 	);
 
 	if (!subcommand || subcommand === "list") {
-		printPanel("Feynman Packages", [
+		printPanel("Bohr Packages", [
 			"Core packages are installed by default to keep first-run setup fast.",
 		]);
 		printSection("Core");
@@ -226,7 +226,7 @@ async function handlePackagesCommand(subcommand: string | undefined, args: strin
 			const installed = preset.sources.every((source) => configuredSources.has(source));
 			printInfo(`${preset.name}${installed ? " (installed)" : ""}  ${preset.description}`);
 		}
-		printInfo("Install with: feynman packages install <preset>");
+		printInfo("Install with: bohr packages install <preset>");
 		return;
 	}
 
@@ -236,7 +236,7 @@ async function handlePackagesCommand(subcommand: string | undefined, args: strin
 
 	const target = args[0];
 	if (!target) {
-		throw new Error("Usage: feynman packages install <generative-ui|memory|session-search|all-extras>");
+		throw new Error("Usage: bohr packages install <generative-ui|memory|session-search|all-extras>");
 	}
 
 	const sources = getOptionalPackagePresetSources(target);
@@ -280,7 +280,7 @@ function handleSearchCommand(subcommand: string | undefined, args: string[]): vo
 		const provider = args[0] as PiWebSearchProvider | undefined;
 		const validProviders: PiWebSearchProvider[] = ["auto", "perplexity", "exa", "gemini"];
 		if (!provider || !validProviders.includes(provider)) {
-			throw new Error("Usage: feynman search set <auto|perplexity|exa|gemini> [api-key]");
+			throw new Error("Usage: bohr search set <auto|perplexity|exa|gemini> [api-key]");
 		}
 		setSearchProvider(provider, args[1]);
 		return;
@@ -331,10 +331,10 @@ export async function main(): Promise<void> {
 	const appRoot = resolve(here, "..");
 	const feynmanVersion = loadPackageVersion(appRoot).version;
 	const bundledSettingsPath = resolve(appRoot, ".feynman", "settings.json");
-	const feynmanHome = getFeynmanHome();
-	const feynmanAgentDir = getFeynmanAgentDir(feynmanHome);
+	const feynmanHome = getBohrHome();
+	const feynmanAgentDir = getBohrAgentDir(feynmanHome);
 
-	ensureFeynmanHome(feynmanHome);
+	ensureBohrHome(feynmanHome);
 	syncBundledAssets(appRoot, feynmanAgentDir);
 
 	const { values, positionals } = parseArgs({
@@ -369,14 +369,14 @@ export async function main(): Promise<void> {
 			console.log(feynmanVersion);
 			return;
 		}
-		throw new Error("Unable to determine the installed Feynman version.");
+		throw new Error("Unable to determine the installed Bohr version.");
 	}
 
 	const workingDir = resolve(values.cwd ?? process.cwd());
 	const sessionDir = resolve(values["session-dir"] ?? getDefaultSessionDir(feynmanHome));
 	const feynmanSettingsPath = resolve(feynmanAgentDir, "settings.json");
 	const feynmanAuthPath = resolve(feynmanAgentDir, "auth.json");
-	const thinkingLevel = normalizeThinkingLevel(values.thinking ?? process.env.FEYNMAN_THINKING) ?? "medium";
+	const thinkingLevel = normalizeThinkingLevel(values.thinking ?? process.env.BOHR_THINKING) ?? "medium";
 
 	normalizeFeynmanSettings(feynmanSettingsPath, bundledSettingsPath, thinkingLevel, feynmanAuthPath);
 
@@ -478,17 +478,17 @@ export async function main(): Promise<void> {
 		return;
 	}
 
-	const explicitModelSpec = values.model ?? process.env.FEYNMAN_MODEL;
-	const explicitServiceTier = normalizeServiceTier(values["service-tier"] ?? process.env.FEYNMAN_SERVICE_TIER);
+	const explicitModelSpec = values.model ?? process.env.BOHR_MODEL;
+	const explicitServiceTier = normalizeServiceTier(values["service-tier"] ?? process.env.BOHR_SERVICE_TIER);
 	const mode = values.mode;
 	if (mode !== undefined && mode !== "text" && mode !== "json" && mode !== "rpc") {
 		throw new Error("Unknown mode. Use text, json, or rpc.");
 	}
-	if ((values["service-tier"] ?? process.env.FEYNMAN_SERVICE_TIER) && !explicitServiceTier) {
+	if ((values["service-tier"] ?? process.env.BOHR_SERVICE_TIER) && !explicitServiceTier) {
 		throw new Error("Unknown service tier. Use auto, default, flex, priority, or standard_only.");
 	}
 	if (explicitServiceTier) {
-		process.env.FEYNMAN_SERVICE_TIER = explicitServiceTier;
+		process.env.BOHR_SERVICE_TIER = explicitServiceTier;
 	}
 	if (explicitModelSpec) {
 		const modelRegistry = createModelRegistry(feynmanAuthPath);
@@ -518,8 +518,8 @@ export async function main(): Promise<void> {
 		appRoot,
 		workingDir,
 		sessionDir,
-		feynmanAgentDir,
-		feynmanVersion,
+		bohrAgentDir: feynmanAgentDir,
+		bohrVersion: feynmanVersion,
 		mode,
 		thinkingLevel,
 		explicitModelSpec,

@@ -22,16 +22,16 @@ function compareSemver(left, right) {
 }
 
 function fail(message) {
-	console.error(`[feynman] ${message}`);
+	console.error(`[bohr] ${message}`);
 	process.exit(1);
 }
 
 function resolveBundledNodeVersion() {
-	const requestedNodeVersion = process.env.FEYNMAN_BUNDLED_NODE_VERSION?.trim();
+	const requestedNodeVersion = process.env.BOHR_BUNDLED_NODE_VERSION?.trim();
 	if (requestedNodeVersion) {
 		if (compareSemver(parseSemver(requestedNodeVersion), parseSemver(minBundledNodeVersion)) < 0) {
 			fail(
-				`FEYNMAN_BUNDLED_NODE_VERSION=${requestedNodeVersion} is below the supported floor ${minBundledNodeVersion}`,
+				`BOHR_BUNDLED_NODE_VERSION=${requestedNodeVersion} is below the supported floor ${minBundledNodeVersion}`,
 			);
 		}
 		return requestedNodeVersion;
@@ -253,14 +253,14 @@ function installBundledNode(bundleRoot, target, stagingRoot) {
 
 function writeLauncher(bundleRoot, target) {
 	if (target.launcher === "unix") {
-		const launcherPath = resolve(bundleRoot, "feynman");
+	const launcherPath = resolve(bundleRoot, "bohr");
 		writeFileSync(
 			launcherPath,
 			[
 				"#!/bin/sh",
 				"set -eu",
 				'ROOT="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"',
-				'exec "$ROOT/node/bin/node" "$ROOT/app/bin/feynman.js" "$@"',
+				'exec "$ROOT/node/bin/node" "$ROOT/app/bin/bohr.js" "$@"',
 				"",
 			].join("\n"),
 			"utf8",
@@ -270,22 +270,22 @@ function writeLauncher(bundleRoot, target) {
 	}
 
 	writeFileSync(
-		resolve(bundleRoot, "feynman.cmd"),
+		resolve(bundleRoot, "bohr.cmd"),
 		[
 			"@echo off",
 			"setlocal",
 			'set "ROOT=%~dp0"',
 			'if "%ROOT:~-1%"=="\\" set "ROOT=%ROOT:~0,-1%"',
-			'"%ROOT%\\node\\node.exe" "%ROOT%\\app\\bin\\feynman.js" %*',
+			'"%ROOT%\\node\\node.exe" "%ROOT%\\app\\bin\\bohr.js" %*',
 			"",
 		].join("\r\n"),
 		"utf8",
 	);
 	writeFileSync(
-		resolve(bundleRoot, "feynman.ps1"),
+		resolve(bundleRoot, "bohr.ps1"),
 		[
 			'$Root = Split-Path -Parent $MyInvocation.MyCommand.Path',
-			'& "$Root\\node\\node.exe" "$Root\\app\\bin\\feynman.js" @args',
+			'& "$Root\\node\\node.exe" "$Root\\app\\bin\\bohr.js" @args',
 			"",
 		].join("\r\n"),
 		"utf8",
@@ -329,9 +329,9 @@ function packBundle(bundleRoot, target, outDir) {
 
 function main() {
 	const target = detectTarget();
-	const stagingRoot = mkdtempSync(join(tmpdir(), "feynman-native-"));
+	const stagingRoot = mkdtempSync(join(tmpdir(), "bohr-native-"));
 	const outDir = resolve(appRoot, "dist", "release");
-	const bundleRoot = resolve(stagingRoot, `feynman-${packageJson.version}-${target.id}`);
+	const bundleRoot = resolve(stagingRoot, `bohr-${packageJson.version}-${target.id}`);
 	const appDir = resolve(bundleRoot, "app");
 
 	mkdirSync(outDir, { recursive: true });
@@ -351,7 +351,7 @@ function main() {
 	validateBundle(bundleRoot, target);
 
 	const archivePath = packBundle(bundleRoot, target, outDir);
-	console.log(`[feynman] native bundle ready: ${archivePath}`);
+	console.log(`[bohr] native bundle ready: ${archivePath}`);
 }
 
 main();

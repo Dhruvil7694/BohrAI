@@ -36,28 +36,28 @@ const compute = [
 ]
 
 const terminalCommands = [
-  { command: 'feynman "what do we know about scaling laws"', description: "Cited research brief from papers and web" },
-  { command: 'feynman deepresearch "mechanistic interpretability"', description: "Multi-agent deep dive with synthesis and verification" },
-  { command: 'feynman lit "RLHF alternatives"', description: "Literature review with consensus and open questions" },
-  { command: "feynman audit 2401.12345", description: "Paper claims vs. what the code actually does" },
-  { command: 'feynman replicate "chain-of-thought improves math"', description: "Replication plan, compute target, experiment execution" },
+  { command: 'bohr "what do we know about scaling laws"', description: "Cited research brief from papers and web" },
+  { command: 'bohr deepresearch "mechanistic interpretability"', description: "Multi-agent deep dive with synthesis and verification" },
+  { command: 'bohr lit "RLHF alternatives"', description: "Literature review with consensus and open questions" },
+  { command: "bohr audit 2401.12345", description: "Paper claims vs. what the code actually does" },
+  { command: 'bohr replicate "chain-of-thought improves math"', description: "Replication plan, compute target, experiment execution" },
 ]
 
 const installCommands = [
-  { label: "curl", command: "curl -fsSL https://feynman.is/install | bash" },
+  { label: "curl", command: "curl -fsSL https://bohr-ai.internal/install | bash" },
 ]
 ---
 
-<Layout title="Feynman — The open source AI research agent" active="home">
+<Layout title="Bohr AI — Private AI research system" active="home">
   <div class="mx-auto max-w-5xl px-6">
 
     <section class="flex flex-col items-center gap-8 pb-16 pt-20 text-center">
       <div class="flex max-w-3xl flex-col gap-4">
         <h1 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-          The open source AI<br />research agent
+          Bohr AI<br />private research system
         </h1>
         <p class="mx-auto max-w-2xl text-lg text-muted-foreground">
-          Reads papers, searches the web, writes drafts, runs experiments, and cites every claim. All locally on your computer.
+          Built for internal research workflows: gather evidence, run structured analysis, and produce decision-ready outputs.
         </p>
       </div>
 
@@ -97,9 +97,6 @@ const installCommands = [
           <a href="/docs/getting-started/installation">
             <Button client:load size="lg">Get Started</Button>
           </a>
-          <a href="https://github.com/getcompanion-ai/feynman" target="_blank" rel="noopener noreferrer" class="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-input bg-background px-4 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
-            GitHub
-          </a>
         </div>
 
         <p class="text-sm text-muted-foreground">
@@ -107,7 +104,13 @@ const installCommands = [
         </p>
       </div>
 
-      <img src="/hero.png" class="w-full" alt="Feynman CLI" />
+      <div class="w-full rounded-xl border border-border bg-card px-6 py-10 text-left">
+        <p class="text-xs uppercase tracking-[0.2em] text-muted-foreground">Bohr AI</p>
+        <h2 class="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Research with clarity, not noise.</h2>
+        <p class="mt-3 max-w-3xl text-muted-foreground">
+          This deployment is private and tailored for your team. Use the workflows below to run deep research, compare sources, and maintain verifiable outputs.
+        </p>
+      </div>
     </section>
 
     <section class="py-16">
@@ -173,7 +176,7 @@ const installCommands = [
       <div class="flex flex-col items-center gap-8 text-center">
         <div class="flex flex-col gap-2">
           <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Skills &amp; Tools</h2>
-          <p class="text-muted-foreground">How Feynman searches, remembers, and exports work.</p>
+          <p class="text-muted-foreground">How Bohr AI searches, remembers, and exports work.</p>
         </div>
         <div class="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {sources.map((source) => (
@@ -226,9 +229,6 @@ const installCommands = [
       <div class="flex flex-wrap items-center justify-center gap-3">
         <a href="/docs/getting-started/installation">
           <Button client:load size="lg">Get Started</Button>
-        </a>
-        <a href="https://github.com/getcompanion-ai/feynman" target="_blank" rel="noopener noreferrer">
-          <Button client:load variant="outline" size="lg">View on GitHub</Button>
         </a>
       </div>
     </section>

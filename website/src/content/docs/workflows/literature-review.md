@@ -18,7 +18,7 @@ From the REPL:
 From the CLI:
 
 ```bash
-feynman lit "Scaling laws for language model performance"
+bohr lit "Scaling laws for language model performance"
 ```
 
 ## How it works

@@ -1,23 +1,23 @@
 ---
 title: Setup
-description: Walk through the guided setup wizard to configure Feynman.
+description: Walk through the guided setup wizard to configure Bohr AI.
 section: Getting Started
 order: 3
 ---
 
-The `feynman setup` wizard configures your model provider, API keys, and optional packages. It runs automatically on first launch, but you can re-run it at any time to change your configuration.
+The `bohr setup` wizard configures your model provider, API keys, and optional packages. It runs automatically on first launch, but you can re-run it at any time to change your configuration.
 
 ## Running setup
 
 ```bash
-feynman setup
+bohr setup
 ```
 
 The wizard walks you through three stages: model configuration, authentication, and optional package installation.
 
 ## Stage 1: Model selection
 
-Feynman supports multiple model providers. The setup wizard presents a list of available providers and models. Select your preferred default model using the arrow keys:
+Bohr AI supports multiple model providers. The setup wizard presents a list of available providers and models. Select your preferred default model using the arrow keys:
 
 ```
 ? Select your default model:
@@ -28,11 +28,11 @@ Feynman supports multiple model providers. The setup wizard presents a list of a
   google:gemini-2.5-pro
 ```
 
-The model you choose here becomes the default for all sessions. You can override it per-session with the `--model` flag or change it later via `feynman model set <provider/model>` or `feynman model set <provider:model>`.
+The model you choose here becomes the default for all sessions. You can override it per-session with the `--model` flag or change it later via `bohr model set <provider/model>` or `bohr model set <provider:model>`.
 
 ## Stage 2: Authentication
 
-Depending on your chosen provider, setup prompts you for an API key or walks you through OAuth login. For providers that support Pi OAuth (like Anthropic and OpenAI), Feynman opens a browser window to complete the sign-in flow. Your credentials are stored securely in the Pi auth storage at `~/.feynman/`.
+Depending on your chosen provider, setup prompts you for an API key or walks you through OAuth login. For providers that support Pi OAuth (like Anthropic and OpenAI), Bohr AI opens a browser window to complete the sign-in flow. Your credentials are stored securely in the Pi auth storage at `~/.bohr/`.
 
 For API key providers, you are prompted to paste your key directly:
 
@@ -50,7 +50,7 @@ For Amazon Bedrock, choose:
 Amazon Bedrock (AWS credential chain)
 ```
 
-Feynman verifies the same AWS credential chain Pi uses at runtime, including `AWS_PROFILE`, `~/.aws` credentials/config, SSO, ECS/IRSA, and EC2 instance roles. Once that check passes, Bedrock models become available in `feynman model list` without needing a traditional API key.
+Bohr AI verifies the same AWS credential chain Pi uses at runtime, including `AWS_PROFILE`, `~/.aws` credentials/config, SSO, ECS/IRSA, and EC2 instance roles. Once that check passes, Bedrock models become available in `bohr model list` without needing a traditional API key.
 
 ### Local models: Ollama, LM Studio, vLLM
 
@@ -73,22 +73,22 @@ API key: local
 That same custom-provider flow also works for other OpenAI-compatible local servers such as LM Studio or vLLM. After saving the provider, run:
 
 ```bash
-feynman model list
-feynman model set <provider>/<model-id>
+bohr model list
+bohr model set <provider>/<model-id>
 ```
 
 to confirm the local model is available and make it the default.
 
 ## Stage 3: Optional packages
 
-Feynman's core ships with the essentials, but some features require additional packages. The wizard asks if you want to install optional presets:
+Bohr AI's core ships with the essentials, but some features require additional packages. The wizard asks if you want to install optional presets:
 
 - **session-search** -- Enables searching prior session transcripts for past research
 - **memory** -- Automatic preference and correction memory across sessions
 - **generative-ui** -- Interactive HTML-style widgets for rich output
 
-You can skip this step and install packages later with `feynman packages install <preset>`.
+You can skip this step and install packages later with `bohr packages install <preset>`.
 
 ## Re-running setup
 
-Configuration is stored in `~/.feynman/settings.json`. Running `feynman setup` again overwrites previous settings. If you only need to change a specific value, edit the config file directly or use the targeted commands like `feynman model set` or `feynman alpha login`.
+Configuration is stored in `~/.bohr/settings.json`. Running `bohr setup` again overwrites previous settings. If you only need to change a specific value, edit the config file directly or use the targeted commands like `bohr model set` or `bohr alpha login`.

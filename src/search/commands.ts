@@ -28,10 +28,10 @@ export function printSearchStatus(): void {
 
 export function setSearchProvider(provider: PiWebSearchProvider, apiKey?: string): void {
 	if (!SEARCH_PROVIDERS.includes(provider)) {
-		throw new Error(`Usage: feynman search set <${SEARCH_PROVIDERS.join("|")}> [api-key]`);
+		throw new Error(`Usage: bohr search set <${SEARCH_PROVIDERS.join("|")}> [api-key]`);
 	}
 	if (apiKey !== undefined && provider === "auto") {
-		throw new Error("The auto provider does not use an API key. Usage: feynman search set auto");
+		throw new Error("The auto provider does not use an API key. Usage: bohr search set auto");
 	}
 
 	const updates: Partial<Record<keyof PiWebAccessConfig, unknown>> = {

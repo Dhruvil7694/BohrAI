@@ -4,7 +4,7 @@ import { createRequire } from "node:module";
 import { homedir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { FEYNMAN_LOGO_HTML } from "../logo.mjs";
+import { BOHR_LOGO_HTML } from "../logo.mjs";
 import { patchPiExtensionLoaderSource } from "./lib/pi-extension-loader-patch.mjs";
 import { patchPiGoogleLegacySchemaSource } from "./lib/pi-google-legacy-schema-patch.mjs";
 import { PI_WEB_ACCESS_PATCH_TARGETS, patchPiWebAccessSource } from "./lib/pi-web-access-patch.mjs";
@@ -12,9 +12,11 @@ import { PI_SUBAGENTS_PATCH_TARGETS, patchPiSubagentsSource } from "./lib/pi-sub
 
 const here = dirname(fileURLToPath(import.meta.url));
 const appRoot = resolve(here, "..");
-const feynmanHome = resolve(process.env.FEYNMAN_HOME ?? homedir(), ".feynman");
+const feynmanHome = process.env.BOHR_HOME?.trim()
+	? resolve(process.env.BOHR_HOME.trim())
+	: resolve(homedir(), ".bohr");
 const feynmanNpmPrefix = resolve(feynmanHome, "npm-global");
-process.env.FEYNMAN_NPM_PREFIX = feynmanNpmPrefix;
+process.env.BOHR_NPM_PREFIX = feynmanNpmPrefix;
 process.env.NPM_CONFIG_PREFIX = feynmanNpmPrefix;
 process.env.npm_config_prefix = feynmanNpmPrefix;
 const appRequire = createRequire(resolve(appRoot, "package.json"));
@@ -53,7 +55,7 @@ const piTuiRoot = findPackageRoot("@mariozechner/pi-tui");
 const piAiRoot = findPackageRoot("@mariozechner/pi-ai");
 
 if (!piPackageRoot) {
-	console.warn("[feynman] pi-coding-agent not found, skipping Pi patches");
+	console.warn("[bohr] pi-coding-agent not found, skipping Pi patches");
 }
 
 const packageJsonPath = piPackageRoot ? resolve(piPackageRoot, "package.json") : null;
@@ -117,7 +119,7 @@ let cachedPackageManager = undefined;
 function resolvePackageManager() {
 	if (cachedPackageManager !== undefined) return cachedPackageManager;
 
-	const requested = process.env.FEYNMAN_PACKAGE_MANAGER?.trim();
+	const requested = process.env.BOHR_PACKAGE_MANAGER?.trim();
 	const candidates = requested ? [requested] : ["npm", "pnpm", "bun"];
 	for (const candidate of candidates) {
 		if (resolveExecutable(candidate)) {
@@ -134,7 +136,7 @@ function installWorkspacePackages(packageSpecs) {
 	const packageManager = resolvePackageManager();
 	if (!packageManager) {
 		process.stderr.write(
-			"[feynman] no supported package manager found; install npm, pnpm, or bun, or set FEYNMAN_PACKAGE_MANAGER.\n",
+			"[bohr] no supported package manager found; install npm, pnpm, or bun, or set BOHR_PACKAGE_MANAGER.\n",
 		);
 		return false;
 	}
@@ -147,7 +149,7 @@ function installWorkspacePackages(packageSpecs) {
 
 	if (result.status !== 0) {
 		if (result.stderr?.length) process.stderr.write(result.stderr);
-		process.stderr.write(`[feynman] ${packageManager} failed while setting up bundled packages.\n`);
+		process.stderr.write(`[bohr] ${packageManager} failed while setting up bundled packages.\n`);
 		return false;
 	}
 
@@ -227,7 +229,7 @@ function ensurePackageWorkspace() {
 	mkdirSync(workspaceDir, { recursive: true });
 	writeFileSync(
 		workspacePackageJsonPath,
-		JSON.stringify({ name: "feynman-packages", private: true }, null, 2) + "\n",
+		JSON.stringify({ name: "bohr-packages", private: true }, null, 2) + "\n",
 		"utf8",
 	);
 
@@ -236,7 +238,7 @@ function ensurePackageWorkspace() {
 	const start = Date.now();
 	const spinner = setInterval(() => {
 		const elapsed = Math.round((Date.now() - start) / 1000);
-		process.stderr.write(`\r${frames[frame++ % frames.length]} setting up feynman... ${elapsed}s`);
+		process.stderr.write(`\r${frames[frame++ % frames.length]} setting up bohr... ${elapsed}s`);
 	}, 80);
 
 	const result = installWorkspacePackages(packageSpecs);
@@ -247,7 +249,7 @@ function ensurePackageWorkspace() {
 	if (!result) {
 		process.stderr.write(`\r✗ setup failed (${elapsed}s)\n`);
 	} else {
-		process.stderr.write(`\r✓ feynman ready (${elapsed}s)\n`);
+		process.stderr.write(`\r✓ bohr ready (${elapsed}s)\n`);
 	}
 }
 
@@ -256,19 +258,19 @@ ensurePackageWorkspace();
 function ensurePandoc() {
 	if (!isGlobalInstall) return;
 	if (process.platform !== "darwin") return;
-	if (process.env.FEYNMAN_SKIP_PANDOC_INSTALL === "1") return;
+	if (process.env.BOHR_SKIP_PANDOC_INSTALL === "1") return;
 	if (resolveExecutable("pandoc", ["/opt/homebrew/bin/pandoc", "/usr/local/bin/pandoc"])) return;
 
 	const brewPath = resolveExecutable("brew", ["/opt/homebrew/bin/brew", "/usr/local/bin/brew"]);
 	if (!brewPath) return;
 
-	console.log("[feynman] installing pandoc...");
+	console.log("[bohr] installing pandoc...");
 	const result = spawnSync(brewPath, ["install", "pandoc"], {
 		stdio: "inherit",
 		timeout: 300000,
 	});
 	if (result.status !== 0) {
-		console.warn("[feynman] warning: pandoc install failed, run `feynman --setup-preview` later");
+		console.warn("[bohr] warning: pandoc install failed, run `bohr --setup-preview` later");
 	}
 }
 
@@ -289,11 +291,11 @@ if (existsSync(piSubagentsRoot)) {
 
 if (packageJsonPath && existsSync(packageJsonPath)) {
 	const pkg = JSON.parse(readFileSync(packageJsonPath, "utf8"));
-	if (pkg.piConfig?.name !== "feynman" || pkg.piConfig?.configDir !== ".feynman") {
+	if (pkg.piConfig?.name !== "bohr" || pkg.piConfig?.configDir !== ".bohr") {
 		pkg.piConfig = {
 			...(pkg.piConfig || {}),
-			name: "feynman",
-			configDir: ".feynman",
+			name: "bohr",
+			configDir: ".bohr",
 		};
 		writeFileSync(packageJsonPath, JSON.stringify(pkg, null, "\t") + "\n", "utf8");
 	}
@@ -306,7 +308,7 @@ for (const entryPath of [cliPath, bunCliPath].filter(Boolean)) {
 
 	let cliSource = readFileSync(entryPath, "utf8");
 	if (cliSource.includes('process.title = "pi";')) {
-		cliSource = cliSource.replace('process.title = "pi";', 'process.title = "feynman";');
+		cliSource = cliSource.replace('process.title = "pi";', 'process.title = "bohr";');
 	}
 	const stdinErrorGuard = [
 		"const feynmanHandleStdinError = (error) => {",
@@ -374,8 +376,8 @@ if (interactiveModePath && existsSync(interactiveModePath)) {
 		writeFileSync(
 			interactiveModePath,
 			interactiveModeSource
-				.replace("`π - ${sessionName} - ${cwdBasename}`", "`feynman - ${sessionName} - ${cwdBasename}`")
-				.replace("`π - ${cwdBasename}`", "`feynman - ${cwdBasename}`"),
+				.replace("`π - ${sessionName} - ${cwdBasename}`", "`bohr - ${sessionName} - ${cwdBasename}`")
+				.replace("`π - ${cwdBasename}`", "`bohr - ${cwdBasename}`"),
 			"utf8",
 		);
 	}
@@ -587,7 +589,7 @@ if (existsSync(sessionSearchIndexerPath)) {
 	const source = readFileSync(sessionSearchIndexerPath, "utf8");
 	const original = 'const sessionsDir = path.join(os.homedir(), ".pi", "agent", "sessions");';
 	const replacement =
-		'const sessionsDir = process.env.FEYNMAN_SESSION_DIR ?? process.env.PI_SESSION_DIR ?? path.join(os.homedir(), ".pi", "agent", "sessions");';
+		'const sessionsDir = process.env.BOHR_SESSION_DIR ?? process.env.PI_SESSION_DIR ?? path.join(os.homedir(), ".pi", "agent", "sessions");';
 	if (source.includes(original)) {
 		writeFileSync(sessionSearchIndexerPath, source.replace(original, replacement), "utf8");
 	}
@@ -599,7 +601,7 @@ const googleSharedPath = piAiRoot ? resolve(piAiRoot, "dist", "providers", "goog
 if (oauthPagePath && existsSync(oauthPagePath)) {
 	let source = readFileSync(oauthPagePath, "utf8");
 	let changed = false;
-	const target = `const LOGO_SVG = \`${FEYNMAN_LOGO_HTML}\`;`;
+	const target = `const LOGO_SVG = \`${BOHR_LOGO_HTML}\`;`;
 	if (!source.includes(target)) {
 		source = source.replace(/const LOGO_SVG = `[^`]*`;/, target);
 		changed = true;
@@ -624,7 +626,7 @@ if (alphaHubAuthPath && existsSync(alphaHubAuthPath)) {
 	const oldSuccess = "'<html><body><h2>Logged in to Alpha Hub</h2><p>You can close this tab.</p></body></html>'";
 	const oldError = "'<html><body><h2>Login failed</h2><p>You can close this tab.</p></body></html>'";
 	const bodyAttr = `style="font-family:system-ui,sans-serif;text-align:center;padding-top:20vh;background:#050a08;color:#f0f5f2"`;
-	const logo = `<h1 style="font-family:monospace;font-size:48px;color:#34d399;margin:0">feynman</h1>`;
+	const logo = `<h1 style="font-family:monospace;font-size:48px;color:#34d399;margin:0">bohr ai</h1>`;
 	const newSuccess = `'<html><body ${bodyAttr}>${logo}<h2 style="color:#34d399;margin-top:16px">Logged in</h2><p style="color:#8aaa9a">You can close this tab.</p></body></html>'`;
 	const newError = `'<html><body ${bodyAttr}>${logo}<h2 style="color:#ef4444;margin-top:16px">Login failed</h2><p style="color:#8aaa9a">You can close this tab.</p></body></html>'`;
 	if (source.includes(oldSuccess)) {
@@ -645,15 +647,15 @@ if (existsSync(piMemoryPath)) {
 	let source = readFileSync(piMemoryPath, "utf8");
 	const memoryOriginal = 'const MEMORY_DIR = join(homedir(), ".pi", "memory");';
 	const memoryReplacement =
-		'const MEMORY_DIR = process.env.FEYNMAN_MEMORY_DIR ?? process.env.PI_MEMORY_DIR ?? join(homedir(), ".pi", "memory");';
+		'const MEMORY_DIR = process.env.BOHR_MEMORY_DIR ?? process.env.PI_MEMORY_DIR ?? join(homedir(), ".pi", "memory");';
 	if (source.includes(memoryOriginal)) {
 		source = source.replace(memoryOriginal, memoryReplacement);
 	}
 	const execOriginal = 'const result = await pi.exec("pi", ["-p", prompt, "--print"], {';
 	const execReplacement = [
-		'const execBinary = process.env.FEYNMAN_NODE_EXECUTABLE || process.env.FEYNMAN_EXECUTABLE || "pi";',
-		'      const execArgs = process.env.FEYNMAN_BIN_PATH',
-		'        ? [process.env.FEYNMAN_BIN_PATH, "--prompt", prompt]',
+		'const execBinary = process.env.BOHR_NODE_EXECUTABLE || process.env.BOHR_EXECUTABLE || "pi";',
+		'      const execArgs = process.env.BOHR_BIN_PATH',
+		'        ? [process.env.BOHR_BIN_PATH, "--prompt", prompt]',
 		'        : ["-p", prompt, "--print"];',
 		'      const result = await pi.exec(execBinary, execArgs, {',
 	].join("\n");

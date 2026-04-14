@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 
 import {
 	formatPiWebAccessDoctorLines,
@@ -19,8 +19,8 @@ test("loadPiWebAccessConfig returns empty config when Pi web config is missing",
 	assert.deepEqual(loadPiWebAccessConfig(configPath), {});
 });
 
-test("getPiWebSearchConfigPath respects FEYNMAN_HOME semantics", () => {
-	assert.equal(getPiWebSearchConfigPath("/tmp/custom-home"), "/tmp/custom-home/.feynman/web-search.json");
+test("getPiWebSearchConfigPath respects BOHR_HOME semantics", () => {
+	assert.equal(getPiWebSearchConfigPath("/tmp/custom-home"), resolve("/tmp/custom-home/web-search.json"));
 });
 
 test("savePiWebAccessConfig merges updates and deletes undefined values", () => {
@@ -46,7 +46,7 @@ test("savePiWebAccessConfig merges updates and deletes undefined values", () => 
 test("getPiWebAccessStatus reads Pi web-access config directly", () => {
 	const root = mkdtempSync(join(tmpdir(), "feynman-pi-web-"));
 	const configPath = getPiWebSearchConfigPath(root);
-	mkdirSync(join(root, ".feynman"), { recursive: true });
+	mkdirSync(root, { recursive: true });
 	writeFileSync(
 		configPath,
 		JSON.stringify({
@@ -72,7 +72,7 @@ test("getPiWebAccessStatus reads Pi web-access config directly", () => {
 test("getPiWebAccessStatus reads Gemini routes directly", () => {
 	const root = mkdtempSync(join(tmpdir(), "feynman-pi-web-"));
 	const configPath = getPiWebSearchConfigPath(root);
-	mkdirSync(join(root, ".feynman"), { recursive: true });
+	mkdirSync(root, { recursive: true });
 	writeFileSync(
 		configPath,
 		JSON.stringify({

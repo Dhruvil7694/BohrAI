@@ -13,8 +13,8 @@ export type PiRuntimeOptions = {
 	appRoot: string;
 	workingDir: string;
 	sessionDir: string;
-	feynmanAgentDir: string;
-	feynmanVersion?: string;
+	bohrAgentDir: string;
+	bohrVersion?: string;
 	mode?: "text" | "json" | "rpc";
 	thinkingLevel?: string;
 	explicitModelSpec?: string;
@@ -22,16 +22,16 @@ export type PiRuntimeOptions = {
 	initialPrompt?: string;
 };
 
-export function getFeynmanNpmPrefixPath(feynmanAgentDir: string): string {
-	return resolve(dirname(feynmanAgentDir), "npm-global");
+export function getBohrNpmPrefixPath(bohrAgentDir: string): string {
+	return resolve(dirname(bohrAgentDir), "npm-global");
 }
 
-export function applyFeynmanPackageManagerEnv(feynmanAgentDir: string): string {
-	const feynmanNpmPrefixPath = getFeynmanNpmPrefixPath(feynmanAgentDir);
-	process.env.FEYNMAN_NPM_PREFIX = feynmanNpmPrefixPath;
-	process.env.NPM_CONFIG_PREFIX = feynmanNpmPrefixPath;
-	process.env.npm_config_prefix = feynmanNpmPrefixPath;
-	return feynmanNpmPrefixPath;
+export function applyBohrPackageManagerEnv(bohrAgentDir: string): string {
+	const bohrNpmPrefixPath = getBohrNpmPrefixPath(bohrAgentDir);
+	process.env.BOHR_NPM_PREFIX = bohrNpmPrefixPath;
+	process.env.NPM_CONFIG_PREFIX = bohrNpmPrefixPath;
+	process.env.npm_config_prefix = bohrNpmPrefixPath;
+	return bohrNpmPrefixPath;
 }
 
 export function resolvePiPaths(appRoot: string) {
@@ -104,36 +104,37 @@ export function buildPiArgs(options: PiRuntimeOptions): string[] {
 
 export function buildPiEnv(options: PiRuntimeOptions): NodeJS.ProcessEnv {
 	const paths = resolvePiPaths(options.appRoot);
-	const feynmanNpmPrefixPath = getFeynmanNpmPrefixPath(options.feynmanAgentDir);
-	const feynmanNpmBinPath = resolve(feynmanNpmPrefixPath, "bin");
-	const feynmanWebSearchConfigPath = resolve(dirname(options.feynmanAgentDir), "web-search.json");
+	const bohrNpmPrefixPath = getBohrNpmPrefixPath(options.bohrAgentDir);
+	const bohrNpmBinPath = resolve(bohrNpmPrefixPath, "bin");
+	const bohrWebSearchConfigPath = resolve(dirname(options.bohrAgentDir), "web-search.json");
 
 	const currentPath = process.env.PATH ?? "";
-	const binEntries = [paths.nodeModulesBinPath, resolve(paths.piWorkspaceNodeModulesPath, ".bin"), feynmanNpmBinPath];
+	const binEntries = [paths.nodeModulesBinPath, resolve(paths.piWorkspaceNodeModulesPath, ".bin"), bohrNpmBinPath];
 	const binPath = binEntries.join(delimiter);
 
 	return {
 		...process.env,
 		PATH: `${binPath}${delimiter}${currentPath}`,
-		FEYNMAN_VERSION: options.feynmanVersion,
-		FEYNMAN_SESSION_DIR: options.sessionDir,
-		FEYNMAN_MEMORY_DIR: resolve(dirname(options.feynmanAgentDir), "memory"),
-		FEYNMAN_WEB_SEARCH_CONFIG: feynmanWebSearchConfigPath,
-		FEYNMAN_NODE_EXECUTABLE: process.execPath,
-		FEYNMAN_BIN_PATH: resolve(options.appRoot, "bin", "feynman.js"),
-		FEYNMAN_NPM_PREFIX: feynmanNpmPrefixPath,
-		// Ensure the Pi child process uses Feynman's agent dir for auth/models/settings.
-		PI_CODING_AGENT_DIR: options.feynmanAgentDir,
+		BOHR_VERSION: options.bohrVersion,
+		BOHR_SESSION_DIR: options.sessionDir,
+		BOHR_MEMORY_DIR: resolve(dirname(options.bohrAgentDir), "memory"),
+		BOHR_WEB_SEARCH_CONFIG: bohrWebSearchConfigPath,
+		BOHR_NODE_EXECUTABLE: process.execPath,
+		BOHR_BIN_PATH: resolve(options.appRoot, "bin", "bohr.js"),
+		BOHR_NPM_PREFIX: bohrNpmPrefixPath,
+		// Ensure the Pi child process uses Bohr's agent dir for auth/models/settings.
+		PI_CODING_AGENT_DIR: options.bohrAgentDir,
 		PANDOC_PATH: process.env.PANDOC_PATH ?? resolveExecutable("pandoc", PANDOC_FALLBACK_PATHS),
 		PI_HARDWARE_CURSOR: process.env.PI_HARDWARE_CURSOR ?? "1",
 		PI_SKIP_VERSION_CHECK: process.env.PI_SKIP_VERSION_CHECK ?? "1",
+		BOHR_CODING_AGENT_DIR: options.bohrAgentDir,
 		MERMAID_CLI_PATH: process.env.MERMAID_CLI_PATH ?? resolveExecutable("mmdc", MERMAID_FALLBACK_PATHS),
 		PUPPETEER_EXECUTABLE_PATH:
 			process.env.PUPPETEER_EXECUTABLE_PATH ?? resolveExecutable("google-chrome", BROWSER_FALLBACK_PATHS),
-		// Always pin npm's global prefix to the Feynman workspace. npm injects
+		// Always pin npm's global prefix to the Bohr workspace. npm injects
 		// lowercase config vars into child processes, which would otherwise leak
 		// the caller's global prefix into Pi.
-		NPM_CONFIG_PREFIX: feynmanNpmPrefixPath,
-		npm_config_prefix: feynmanNpmPrefixPath,
+		NPM_CONFIG_PREFIX: bohrNpmPrefixPath,
+		npm_config_prefix: bohrNpmPrefixPath,
 	};
 }

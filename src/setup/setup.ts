@@ -1,6 +1,6 @@
 import { isLoggedIn as isAlphaLoggedIn, login as loginAlpha } from "@companion-ai/alpha-hub/lib";
 
-import { getDefaultSessionDir, getFeynmanHome } from "../config/paths.js";
+import { getBohrHome, getDefaultSessionDir } from "../config/paths.js";
 import { getPiWebAccessStatus, getPiWebSearchConfigPath } from "../pi/web-access.js";
 import { normalizeFeynmanSettings } from "../pi/settings.js";
 import type { ThinkingLevel } from "../pi/settings.js";
@@ -27,11 +27,11 @@ function isInteractiveTerminal(): boolean {
 
 function printNonInteractiveSetupGuidance(): void {
 	printInfo("Non-interactive terminal. Use explicit commands:");
-	printInfo("  feynman model login <provider>");
-	printInfo("  feynman model set <provider/model>");
-	printInfo("  # or configure API keys via env vars/auth.json and rerun `feynman model list`");
-	printInfo("  feynman alpha login");
-	printInfo("  feynman doctor");
+	printInfo("  bohr model login <provider>");
+	printInfo("  bohr model set <provider/model>");
+	printInfo("  # or configure API keys via env vars/auth.json and rerun `bohr model list`");
+	printInfo("  bohr alpha login");
+	printInfo("  bohr doctor");
 }
 
 export async function runSetup(options: SetupOptions): Promise<void> {

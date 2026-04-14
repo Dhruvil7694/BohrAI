@@ -1,13 +1,13 @@
-# Contributing to Feynman
+# Contributing to Bohr
 
-Feynman is a research-first CLI built on Pi and alphaXiv. This guide is for humans and agents contributing code, prompts, skills, docs, installers, or workflow behavior to the repository.
+Bohr is a research-first CLI built on Pi and alphaXiv. This guide is for humans and agents contributing code, prompts, skills, docs, installers, or workflow behavior to the repository.
 
 ## Quick Links
 
-- GitHub: https://github.com/getcompanion-ai/feynman
-- Docs: https://feynman.is/docs
+- GitHub: https://github.com/your-org/bohr-ai
+- Docs: https://bohr-ai.internal/docs
 - Repo agent contract: [AGENTS.md](AGENTS.md)
-- Issues: https://github.com/getcompanion-ai/feynman/issues
+- Issues: https://github.com/your-org/bohr-ai/issues
 
 ## What Goes Where
 

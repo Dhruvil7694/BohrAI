@@ -1,15 +1,15 @@
 ---
 title: Package Stack
-description: Core and optional Pi packages bundled with Feynman.
+description: Core and optional Pi packages bundled with Bohr AI.
 section: Reference
 order: 3
 ---
 
-Feynman is built on the Pi runtime and uses curated Pi packages for its capabilities. Packages are managed through `feynman packages` commands and configured in `~/.feynman/settings.json`.
+Bohr AI is built on the Pi runtime and uses curated Pi packages for its capabilities. Packages are managed through `bohr packages` commands and configured in `~/.bohr/settings.json`.
 
 ## Core packages
 
-These are installed by default with every Feynman installation. They provide the foundation for all research workflows.
+These are installed by default with every Bohr AI installation. They provide the foundation for all research workflows.
 
 | Package | Purpose |
 | --- | --- |
@@ -25,11 +25,11 @@ These are installed by default with every Feynman installation. They provide the
 | `pi-schedule-prompt` | Schedule recurring and deferred research jobs. Powers the `/watch` workflow |
 | `@tmustier/pi-ralph-wiggum` | Long-running agent loops for iterative development. Powers `/autoresearch` |
 
-These packages are updated together when you run `feynman update`. You do not need to install them individually.
+These packages are updated together when you run `bohr update`. You do not need to install them individually.
 
 ## Optional packages
 
-Install on demand with `feynman packages install <preset>`. These extend Feynman with capabilities that not every user needs.
+Install on demand with `bohr packages install <preset>`. These extend Bohr AI with capabilities that not every user needs.
 
 | Package | Preset | Purpose |
 | --- | --- | --- |
@@ -42,21 +42,21 @@ Install on demand with `feynman packages install <preset>`. These extend Feynman
 List all available packages and their install status:
 
 ```bash
-feynman packages list
+bohr packages list
 ```
 
 Install a specific optional preset:
 
 ```bash
-feynman packages install session-search
-feynman packages install memory
-feynman packages install generative-ui
+bohr packages install session-search
+bohr packages install memory
+bohr packages install generative-ui
 ```
 
 Install all optional packages at once:
 
 ```bash
-feynman packages install all-extras
+bohr packages install all-extras
 ```
 
 ## Updating packages
@@ -64,15 +64,15 @@ feynman packages install all-extras
 Update all installed packages to their latest versions:
 
 ```bash
-feynman update
+bohr update
 ```
 
 Update a specific package:
 
 ```bash
-feynman update pi-subagents
+bohr update pi-subagents
 ```
 
-Running `feynman update` without arguments updates everything. Pass a specific package name to update just that one. Updates are safe and preserve your configuration.
+Running `bohr update` without arguments updates everything. Pass a specific package name to update just that one. Updates are safe and preserve your configuration.
 
-This command updates Pi packages inside Feynman's environment. To upgrade the standalone Feynman app itself, rerun the installer from the [Installation guide](/docs/getting-started/installation).
+This command updates Pi packages inside Bohr AI's environment. To upgrade the standalone Bohr AI app itself, rerun the installer from the [Installation guide](/docs/getting-started/installation).

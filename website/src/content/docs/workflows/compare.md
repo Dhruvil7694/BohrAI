@@ -22,10 +22,10 @@ From the REPL:
 From the CLI:
 
 ```bash
-feynman compare "topic or list of sources"
+bohr compare "topic or list of sources"
 ```
 
-You can provide a topic and let Feynman find the sources, or list specific papers and documents for a targeted comparison.
+You can provide a topic and let Bohr AI find the sources, or list specific papers and documents for a targeted comparison.
 
 ## How it works
 

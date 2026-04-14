@@ -2,8 +2,8 @@ import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 
 import { registerAlphaTools } from "./research-tools/alpha.js";
 import { registerDiscoveryCommands } from "./research-tools/discovery.js";
-import { registerFeynmanModelCommand } from "./research-tools/feynman-model.js";
-import { installFeynmanHeader } from "./research-tools/header.js";
+import { registerBohrModelCommand } from "./research-tools/bohr-model.js";
+import { installBohrHeader } from "./research-tools/header.js";
 import { registerHelpCommand } from "./research-tools/help.js";
 import { registerInitCommand, registerOutputsCommand } from "./research-tools/project.js";
 import { registerServiceTierControls } from "./research-tools/service-tier.js";
@@ -13,12 +13,12 @@ export default function researchTools(pi: ExtensionAPI): void {
 
 	// Pi 0.66.x folds post-switch/resume lifecycle into session_start.
 	pi.on("session_start", async (_event, ctx) => {
-		await installFeynmanHeader(pi, ctx, cache);
+		await installBohrHeader(pi, ctx, cache);
 	});
 
 	registerAlphaTools(pi);
 	registerDiscoveryCommands(pi);
-	registerFeynmanModelCommand(pi);
+	registerBohrModelCommand(pi);
 	registerHelpCommand(pi);
 	registerInitCommand(pi);
 	registerOutputsCommand(pi);

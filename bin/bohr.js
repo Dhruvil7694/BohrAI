@@ -21,13 +21,13 @@ function compareNodeVersions(left, right) {
 
 if (compareNodeVersions(parseNodeVersion(process.versions.node), parseNodeVersion(MIN_NODE_VERSION)) < 0) {
   const isWindows = process.platform === "win32";
-  console.error(`feynman requires Node.js ${MIN_NODE_VERSION} or later (detected ${process.versions.node}).`);
+  console.error(`bohr requires Node.js ${MIN_NODE_VERSION} or later (detected ${process.versions.node}).`);
   console.error(isWindows
     ? "Install a newer Node.js from https://nodejs.org, or use the standalone installer:"
     : "Switch to Node 20 with `nvm install 20 && nvm use 20`, or use the standalone installer:");
   console.error(isWindows
-    ? "irm https://feynman.is/install.ps1 | iex"
-    : "curl -fsSL https://feynman.is/install | bash");
+    ? "irm https://bohr-ai.internal/install.ps1 | iex"
+    : "curl -fsSL https://bohr-ai.internal/install | bash");
   process.exit(1);
 }
 const here = import.meta.dirname;

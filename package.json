@@ -8,7 +8,7 @@
     "node": ">=20.19.0"
   },
   "bin": {
-    "feynman": "bin/feynman.js"
+    "bohr": "bin/bohr.js"
   },
   "files": [
     "bin/",
@@ -37,7 +37,7 @@
     "dev": "tsx src/index.ts",
     "prepack": "node ./scripts/clean-publish-artifacts.mjs && npm run build && node ./scripts/prepare-runtime-workspace.mjs",
     "start": "tsx src/index.ts",
-    "start:dist": "node ./bin/feynman.js",
+    "start:dist": "node ./bin/bohr.js",
     "test": "node --import tsx --test --test-concurrency=1 tests/*.test.ts",
     "typecheck": "tsc --noEmit"
   },

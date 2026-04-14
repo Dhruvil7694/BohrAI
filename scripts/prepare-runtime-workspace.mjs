@@ -62,7 +62,7 @@ function writeWorkspacePackageJson() {
 		workspacePackageJsonPath,
 		JSON.stringify(
 			{
-				name: "feynman-runtime",
+				name: "bohr-runtime",
 				private: true,
 			},
 			null,
@@ -144,19 +144,19 @@ function createWorkspaceArchive() {
 const packageSpecs = readPackageSpecs();
 
 if (workspaceIsCurrent(packageSpecs)) {
-	console.log("[feynman] vendored runtime workspace already up to date");
+	console.log("[bohr] vendored runtime workspace already up to date");
 	if (archiveIsCurrent()) {
 		process.exit(0);
 	}
-	console.log("[feynman] refreshing runtime workspace archive...");
+	console.log("[bohr] refreshing runtime workspace archive...");
 	createWorkspaceArchive();
-	console.log("[feynman] runtime workspace archive ready");
+	console.log("[bohr] runtime workspace archive ready");
 	process.exit(0);
 }
 
-console.log("[feynman] preparing vendored runtime workspace...");
+console.log("[bohr] preparing vendored runtime workspace...");
 prepareWorkspace(packageSpecs);
 pruneWorkspace();
 writeManifest(packageSpecs);
 createWorkspaceArchive();
-console.log("[feynman] vendored runtime workspace ready");
+console.log("[bohr] vendored runtime workspace ready");

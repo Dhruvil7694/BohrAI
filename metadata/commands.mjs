@@ -37,8 +37,8 @@ export function readPromptSpecs(appRoot) {
 export const extensionCommandSpecs = [
 	{ name: "capabilities", args: "", section: "Project & Session", description: "Show installed packages, discovery entrypoints, and runtime capability counts.", publicDocs: true },
 	{ name: "commands", args: "", section: "Project & Session", description: "Browse all available slash commands, including built-in and package commands.", publicDocs: true },
-	{ name: "help", args: "", section: "Project & Session", description: "Show grouped Feynman commands and prefill the editor with a selected command.", publicDocs: true },
-	{ name: "feynman-model", args: "", section: "Project & Session", description: "Open Feynman model menu (main + per-subagent overrides).", publicDocs: true },
+	{ name: "help", args: "", section: "Project & Session", description: "Show grouped Bohr commands and prefill the editor with a selected command.", publicDocs: true },
+	{ name: "bohr-model", args: "", section: "Project & Session", description: "Open Bohr model menu (main + per-subagent overrides).", publicDocs: true },
 	{ name: "init", args: "", section: "Project & Session", description: "Bootstrap AGENTS.md and session-log folders for a research project.", publicDocs: true },
 	{ name: "outputs", args: "", section: "Project & Session", description: "Browse all research artifacts (papers, outputs, experiments, notes).", publicDocs: true },
 	{ name: "service-tier", args: "", section: "Project & Session", description: "View or set the provider service tier override for supported models.", publicDocs: true },
@@ -74,41 +74,41 @@ export const cliCommandSections = [
 	{
 		title: "Core",
 		commands: [
-			{ usage: "feynman", description: "Launch the interactive REPL." },
-			{ usage: "feynman chat [prompt]", description: "Start chat explicitly, optionally with an initial prompt." },
-			{ usage: "feynman help", description: "Show CLI help." },
-			{ usage: "feynman setup", description: "Run the guided setup wizard." },
-			{ usage: "feynman doctor", description: "Diagnose config, auth, Pi runtime, and preview dependencies." },
-			{ usage: "feynman status", description: "Show the current setup summary." },
+			{ usage: "bohr", description: "Launch the interactive REPL." },
+			{ usage: "bohr chat [prompt]", description: "Start chat explicitly, optionally with an initial prompt." },
+			{ usage: "bohr help", description: "Show CLI help." },
+			{ usage: "bohr setup", description: "Run the guided setup wizard." },
+			{ usage: "bohr doctor", description: "Diagnose config, auth, Pi runtime, and preview dependencies." },
+			{ usage: "bohr status", description: "Show the current setup summary." },
 		],
 	},
 	{
 		title: "Model Management",
 		commands: [
-			{ usage: "feynman model list", description: "List available models in Pi auth storage." },
-			{ usage: "feynman model login [id]", description: "Authenticate a model provider with OAuth or API-key setup." },
-			{ usage: "feynman model logout [id]", description: "Clear stored auth for a model provider." },
-			{ usage: "feynman model set <provider/model>", description: "Set the default model (also accepts provider:model)." },
-			{ usage: "feynman model tier [value]", description: "View or set the request service tier override." },
+			{ usage: "bohr model list", description: "List available models in Pi auth storage." },
+			{ usage: "bohr model login [id]", description: "Authenticate a model provider with OAuth or API-key setup." },
+			{ usage: "bohr model logout [id]", description: "Clear stored auth for a model provider." },
+			{ usage: "bohr model set <provider/model>", description: "Set the default model (also accepts provider:model)." },
+			{ usage: "bohr model tier [value]", description: "View or set the request service tier override." },
 		],
 	},
 	{
 		title: "AlphaXiv",
 		commands: [
-			{ usage: "feynman alpha login", description: "Sign in to alphaXiv." },
-			{ usage: "feynman alpha logout", description: "Clear alphaXiv auth." },
-			{ usage: "feynman alpha status", description: "Check alphaXiv auth status." },
+			{ usage: "bohr alpha login", description: "Sign in to alphaXiv." },
+			{ usage: "bohr alpha logout", description: "Clear alphaXiv auth." },
+			{ usage: "bohr alpha status", description: "Check alphaXiv auth status." },
 		],
 	},
 	{
 		title: "Utilities",
 		commands: [
-			{ usage: "feynman packages list", description: "Show core and optional Pi package presets." },
-			{ usage: "feynman packages install <preset>", description: "Install optional package presets on demand." },
-			{ usage: "feynman search status", description: "Show Pi web-access status and config path." },
-			{ usage: "feynman search set <provider> [api-key]", description: "Set the web search provider and optionally save its API key." },
-			{ usage: "feynman search clear", description: "Reset web search provider to auto while preserving API keys." },
-			{ usage: "feynman update [package]", description: "Update installed packages, or a specific package." },
+			{ usage: "bohr packages list", description: "Show core and optional Pi package presets." },
+			{ usage: "bohr packages install <preset>", description: "Install optional package presets on demand." },
+			{ usage: "bohr search status", description: "Show Pi web-access status and config path." },
+			{ usage: "bohr search set <provider> [api-key]", description: "Set the web search provider and optionally save its API key." },
+			{ usage: "bohr search clear", description: "Reset web search provider to auto while preserving API keys." },
+			{ usage: "bohr update [package]", description: "Update installed packages, or a specific package." },
 		],
 	},
 ];
@@ -124,8 +124,8 @@ export const legacyFlags = [
 	{ usage: "--cwd <path>", description: "Set the working directory for tools." },
 	{ usage: "--session-dir <path>", description: "Set the session storage directory." },
 	{ usage: "--new-session", description: "Start a new persisted session." },
-	{ usage: "--doctor", description: "Alias for `feynman doctor`." },
-	{ usage: "--setup-preview", description: "Alias for `feynman setup preview`." },
+	{ usage: "--doctor", description: "Alias for `bohr doctor`." },
+	{ usage: "--setup-preview", description: "Alias for `bohr setup preview`." },
 ];
 
 export const topLevelCommandNames = ["alpha", "chat", "doctor", "help", "model", "packages", "search", "setup", "status", "update"];
@@ -135,7 +135,7 @@ export function formatSlashUsage(command) {
 }
 
 export function formatCliWorkflowUsage(command) {
-	return `feynman ${command.name}${command.args ? ` ${command.args}` : ""}`;
+	return `bohr ${command.name}${command.args ? ` ${command.args}` : ""}`;
 }
 
 export function getExtensionCommandSpec(name) {

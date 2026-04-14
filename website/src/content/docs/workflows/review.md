@@ -22,11 +22,11 @@ From the REPL:
 From the CLI:
 
 ```bash
-feynman review arxiv:2401.12345
-feynman review my-draft.md
+bohr review arxiv:2401.12345
+bohr review my-draft.md
 ```
 
-You can pass an arXiv ID, a URL, or a local file path. For arXiv papers, Feynman fetches the full PDF through AlphaXiv.
+You can pass an arXiv ID, a URL, or a local file path. For arXiv papers, Bohr AI fetches the full PDF through AlphaXiv.
 
 ## How it works
 

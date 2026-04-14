@@ -22,7 +22,7 @@ From the REPL:
 From the CLI:
 
 ```bash
-feynman draft "A survey of retrieval-augmented generation techniques"
+bohr draft "A survey of retrieval-augmented generation techniques"
 ```
 
 When used with `--from-session`, the writer draws from the current session's research findings, making it a natural follow-up to a deep research or literature review workflow.
@@ -48,4 +48,4 @@ The draft follows standard academic structure:
 
 ## Preview and iteration
 
-After generating the draft, use `/preview` to render it as HTML or PDF with proper formatting, math rendering, and typography. You can iterate on the draft by asking Feynman to revise specific sections, add more detail, or restructure the argument.
+After generating the draft, use `/preview` to render it as HTML or PDF with proper formatting, math rendering, and typography. You can iterate on the draft by asking Bohr AI to revise specific sections, add more detail, or restructure the argument.

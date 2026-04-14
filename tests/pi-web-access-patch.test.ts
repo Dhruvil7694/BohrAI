@@ -13,7 +13,7 @@ test("patchPiWebAccessSource rewrites legacy Pi web-search config paths", () => 
 
 	const patched = patchPiWebAccessSource("perplexity.ts", input);
 
-	assert.match(patched, /FEYNMAN_WEB_SEARCH_CONFIG/);
+	assert.match(patched, /BOHR_WEB_SEARCH_CONFIG/);
 	assert.match(patched, /PI_WEB_SEARCH_CONFIG/);
 });
 

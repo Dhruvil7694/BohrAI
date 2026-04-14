@@ -43,7 +43,7 @@ export type DoctorOptions = {
 	appRoot: string;
 };
 
-export type FeynmanStatusSnapshot = {
+export type BohrStatusSnapshot = {
 	model?: string;
 	modelValid: boolean;
 	recommendedModel?: string;
@@ -62,7 +62,7 @@ export type FeynmanStatusSnapshot = {
 	missingPiBits: string[];
 };
 
-export function collectStatusSnapshot(options: DoctorOptions): FeynmanStatusSnapshot {
+export function collectStatusSnapshot(options: DoctorOptions): BohrStatusSnapshot {
 	const pandocPath = resolveExecutable("pandoc", PANDOC_FALLBACK_PATHS);
 	const browserPath = process.env.PUPPETEER_EXECUTABLE_PATH ?? resolveExecutable("google-chrome", BROWSER_FALLBACK_PATHS);
 	const missingPiBits = validatePiInstallation(options.appRoot);
@@ -95,7 +95,7 @@ export function collectStatusSnapshot(options: DoctorOptions): FeynmanStatusSnap
 
 export function runStatus(options: DoctorOptions): void {
 	const snapshot = collectStatusSnapshot(options);
-	printPanel("Feynman Status", [
+	printPanel("Bohr Status", [
 		"Current setup summary for the research shell.",
 	]);
 	printSection("Core");
@@ -137,7 +137,7 @@ export function runDoctor(options: DoctorOptions): void {
 	const browserPath = process.env.PUPPETEER_EXECUTABLE_PATH ?? resolveExecutable("google-chrome", BROWSER_FALLBACK_PATHS);
 	const missingPiBits = validatePiInstallation(options.appRoot);
 
-	printPanel("Feynman Doctor", [
+	printPanel("Bohr Doctor", [
 		"Checks config, auth, runtime wiring, and preview dependencies.",
 	]);
 	console.log(`working dir: ${options.workingDir}`);
@@ -205,5 +205,5 @@ export function runDoctor(options: DoctorOptions): void {
 	for (const line of modelStatus.modelGuidance) {
 		console.log(`next step: ${line}`);
 	}
-	console.log("setup hint: feynman setup");
+	console.log("setup hint: bohr setup");
 }

@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import { getFeynmanHome } from "../config/paths.js";
+import { getBohrHome } from "../config/paths.js";
 
 export type PiWebSearchProvider = "auto" | "perplexity" | "exa" | "gemini";
 export type PiWebSearchWorkflow = "none" | "summary-review";
@@ -30,8 +30,8 @@ export type PiWebAccessStatus = {
 };
 
 export function getPiWebSearchConfigPath(home?: string): string {
-	const feynmanHome = home ? resolve(home, ".feynman") : getFeynmanHome();
-	return resolve(feynmanHome, "web-search.json");
+	const bohrHome = home ? resolve(home) : getBohrHome();
+	return resolve(bohrHome, "web-search.json");
 }
 
 function normalizeProvider(value: unknown): PiWebSearchProvider | undefined {

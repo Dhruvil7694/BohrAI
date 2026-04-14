@@ -483,14 +483,14 @@ async function verifyBedrockCredentialChain(): Promise<void> {
 
 async function configureBedrockProvider(authPath: string): Promise<boolean> {
 	printSection("AWS Credentials: Amazon Bedrock");
-	printInfo("Feynman will verify the AWS SDK credential chain used by Pi's Bedrock provider.");
+	printInfo("Bohr will verify the AWS SDK credential chain used by Pi's Bedrock provider.");
 	printInfo("Supported sources include AWS_PROFILE, ~/.aws credentials/config, SSO, ECS/IRSA, and EC2 instance roles.");
 
 	try {
 		await verifyBedrockCredentialChain();
 		AuthStorage.create(authPath).set("amazon-bedrock", { type: "api_key", key: "<authenticated>" });
 		printSuccess("Verified AWS credential chain and marked Amazon Bedrock as configured.");
-		printInfo("Use `feynman model list` to see available Bedrock models.");
+		printInfo("Use `bohr model list` to see available Bedrock models.");
 		return true;
 	} catch (error) {
 		printWarning(`AWS credential verification failed: ${error instanceof Error ? error.message : String(error)}`);
@@ -566,7 +566,7 @@ async function configureApiKeyProvider(authPath: string, providerId?: string): P
 	const apiKey = await promptText("Paste API key (leave empty to use env var instead)", "");
 	if (!apiKey) {
 		if (provider.envVar) {
-			printInfo(`Set ${provider.envVar} and rerun setup (or run \`feynman model list\`).`);
+			printInfo(`Set ${provider.envVar} and rerun setup (or run \`bohr model list\`).`);
 		} else {
 			printInfo("No API key provided.");
 		}
@@ -771,7 +771,7 @@ export async function logoutModelProvider(authPath: string, providerId?: string)
 export function setDefaultModelSpec(settingsPath: string, authPath: string, spec: string): void {
 	const resolvedSpec = resolveAvailableModelSpec(authPath, spec);
 	if (!resolvedSpec) {
-		throw new Error(`Model not available in Pi auth storage: ${spec}. Run \`feynman model list\` first.`);
+		throw new Error(`Model not available in Pi auth storage: ${spec}. Run \`bohr model list\` first.`);
 	}
 
 	const [provider, ...rest] = resolvedSpec.split("/");
@@ -813,7 +813,7 @@ export async function runModelSetup(settingsPath: string, authPath: string): Pro
 		if (status.availableModels.length === 0) {
 			printWarning("No authenticated models are available yet.");
 			printInfo("If you configured a custom provider, ensure it has `apiKey` set in models.json.");
-			printInfo("Tip: run `feynman doctor` to see models.json path + load errors.");
+			printInfo("Tip: run `bohr doctor` to see models.json path + load errors.");
 		}
 	}
 

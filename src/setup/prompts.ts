@@ -3,7 +3,7 @@ import { createInterface } from "node:readline/promises";
 
 export async function promptText(question: string, defaultValue = ""): Promise<string> {
 	if (!input.isTTY || !output.isTTY) {
-		throw new Error("feynman setup requires an interactive terminal.");
+		throw new Error("bohr setup requires an interactive terminal.");
 	}
 	const rl = createInterface({ input, output });
 	try {

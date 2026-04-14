@@ -2,36 +2,39 @@ import { mkdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { resolve } from "node:path";
 
-export function getFeynmanHome(): string {
-	return resolve(process.env.FEYNMAN_HOME ?? homedir(), ".feynman");
+export function getBohrHome(): string {
+	if (process.env.BOHR_HOME?.trim()) {
+		return resolve(process.env.BOHR_HOME.trim());
+	}
+	return resolve(homedir(), ".bohr");
 }
 
-export function getFeynmanAgentDir(home = getFeynmanHome()): string {
+export function getBohrAgentDir(home = getBohrHome()): string {
 	return resolve(home, "agent");
 }
 
-export function getFeynmanMemoryDir(home = getFeynmanHome()): string {
+export function getBohrMemoryDir(home = getBohrHome()): string {
 	return resolve(home, "memory");
 }
 
-export function getFeynmanStateDir(home = getFeynmanHome()): string {
+export function getBohrStateDir(home = getBohrHome()): string {
 	return resolve(home, ".state");
 }
 
-export function getDefaultSessionDir(home = getFeynmanHome()): string {
+export function getDefaultSessionDir(home = getBohrHome()): string {
 	return resolve(home, "sessions");
 }
 
-export function getBootstrapStatePath(home = getFeynmanHome()): string {
-	return resolve(getFeynmanStateDir(home), "bootstrap.json");
+export function getBootstrapStatePath(home = getBohrHome()): string {
+	return resolve(getBohrStateDir(home), "bootstrap.json");
 }
 
-export function ensureFeynmanHome(home = getFeynmanHome()): void {
+export function ensureBohrHome(home = getBohrHome()): void {
 	for (const dir of [
 		home,
-		getFeynmanAgentDir(home),
-		getFeynmanMemoryDir(home),
-		getFeynmanStateDir(home),
+		getBohrAgentDir(home),
+		getBohrMemoryDir(home),
+		getBohrStateDir(home),
 		getDefaultSessionDir(home),
 	]) {
 		mkdirSync(dir, { recursive: true });

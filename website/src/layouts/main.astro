@@ -9,8 +9,8 @@ interface Props {
 }
 
 const {
-  title = "Feynman - The open source AI research agent",
-  description = "An AI-powered research agent that helps you discover, analyze, and synthesize scientific literature.",
+  title = "Bohr AI - Private AI research system",
+  description = "A private AI research system that helps teams discover, analyze, and synthesize technical knowledge.",
   active = "home",
 } = Astro.props
 ---
@@ -41,7 +41,7 @@ const {
     <nav class="sticky top-0 z-50 bg-background">
       <div class="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <a href="/" class="flex items-center gap-2">
-          <span class="font-['VT323'] text-2xl text-primary">feynman</span>
+          <span class="font-['VT323'] text-2xl text-primary">bohr ai</span>
         </a>
         <div class="flex items-center gap-4 sm:gap-6">
           <a
@@ -52,14 +52,6 @@ const {
             ]}
           >
             Docs
-          </a>
-          <a
-            href="https://github.com/getcompanion-ai/feynman"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            GitHub
           </a>
           <button
           id="theme-toggle"
@@ -104,14 +96,6 @@ const {
         </p>
         <div class="flex items-center gap-4 text-sm">
           <a href="/docs/getting-started/installation" class="text-muted-foreground transition-colors hover:text-foreground">Docs</a>
-          <a
-            href="https://github.com/getcompanion-ai/feynman"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-muted-foreground transition-colors hover:text-foreground"
-          >
-            GitHub
-          </a>
         </div>
       </div>
     </footer>

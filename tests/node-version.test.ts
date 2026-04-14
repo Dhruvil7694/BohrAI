@@ -17,19 +17,25 @@ test("isSupportedNodeVersion enforces the exact minimum floor", () => {
 });
 
 test("ensureSupportedNodeVersion throws a guided upgrade message", () => {
+	const isWindows = process.platform === "win32";
 	assert.throws(
 		() => ensureSupportedNodeVersion("18.17.0"),
 		(error: unknown) =>
 			error instanceof Error &&
 			error.message.includes(`Node.js ${MIN_NODE_VERSION}`) &&
-			error.message.includes("nvm install 20 && nvm use 20") &&
-			error.message.includes("https://feynman.is/install"),
+			error.message.includes(isWindows ? "Install a newer Node.js from https://nodejs.org" : "nvm install 20 && nvm use 20") &&
+			error.message.includes(isWindows ? "https://bohr-ai.internal/install.ps1" : "https://bohr-ai.internal/install"),
 	);
 });
 
 test("unsupported version guidance reports the detected version", () => {
 	const lines = getUnsupportedNodeVersionLines("18.17.0");
+	const isWindows = process.platform === "win32";
 
-	assert.equal(lines[0], "feynman requires Node.js 20.19.0 or later (detected 18.17.0).");
-	assert.ok(lines.some((line) => line.includes("curl -fsSL https://feynman.is/install | bash")));
+	assert.equal(lines[0], "bohr requires Node.js 20.19.0 or later (detected 18.17.0).");
+	assert.ok(
+		lines.some((line) =>
+			line.includes(isWindows ? "irm https://bohr-ai.internal/install.ps1 | iex" : "curl -fsSL https://bohr-ai.internal/install | bash"),
+		),
+	);
 });

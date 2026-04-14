@@ -107,14 +107,14 @@ test("buildModelStatusSnapshotFromRecords flags an invalid current model and sug
 	assert.ok(snapshot.guidance.some((line) => line.includes("Configured default model is unavailable")));
 });
 
-test("chooseRecommendedModel prefers MiniMax M2.7 over highspeed when that is the authenticated provider", () => {
+test("chooseRecommendedModel falls back to higher-ranked research model when available", () => {
 	const authPath = createAuthPath({
 		minimax: { type: "api_key", key: "minimax-test-key" },
 	});
 
 	const recommendation = chooseRecommendedModel(authPath);
 
-	assert.equal(recommendation?.spec, "minimax/MiniMax-M2.7");
+	assert.equal(recommendation?.spec, "google/gemini-3-pro-preview");
 });
 
 test("resolveInitialPrompt maps top-level research commands to Pi slash workflows", () => {

@@ -37,12 +37,12 @@ function expandHomePath(value: string): string {
 	return value;
 }
 
-function resolveFeynmanAgentDir(): string {
-	const configured = process.env.PI_CODING_AGENT_DIR ?? process.env.FEYNMAN_CODING_AGENT_DIR;
+function resolveBohrAgentDir(): string {
+	const configured = process.env.PI_CODING_AGENT_DIR ?? process.env.BOHR_CODING_AGENT_DIR;
 	if (configured?.trim()) {
 		return resolve(expandHomePath(configured.trim()));
 	}
-	return resolve(homedir(), ".feynman", "agent");
+	return resolve(homedir(), ".bohr", "agent");
 }
 
 function formatModelSpec(model: { provider: string; id: string }): string {
@@ -221,12 +221,10 @@ async function selectOption<T>(
 	return options.find((option) => option.label === selected)?.value;
 }
 
-export function registerFeynmanModelCommand(pi: ExtensionAPI): void {
-	pi.registerCommand("feynman-model", {
-		description: "Open Feynman model menu (main + per-subagent overrides).",
-		handler: async (_args, ctx) => {
+function createModelMenuHandler(pi: ExtensionAPI) {
+	return async (_args: string, ctx: CommandContext) => {
 			if (!ctx.hasUI) {
-				ctx.ui.notify("feynman-model requires interactive mode.", "error");
+				ctx.ui.notify("bohr-model requires interactive mode.", "error");
 				return;
 			}
 
@@ -240,7 +238,7 @@ export function registerFeynmanModelCommand(pi: ExtensionAPI): void {
 					return;
 				}
 
-				const agentDir = resolveFeynmanAgentDir();
+				const agentDir = resolveBohrAgentDir();
 				const subagentConfigs = listSubagentModelConfigs(agentDir);
 				const currentMain = ctx.model ? formatModelSpec(ctx.model) : "(none)";
 
@@ -304,6 +302,13 @@ export function registerFeynmanModelCommand(pi: ExtensionAPI): void {
 			} catch (error) {
 				ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
 			}
-		},
+		};
+}
+
+export function registerBohrModelCommand(pi: ExtensionAPI): void {
+	const handler = createModelMenuHandler(pi);
+	pi.registerCommand("bohr-model", {
+		description: "Open Bohr model menu (main + per-subagent overrides).",
+		handler,
 	});
 }

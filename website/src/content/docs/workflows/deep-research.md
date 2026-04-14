@@ -5,7 +5,7 @@ section: Workflows
 order: 1
 ---
 
-Deep research is the flagship Feynman workflow. It dispatches multiple researcher agents in parallel to search academic papers, web sources, and code repositories, then synthesizes everything into a structured research brief with inline citations.
+Deep research is the flagship Bohr AI workflow. It dispatches multiple researcher agents in parallel to search academic papers, web sources, and code repositories, then synthesizes everything into a structured research brief with inline citations.
 
 ## Usage
 
@@ -18,7 +18,7 @@ From the REPL:
 From the CLI:
 
 ```bash
-feynman deepresearch "What are the current approaches to mechanistic interpretability in LLMs?"
+bohr deepresearch "What are the current approaches to mechanistic interpretability in LLMs?"
 ```
 
 Both forms are equivalent. The workflow begins immediately and streams progress as agents discover and analyze sources.

@@ -10,7 +10,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   integrations: [react()],
-  site: 'https://feynman.is',
+  site: 'https://bohr-ai.internal',
   markdown: {
     shikiConfig: {
       themes: {

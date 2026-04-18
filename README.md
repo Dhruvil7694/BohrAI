@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://bohr-ai.internal">
-    <img src="assets/hero.png" alt="Bohr AI CLI" width="800" />
+    <img src="assets/hero.png" alt="Bohr terminal — REPL session" width="800" />
   </a>
 </p>
 <p align="center">The private AI research system.</p>

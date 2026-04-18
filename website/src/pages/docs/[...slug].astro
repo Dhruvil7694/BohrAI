@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content"
 import Layout from "@/layouts/main.astro"
 import DocsChrome from "@/components/DocsChrome.astro"
+import InstallationDoc from "@/components/docs/InstallationDoc.astro"
 
 export async function getStaticPaths() {
   const docs = await getCollection("docs")
@@ -14,6 +15,7 @@ export async function getStaticPaths() {
 const { entry } = Astro.props
 const { Content } = await entry.render()
 const currentSlug = entry.slug
+const isInstallationPage = currentSlug === "getting-started/installation"
 ---
 
 <Layout title={`${entry.data.title} — Bohr AI Docs`} description={entry.data.description} active="docs">
@@ -22,18 +24,18 @@ const currentSlug = entry.slug
       <nav class="docs-breadcrumb mb-8" aria-label="Breadcrumb">
         <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
           <li>
-            <a href="/docs" class="transition-colors hover:text-foreground">Docs</a>
+            <a href="/docs">Docs</a>
           </li>
-          <li class="text-muted-foreground/50" aria-hidden="true">
+          <li class="text-muted-foreground/60" aria-hidden="true">
             /
           </li>
-          <li class="text-foreground">{entry.data.section}</li>
+          <li class="text-[var(--bohr-shell-fg)]">{entry.data.section}</li>
         </ol>
       </nav>
 
-      <header class="mb-10 border-b border-border/60 pb-8">
+      <header class="mb-10 border-b border-[color:var(--bohr-shell-border)] pb-8 dark:border-white/10">
         <h1 class="docs-page-title">{entry.data.title}</h1>
-        <p class="mt-4 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
+        <p class="docs-page-lede mt-5 max-w-2xl">
           {entry.data.description}
         </p>
       </header>
@@ -41,7 +43,7 @@ const currentSlug = entry.slug
       <div
         class="prose prose-neutral max-w-none dark:prose-invert prose-headings:scroll-mt-24 prose-headings:font-semibold prose-p:leading-relaxed prose-li:leading-relaxed prose-a:text-primary prose-a:no-underline hover:prose-a:underline"
       >
-        <Content />
+        {isInstallationPage ? <InstallationDoc /> : <Content />}
       </div>
     </article>
   </DocsChrome>

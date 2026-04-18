@@ -6,6 +6,8 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$ReleasesLatestUrl = if ($env:BOHR_RELEASES_LATEST_URL) { $env:BOHR_RELEASES_LATEST_URL } else { "https://github.com/Dhruvil7694/BohrAI/releases/latest" }
+$RepoArchiveBaseUrl = if ($env:BOHR_REPO_ARCHIVE_BASE_URL) { $env:BOHR_REPO_ARCHIVE_BASE_URL.TrimEnd("/") } else { "https://github.com/Dhruvil7694/BohrAI/archive/refs" }
 
 function Normalize-Version {
   param([string]$RequestedVersion)
@@ -23,7 +25,7 @@ function Normalize-Version {
 }
 
 function Resolve-LatestReleaseVersion {
-  $page = Invoke-WebRequest -Uri "https://github.com/your-org/bohr-ai/releases/latest"
+  $page = Invoke-WebRequest -Uri $ReleasesLatestUrl
   $match = [regex]::Match($page.Content, 'releases/tag/v([0-9][^"''<>\s]*)')
   if (-not $match.Success) {
     throw "Failed to resolve the latest Bohr release version."
@@ -46,7 +48,7 @@ function Resolve-VersionMetadata {
   return [PSCustomObject]@{
     ResolvedVersion = $resolvedVersion
     GitRef = "v$resolvedVersion"
-    DownloadUrl = if ($env:BOHR_INSTALL_SKILLS_ARCHIVE_URL) { $env:BOHR_INSTALL_SKILLS_ARCHIVE_URL } else { "https://github.com/your-org/bohr-ai/archive/refs/tags/v$resolvedVersion.zip" }
+    DownloadUrl = if ($env:BOHR_INSTALL_SKILLS_ARCHIVE_URL) { $env:BOHR_INSTALL_SKILLS_ARCHIVE_URL } else { "$RepoArchiveBaseUrl/tags/v$resolvedVersion.zip" }
   }
 }
 

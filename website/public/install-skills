@@ -2,6 +2,8 @@
 
 set -eu
 
+RELEASES_LATEST_URL="${BOHR_RELEASES_LATEST_URL:-https://github.com/Dhruvil7694/BohrAI/releases/latest}"
+REPO_ARCHIVE_BASE_URL="${BOHR_REPO_ARCHIVE_BASE_URL:-https://github.com/Dhruvil7694/BohrAI/archive/refs}"
 VERSION="latest"
 SCOPE="${BOHR_SKILLS_SCOPE:-user}"
 TARGET_DIR="${BOHR_SKILLS_DIR:-}"
@@ -78,7 +80,7 @@ resolve_version() {
   normalized_version="$(normalize_version "$VERSION")"
 
   if [ "$normalized_version" = "latest" ]; then
-    release_page="$(download_text "https://github.com/your-org/bohr-ai/releases/latest")"
+    release_page="$(download_text "$RELEASES_LATEST_URL")"
     resolved_version="$(printf '%s\n' "$release_page" | sed -n 's@.*releases/tag/v\([0-9][^"<>[:space:]]*\).*@\1@p' | head -n 1)"
 
     if [ -z "$resolved_version" ]; then
@@ -150,10 +152,10 @@ archive_url="${BOHR_INSTALL_SKILLS_ARCHIVE_URL:-}"
 if [ -z "$archive_url" ]; then
   case "$git_ref" in
     main)
-      archive_url="https://github.com/your-org/bohr-ai/archive/refs/heads/main.tar.gz"
+      archive_url="${REPO_ARCHIVE_BASE_URL}/heads/main.tar.gz"
       ;;
     v*)
-      archive_url="https://github.com/your-org/bohr-ai/archive/refs/tags/${git_ref}.tar.gz"
+      archive_url="${REPO_ARCHIVE_BASE_URL}/tags/${git_ref}.tar.gz"
       ;;
   esac
 fi

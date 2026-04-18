@@ -41,12 +41,16 @@ jobs:
         include:
           - id: linux-x64
             os: blacksmith-4vcpu-ubuntu-2404
+          - id: linux-arm64
+            os: ubuntu-24.04-arm
           - id: darwin-x64
             os: macos-15-intel
           - id: darwin-arm64
             os: macos-14
           - id: win32-x64
             os: blacksmith-4vcpu-windows-2025
+          - id: win32-arm64
+            os: windows-11-arm
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
@@ -57,7 +61,7 @@ jobs:
       - run: npm run build
       - run: npm run build:native-bundle
       - name: Smoke native bundle (Unix)
-        if: matrix.id != 'win32-x64'
+        if: ${{ !startsWith(matrix.id, 'win32-') }}
         shell: bash
         run: |
           VERSION=$(node -p "require('./package.json').version")
@@ -66,14 +70,15 @@ jobs:
           "$tmp/bohr-${VERSION}-${{ matrix.id }}/bohr" --help >/tmp/bohr-help.out
           head -20 /tmp/bohr-help.out
       - name: Smoke native bundle (Windows)
-        if: matrix.id == 'win32-x64'
+        if: ${{ startsWith(matrix.id, 'win32-') }}
         shell: pwsh
         run: |
           $version = node -p "require('./package.json').version"
+          $target = "${{ matrix.id }}"
           $tmp = Join-Path $env:RUNNER_TEMP ("bohr-smoke-" + [guid]::NewGuid().ToString("N"))
           New-Item -ItemType Directory -Path $tmp | Out-Null
-          Expand-Archive -LiteralPath "dist/release/bohr-$version-win32-x64.zip" -DestinationPath $tmp -Force
-          $bundleRoot = Join-Path $tmp "bohr-$version-win32-x64"
+          Expand-Archive -LiteralPath "dist/release/bohr-$version-$target.zip" -DestinationPath $tmp -Force
+          $bundleRoot = Join-Path $tmp "bohr-$version-$target"
           & (Join-Path $bundleRoot "bohr.cmd") --help | Select-Object -First 20
       - uses: actions/upload-artifact@v4
         with:

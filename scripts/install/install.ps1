@@ -3,6 +3,8 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$InstallScriptUrl = if ($env:BOHR_INSTALL_SCRIPT_URL) { $env:BOHR_INSTALL_SCRIPT_URL } else { "https://raw.githubusercontent.com/Dhruvil7694/BohrAI/main/website/public/install.ps1" }
+$ReleasesLatestUrl = if ($env:BOHR_RELEASES_LATEST_URL) { $env:BOHR_RELEASES_LATEST_URL } else { "https://github.com/Dhruvil7694/BohrAI/releases/latest" }
 
 function Normalize-Version {
   param([string]$RequestedVersion)
@@ -20,7 +22,7 @@ function Normalize-Version {
 }
 
 function Resolve-LatestReleaseVersion {
-  $page = Invoke-WebRequest -Uri "https://github.com/your-org/bohr-ai/releases/latest"
+  $page = Invoke-WebRequest -Uri $ReleasesLatestUrl
   $match = [regex]::Match($page.Content, 'releases/tag/v([0-9][^"''<>\s]*)')
   if (-not $match.Success) {
     throw "Failed to resolve the latest Bohr release version."
@@ -46,7 +48,7 @@ function Resolve-ReleaseMetadata {
 
   $bundleName = "bohr-$resolvedVersion-$AssetTarget"
   $archiveName = "$bundleName.$BundleExtension"
-  $baseUrl = if ($env:BOHR_INSTALL_BASE_URL) { $env:BOHR_INSTALL_BASE_URL } else { "https://github.com/your-org/bohr-ai/releases/download/v$resolvedVersion" }
+  $baseUrl = if ($env:BOHR_INSTALL_BASE_URL) { $env:BOHR_INSTALL_BASE_URL } else { "https://github.com/Dhruvil7694/BohrAI/releases/download/v$resolvedVersion" }
 
   return [PSCustomObject]@{
     ResolvedVersion = $resolvedVersion
@@ -110,7 +112,7 @@ This usually means the release exists, but not all platform bundles were uploade
 Workarounds:
   - try again after the release finishes publishing
   - pass the latest published version explicitly, e.g.:
-    & ([scriptblock]::Create((irm https://bohr-ai.internal/install.ps1))) -Version 0.2.16
+    & ([scriptblock]::Create((irm $InstallScriptUrl))) -Version 0.2.16
 "@
   }
 

@@ -1,34 +1,38 @@
 <p align="center">
-  <a href="https://bohr-ai.internal">
+  <a href="https://github.com/Dhruvil7694/BohrAI">
     <img src="assets/hero.png" alt="Bohr terminal — REPL session" width="800" />
   </a>
 </p>
 <p align="center">The private AI research system.</p>
 <p align="center">
-  <a href="https://bohr-ai.internal/docs"><img alt="Docs" src="https://img.shields.io/badge/docs-bohr--ai.internal-000000?style=flat-square" /></a>
+  <a href="https://github.com/Dhruvil7694/BohrAI/tree/main/website/src/content/docs"><img alt="Docs" src="https://img.shields.io/badge/docs-repo-000000?style=flat-square" /></a>
 </p>
 
 ---
 
 ### Installation
 
+Bohr ships prebuilt standalone bundles for supported macOS, Linux, and Windows machines. You do not need to deploy a running app before changing these commands; you only need the installer scripts and release assets published at reachable URLs.
+
 **macOS / Linux:**
 
 ```bash
-curl -fsSL https://bohr-ai.internal/install | bash
+curl -fsSL https://raw.githubusercontent.com/Dhruvil7694/BohrAI/main/website/public/install | bash
 ```
 
 **Windows (PowerShell):**
 
 ```powershell
-irm https://bohr-ai.internal/install.ps1 | iex
+irm https://raw.githubusercontent.com/Dhruvil7694/BohrAI/main/website/public/install.ps1 | iex
 ```
 
-The one-line installer fetches the latest tagged release. To pin a version, pass it explicitly, for example `curl -fsSL https://bohr-ai.internal/install | bash -s -- 0.2.17`.
+The one-line installer fetches the latest tagged release. To pin a version, pass it explicitly, for example `curl -fsSL https://raw.githubusercontent.com/Dhruvil7694/BohrAI/main/website/public/install | bash -s -- 0.2.18`.
 
 The installer downloads a standalone native bundle with its own Node.js runtime.
 
 To upgrade the standalone app later, rerun the installer. `bohr update` only refreshes installed Pi packages inside Bohr's environment; it does not replace the standalone runtime bundle itself.
+
+For internal client deployments, do not hardcode the GitHub Raw URLs above. Instead set the deployment variables in `.env.example` such as `PUBLIC_BOHR_SITE_URL`, `PUBLIC_BOHR_INSTALL_BASE_URL`, `BOHR_RELEASES_LATEST_URL`, and `BOHR_INSTALL_BASE_URL`, then publish the same scripts and release bundles on the client's own host. The website homepage already reads those env-based install URLs at build time; the docs page should be published from the same deployment so users copy the correct host-specific command.
 
 Local models are supported through the custom-provider flow. For Ollama, run `bohr setup`, choose `Custom provider (baseUrl + API key)`, use `openai-completions`, and point it at `http://localhost:11434/v1`.
 
@@ -39,13 +43,13 @@ If you want just the research skills without the full terminal app:
 **macOS / Linux:**
 
 ```bash
-curl -fsSL https://bohr-ai.internal/install-skills | bash
+curl -fsSL https://raw.githubusercontent.com/Dhruvil7694/BohrAI/main/website/public/install-skills | bash
 ```
 
 **Windows (PowerShell):**
 
 ```powershell
-irm https://bohr-ai.internal/install-skills.ps1 | iex
+irm https://raw.githubusercontent.com/Dhruvil7694/BohrAI/main/website/public/install-skills.ps1 | iex
 ```
 
 That installs the skill library into `~/.codex/skills/bohr`.
@@ -55,18 +59,29 @@ For a repo-local install instead:
 **macOS / Linux:**
 
 ```bash
-curl -fsSL https://bohr-ai.internal/install-skills | bash -s -- --repo
+curl -fsSL https://raw.githubusercontent.com/Dhruvil7694/BohrAI/main/website/public/install-skills | bash -s -- --repo
 ```
 
 **Windows (PowerShell):**
 
 ```powershell
-& ([scriptblock]::Create((irm https://bohr-ai.internal/install-skills.ps1))) -Scope Repo
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/Dhruvil7694/BohrAI/main/website/public/install-skills.ps1))) -Scope Repo
 ```
 
 That installs into `.agents/skills/bohr` under the current repository.
 
 These installers download the bundled `skills/` and `prompts/` trees plus the repo guidance files referenced by those skills. They do not install the Bohr terminal, bundled Node runtime, auth storage, or Pi packages.
+
+---
+
+### Token usage & caveman mode
+
+Long multi-agent runs burn context fast. Bohr mitigates this in several ways:
+
+- **Bundled caveman skill** (`skills/caveman/caveman.md`) — instructs terse, substance-preserving replies. The skill description targets **roughly 75% fewer tokens** on assistant output versus verbose defaults when the model follows the style; actual savings vary by model and task.
+- **Paper-generator / Pi subagent path** — prepends short `[CAVEMAN MODE: lite|full|ultra]` instructions, passes **minimal JSON context** (slug, phase, filenames), and uses **file handoffs** instead of dumping large intermediates into the prompt.
+- **Configuration** — optional `CAVEMAN_MODE_DEFAULT` and `ENABLE_TOKEN_OPTIMIZATION` in `.env.example` tune subagent compression when using the CLI (dotenv-loaded). See the repo docs: [Token optimization & caveman mode](https://github.com/Dhruvil7694/BohrAI/blob/main/website/src/content/docs/reference/token-optimization.md).
+- **Cost planning** — illustrative token and dollar scenarios by provider family (OpenAI, Anthropic, Gemini, Grok, DeepSeek, Chinese APIs), tool fees, and self-host FLOPs intuition: [Cost & token estimation](https://github.com/Dhruvil7694/BohrAI/blob/main/website/src/content/docs/reference/cost-token-estimation.md).
 
 ---
 
@@ -176,8 +191,8 @@ Built on [Pi](https://github.com/badlogic/pi-mono) for the agent runtime, [alpha
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full contributor guide.
 
 ```bash
-git clone https://github.com/your-org/bohr-ai.git
-cd bohr-ai
+git clone https://github.com/Dhruvil7694/BohrAI.git
+cd BohrAI
 nvm use || nvm install
 npm install
 npm test
@@ -185,4 +200,4 @@ npm run typecheck
 npm run build
 ```
 
-[Docs](https://bohr-ai.internal/docs) · [Proprietary License](LICENSE)
+[Docs](https://github.com/Dhruvil7694/BohrAI/tree/main/website/src/content/docs) · [Proprietary License](LICENSE)

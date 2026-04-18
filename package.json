@@ -1,6 +1,6 @@
 {
   "name": "@companion-ai/bohr",
-  "version": "0.2.17",
+  "version": "0.2.18",
   "description": "Research-first CLI agent built on Pi and alphaXiv",
   "license": "UNLICENSED",
   "type": "module",

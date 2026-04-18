@@ -2,6 +2,8 @@
 
 set -eu
 
+INSTALL_SCRIPT_URL="${BOHR_INSTALL_SCRIPT_URL:-https://raw.githubusercontent.com/Dhruvil7694/BohrAI/main/website/public/install}"
+RELEASES_LATEST_URL="${BOHR_RELEASES_LATEST_URL:-https://github.com/Dhruvil7694/BohrAI/releases/latest}"
 VERSION="${1:-latest}"
 INSTALL_BIN_DIR="${BOHR_INSTALL_BIN_DIR:-$HOME/.local/bin}"
 INSTALL_APP_DIR="${BOHR_INSTALL_APP_DIR:-$HOME/.local/share/bohr}"
@@ -185,7 +187,7 @@ resolve_release_metadata() {
   normalized_version="$(normalize_version "$VERSION")"
 
   if [ "$normalized_version" = "latest" ]; then
-    release_page="$(download_text "https://github.com/your-org/bohr-ai/releases/latest")"
+    release_page="$(download_text "$RELEASES_LATEST_URL")"
     resolved_version="$(printf '%s\n' "$release_page" | sed -n 's@.*releases/tag/v\([0-9][^"<>[:space:]]*\).*@\1@p' | head -n 1)"
 
     if [ -z "$resolved_version" ]; then
@@ -198,7 +200,7 @@ resolve_release_metadata() {
 
   bundle_name="bohr-${resolved_version}-${asset_target}"
   archive_name="${bundle_name}.${archive_extension}"
-  download_url="${BOHR_INSTALL_BASE_URL:-https://github.com/your-org/bohr-ai/releases/download/v${resolved_version}}/${archive_name}"
+  download_url="${BOHR_INSTALL_BASE_URL:-https://github.com/Dhruvil7694/BohrAI/releases/download/v${resolved_version}}/${archive_name}"
 
   printf '%s\n%s\n%s\n%s\n' "$resolved_version" "$bundle_name" "$archive_name" "$download_url"
 }
@@ -261,7 +263,7 @@ This usually means the release exists, but not all platform bundles were uploade
 Workarounds:
   - try again after the release finishes publishing
   - pass the latest published version explicitly, e.g.:
-    curl -fsSL https://bohr-ai.internal/install | bash -s -- 0.2.16
+    curl -fsSL ${INSTALL_SCRIPT_URL} | bash -s -- 0.2.16
 EOF
   exit 1
 fi

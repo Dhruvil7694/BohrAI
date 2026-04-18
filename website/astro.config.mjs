@@ -3,6 +3,7 @@
 import tailwindcss from "@tailwindcss/vite"
 import { defineConfig } from "astro/config"
 import react from "@astrojs/react"
+import rehypeSlug from "rehype-slug"
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,6 +13,7 @@ export default defineConfig({
   integrations: [react()],
   site: 'https://bohr-ai.internal',
   markdown: {
+    rehypePlugins: [rehypeSlug],
     shikiConfig: {
       themes: {
         light: 'vitesse-light',

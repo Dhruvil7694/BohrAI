@@ -39,6 +39,9 @@
     "start": "tsx src/index.ts",
     "start:dist": "node ./bin/bohr.js",
     "test": "node --import tsx --test --test-concurrency=1 tests/*.test.ts",
+    "test:paper": "tsx scripts/test-paper-generator.ts",
+    "test:search": "tsx -e \"import {searchAllSources} from './src/paper-generator/search-tools.js'; searchAllSources('transformer',5).then(r=>console.log('Found',r.length,'papers'))\"",
+    "install:paper-gen": "bash scripts/install-paper-generator.sh",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [
@@ -63,7 +66,8 @@
     "@mariozechner/pi-ai": "^0.66.1",
     "@mariozechner/pi-coding-agent": "^0.66.1",
     "@sinclair/typebox": "^0.34.48",
-    "dotenv": "^17.3.1"
+    "dotenv": "^17.3.1",
+    "xml2js": "^0.6.2"
   },
   "overrides": {
     "basic-ftp": "5.2.1",
@@ -89,6 +93,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
+    "@types/xml2js": "^0.4.14",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },

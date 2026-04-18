@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import { getBohrHome } from "../config/paths.js";
+import { getBohrHome } from "../config/paths";
 
 export type PiWebSearchProvider = "auto" | "perplexity" | "exa" | "gemini";
 export type PiWebSearchWorkflow = "none" | "summary-review";

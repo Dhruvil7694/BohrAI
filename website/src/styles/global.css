@@ -49,6 +49,7 @@
 }
 
 :root {
+    --font-cli: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     --background: oklch(0.99 0 0);
     --foreground: oklch(0.16 0 0);
     --card: oklch(0.96 0 0);
@@ -130,6 +131,164 @@
     scroll-behavior: smooth;
     overflow-x: clip;
     }
+}
+
+@layer utilities {
+  .hp-shell {
+    width: min(100% - 2rem, 72rem);
+    margin-inline: auto;
+  }
+
+  .hp-surface {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+  }
+
+  .hp-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  .hp-focus-visible {
+    transition: box-shadow 0.2s ease, outline-color 0.2s ease;
+  }
+
+  .hp-focus-visible:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 5px var(--ring);
+  }
+
+  .hp-cta-primary,
+  .hp-cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding-inline: 1rem;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .hp-cta-primary {
+    color: var(--primary-foreground);
+    background-color: var(--primary);
+    border: 1px solid transparent;
+  }
+
+  .hp-cta-primary:hover {
+    filter: brightness(0.95);
+  }
+
+  .hp-cta-secondary {
+    color: var(--foreground);
+    background-color: transparent;
+    border: 1px solid var(--border);
+  }
+
+  .hp-cta-secondary:hover {
+    background-color: var(--accent);
+    border-color: var(--foreground);
+  }
+
+  .hp-cta-primary:focus-visible,
+  .hp-cta-secondary:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 5px var(--ring);
+  }
+
+  .hp-space-hero {
+    padding-block: clamp(3.5rem, 6.5vw, 6rem);
+  }
+
+  .hp-space-core {
+    padding-block: clamp(2.75rem, 5.2vw, 4.5rem);
+  }
+
+  .hp-hero-title {
+    font-size: clamp(2rem, 5vw, 3.6rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    overflow-wrap: break-word;
+  }
+
+  .hp-hero-copy {
+    font-size: clamp(1rem, 1.4vw + 0.7rem, 1.25rem);
+    line-height: 1.65;
+    color: var(--muted-foreground);
+    overflow-wrap: anywhere;
+  }
+
+  @supports (background: color-mix(in oklab, black 50%, white)) {
+    .hp-surface {
+      background: color-mix(in oklab, var(--card) 90%, var(--background));
+      box-shadow: 0 1px 2px color-mix(in oklab, var(--foreground) 10%, transparent);
+    }
+
+    .hp-focus-visible:focus-visible {
+      box-shadow: 0 0 0 4px color-mix(in oklab, var(--ring) 24%, transparent);
+    }
+
+    .hp-cta-primary:hover {
+      filter: none;
+      background-color: color-mix(in oklab, var(--primary) 88%, var(--background));
+    }
+
+    .hp-cta-secondary:hover {
+      border-color: color-mix(in oklab, var(--border) 70%, var(--foreground));
+    }
+
+    .hp-cta-primary:focus-visible,
+    .hp-cta-secondary:focus-visible {
+      box-shadow: 0 0 0 4px color-mix(in oklab, var(--ring) 24%, transparent);
+    }
+  }
+
+  @supports (text-wrap: balance) {
+    .hp-hero-title {
+      text-wrap: balance;
+    }
+  }
+
+  @supports (text-wrap: pretty) {
+    .hp-hero-copy {
+      text-wrap: pretty;
+    }
+  }
+
+  .hp-grid-core {
+    display: grid;
+    gap: clamp(1rem, 2vw, 1.5rem);
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  @media (min-width: 48rem) {
+    .hp-shell {
+      width: min(100% - 3rem, 74rem);
+    }
+
+    .hp-grid-core {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 75rem) {
+    .hp-grid-core {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
 }
 
 .prose h2 {
@@ -368,4 +527,123 @@
 ::selection {
   background: var(--primary);
   color: var(--primary-foreground);
+}
+
+/* CLI homepage — install tabs (styles toggled via aria-pressed in JS) */
+.cli-install-tab[aria-pressed="true"] {
+  background-color: #141414;
+  color: #fafafa;
+}
+
+.cli-install-tab[aria-pressed="false"] {
+  background-color: transparent;
+  color: #737373;
+}
+
+.cli-install-tab[aria-pressed="false"]:hover {
+  background-color: #111111;
+  color: #d4d4d4;
+}
+
+/* Full-width page shell — horizontal rhythm matches CLI homepage */
+@layer utilities {
+  .page-gutter-x {
+    @apply mx-auto w-full max-w-none px-3 sm:px-4 md:px-6 lg:px-8 xl:px-10 2xl:px-12;
+  }
+
+  /** Docs: minimal side margins so sidebar + article use more viewport width */
+  .docs-page-gutter-x {
+    @apply mx-auto w-full max-w-none px-2 sm:px-3 md:px-3 lg:px-4 xl:px-5 2xl:px-6;
+  }
+}
+
+/* Documentation layout — sidebar + article */
+@layer components {
+  .docs-layout-navlink {
+    @apply block rounded-md px-2 py-1 text-[13px] leading-snug text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground;
+  }
+
+  .docs-layout-navlink-active {
+    @apply bg-muted/90 font-medium text-foreground;
+  }
+
+  .docs-layout-section-title {
+    @apply mb-2 px-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground;
+  }
+
+  .docs-nav-details {
+    @apply border-b border-border/40 pb-3 last:border-b-0 last:pb-0;
+  }
+
+  .docs-nav-summary {
+    @apply flex cursor-pointer list-none items-center justify-between gap-1.5 rounded-md px-1.5 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground outline-none transition-colors hover:text-foreground sm:text-[11px] sm:tracking-wider marker:content-[''] [&::-webkit-details-marker]:hidden;
+  }
+
+  .docs-nav-summary:focus-visible {
+    @apply ring-2 ring-ring/50 ring-offset-2 ring-offset-background;
+  }
+
+  .docs-nav-chevron {
+    @apply h-3.5 w-3.5 shrink-0 text-muted-foreground/80 transition-transform duration-200;
+  }
+
+  .docs-nav-details[open] .docs-nav-chevron {
+    @apply rotate-180;
+  }
+
+  .docs-hub-section-label {
+    @apply mb-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground;
+  }
+
+  .docs-hub-link {
+    @apply block rounded-md py-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground;
+  }
+
+  .docs-hub-card {
+    @apply flex flex-col gap-1 rounded-lg border border-border/60 bg-card/40 px-4 py-4 transition-colors hover:border-border hover:bg-muted/25;
+  }
+
+  .docs-breadcrumb {
+    @apply text-[13px] text-muted-foreground;
+  }
+
+  .docs-page-title {
+    @apply text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-[2rem] sm:leading-tight;
+  }
+
+  /** Main column — mirrors floating sidebar panel (height set on parent on lg) */
+  .docs-main-panel {
+    @apply min-h-0 w-full rounded-xl border border-border/35 bg-background/85 p-0 shadow-sm;
+    @apply lg:flex lg:h-full lg:max-h-full lg:flex-col lg:overflow-hidden lg:rounded-2xl lg:border-border/40 lg:bg-card/70 lg:shadow-[0_16px_48px_-8px_rgba(0,0,0,0.55)] lg:ring-1 lg:ring-border/35 lg:backdrop-blur-md;
+  }
+
+  /** Scrollable doc body — pad here so chrome stays fixed */
+  .docs-main-scroll {
+    @apply p-5 sm:p-6 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-y-contain lg:p-8;
+  }
+}
+
+
+/* Workflows hub */
+@layer utilities {
+  .wf-hub-search {
+    @apply w-full max-w-lg rounded-xl border border-border/60 bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm placeholder:text-muted-foreground focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-ring/40;
+  }
+
+  .wf-hub-section-title {
+    @apply mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground;
+  }
+}
+
+/* Marketing / hub pages */
+@layer utilities {
+  .hub-card {
+    @apply flex flex-col gap-2 rounded-xl border border-border bg-card/80 p-5 text-left shadow-sm transition-colors hover:border-primary/35 hover:bg-card;
+  }
+  .hub-search {
+    @apply w-full max-w-md rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50;
+  }
+  .hub-kicker {
+    @apply text-xs font-semibold uppercase tracking-wider text-primary;
+  }
 }

@@ -3,8 +3,8 @@ import { dirname } from "node:path";
 
 import { ModelRegistry, type PackageSource } from "@mariozechner/pi-coding-agent";
 
-import { CORE_PACKAGE_SOURCES, shouldPruneLegacyDefaultPackages } from "./package-presets.js";
-import { createModelRegistry } from "../model/registry.js";
+import { CORE_PACKAGE_SOURCES, shouldPruneLegacyDefaultPackages } from "./package-presets";
+import { createModelRegistry } from "../model/registry";
 
 export type ThinkingLevel = "off" | "minimal" | "low" | "medium" | "high" | "xhigh";
 

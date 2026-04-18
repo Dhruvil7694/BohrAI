@@ -1,0 +1,44 @@
+---
+interface Props {
+  title: string
+  summary: string
+  href: string
+  slashCommand: string
+  category: "pipeline" | "module"
+}
+
+const { title, summary, href, slashCommand, category } = Astro.props
+const kind = category === "pipeline" ? "Pipeline" : "Module"
+---
+
+<a
+  href={href}
+  class="wf-card group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/45 bg-gradient-to-b from-card/95 via-card/80 to-muted/15 p-6 shadow-[0_12px_40px_-16px_rgba(0,0,0,0.65)] ring-1 ring-border/30 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_20px_50px_-18px_rgba(0,0,0,0.75)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+>
+  <div class="mb-4 flex flex-wrap items-center gap-2">
+    <span
+      class:list={[
+        "rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
+        category === "pipeline"
+          ? "border-primary/35 bg-primary/10 text-primary"
+          : "border-border bg-muted/50 text-muted-foreground",
+      ]}
+    >
+      {kind}
+    </span>
+    <code
+      class="rounded-md border border-border/60 bg-background/90 px-2 py-1 font-mono text-[11px] text-muted-foreground group-hover:border-primary/25 group-hover:text-foreground"
+      >{slashCommand}</code
+    >
+  </div>
+  <h2 class="text-lg font-semibold tracking-tight text-foreground group-hover:text-primary">{title}</h2>
+  <p class="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{summary}</p>
+  <span
+    class="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-transform group-hover:translate-x-0.5"
+  >
+    View workflow
+    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+    </svg>
+  </span>
+</a>

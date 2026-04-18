@@ -1,3 +1,94 @@
 ---
-return Astro.redirect('/docs/getting-started/installation')
+import Layout from "@/layouts/main.astro"
+import DocsChrome from "@/components/DocsChrome.astro"
+import { docsSidebarSections } from "@/data/docs-nav"
+
+const highlights = [
+  {
+    title: "Installation",
+    description: "Bootstrap Bohr and configure providers.",
+    href: "/docs/getting-started/installation",
+  },
+  {
+    title: "Slash commands",
+    description: "Every REPL command in one place.",
+    href: "/docs/reference/slash-commands",
+  },
+  {
+    title: "CLI commands",
+    description: "Equivalent `bohr …` invocations from the shell.",
+    href: "/docs/reference/cli-commands",
+  },
+] as const
 ---
+
+<Layout title="Documentation — Bohr AI" description="Guides, workflows, agents, templates, tools, and reference." active="docs">
+  <DocsChrome>
+    <article class="min-w-0 w-full max-w-none pb-12 lg:pb-16">
+      <nav class="docs-breadcrumb mb-8" aria-label="Breadcrumb">
+        <span class="text-foreground">Docs</span>
+      </nav>
+
+      <header class="mb-12">
+        <h1 class="docs-page-title">Docs</h1>
+        <p class="mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
+          Guides and reference for Bohr. For a visual overview, see{" "}
+          <a class="text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground" href="/explore">Explore</a>
+          {" · "}
+          <a class="text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground" href="/agents">Agents</a>
+          {" · "}
+          <a class="text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground" href="/workflows">Workflows</a>
+          {" · "}
+          <a class="text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground" href="/how-it-works">How it works</a>.
+        </p>
+      </header>
+
+      <div class="space-y-12">
+        <section aria-labelledby="popular-heading">
+          <h2 id="popular-heading" class="docs-hub-section-label">
+            Start here
+          </h2>
+          <ul class="grid gap-3 sm:grid-cols-3">
+            {
+              highlights.map((h) => (
+                <li>
+                  <a href={h.href} class="docs-hub-card group no-underline">
+                    <span class="text-sm font-medium text-foreground group-hover:text-foreground">{h.title}</span>
+                    <span class="text-[13px] leading-snug text-muted-foreground">{h.description}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <section class="border-t border-border/50 pt-12" aria-labelledby="all-topics-heading">
+          <h2 id="all-topics-heading" class="docs-hub-section-label">
+            All topics
+          </h2>
+          <p class="mb-8 max-w-xl text-[13px] leading-relaxed text-muted-foreground">
+            Use the sidebar to jump to a page, or open a section below.
+          </p>
+          <div class="space-y-10">
+            {
+              docsSidebarSections.map((section) => (
+                <div>
+                  <h3 class="mb-3 text-[13px] font-semibold text-foreground">{section.title}</h3>
+                  <ul class="grid gap-x-8 gap-y-1 sm:grid-cols-2">
+                    {section.items.map((item) => (
+                      <li>
+                        <a href={`/docs/${item.slug}`} class="docs-hub-link">
+                          {item.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))
+            }
+          </div>
+        </section>
+      </div>
+    </article>
+  </DocsChrome>
+</Layout>

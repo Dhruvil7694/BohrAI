@@ -1,0 +1,115 @@
+---
+import { getCollection } from "astro:content"
+import Layout from "@/layouts/main.astro"
+import WorkflowCard from "@/components/WorkflowCard.astro"
+
+const entries = await getCollection("workflowPages")
+entries.sort((a, b) => a.data.order - b.data.order)
+
+const pipelines = entries.filter((e) => e.data.category === "pipeline")
+const modules = entries.filter((e) => e.data.category === "module")
+---
+
+<Layout
+  title="Workflows — Bohr AI"
+  description="Research pipelines and workflow modules: slash commands, flow diagrams, and deep-dive pages."
+  active="explore"
+>
+  <div class="page-gutter-x pb-16 pt-8 sm:pt-10">
+    <header class="mb-10 max-w-3xl">
+      <p class="hub-kicker mb-2">Explore</p>
+      <h1 class="text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Workflows</h1>
+      <p class="mt-4 text-base leading-relaxed text-muted-foreground">
+        Each card opens a detail page with a flow diagram and short guide. Slash commands run in the REPL;{" "}
+        <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-sm">bohr …</code> maps to the same pipeline from the shell.
+      </p>
+    </header>
+
+    <div class="mb-8">
+      <label class="sr-only" for="workflow-filter">Filter workflows</label>
+      <input
+        id="workflow-filter"
+        class="wf-hub-search"
+        type="search"
+        placeholder="Filter by name, slash command, or keyword…"
+        autocomplete="off"
+      />
+    </div>
+
+    <section class="mb-14" aria-labelledby="pipelines-heading">
+      <h2 id="pipelines-heading" class="wf-hub-section-title">End-to-end pipelines</h2>
+      <p class="mb-6 max-w-2xl text-sm text-muted-foreground">
+        Full research flows—literature, paper, audit, replication, and more.
+      </p>
+      <ul class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3" id="workflow-grid-pipelines">
+        {
+          pipelines.map((e) => {
+            const blob = `${e.data.title} ${e.data.summary} ${e.data.slashCommand} ${e.data.cliName} pipeline`.toLowerCase()
+            return (
+              <li data-wf-card data-search={blob}>
+                <WorkflowCard
+                  title={e.data.title}
+                  summary={e.data.summary}
+                  href={`/workflows/${e.slug}`}
+                  slashCommand={e.data.slashCommand}
+                  category="pipeline"
+                />
+              </li>
+            )
+          })
+        }
+      </ul>
+    </section>
+
+    <section aria-labelledby="modules-heading">
+      <h2 id="modules-heading" class="wf-hub-section-title">Workflow modules</h2>
+      <p class="mb-6 max-w-2xl text-sm text-muted-foreground">
+        Focused stages you can compose—hypothesis, graphs, citation checks, iteration, and more.
+      </p>
+      <ul class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3" id="workflow-grid-modules">
+        {
+          modules.map((e) => {
+            const blob = `${e.data.title} ${e.data.summary} ${e.data.slashCommand} ${e.data.cliName} module`.toLowerCase()
+            return (
+              <li data-wf-card data-search={blob}>
+                <WorkflowCard
+                  title={e.data.title}
+                  summary={e.data.summary}
+                  href={`/workflows/${e.slug}`}
+                  slashCommand={e.data.slashCommand}
+                  category="module"
+                />
+              </li>
+            )
+          })
+        }
+      </ul>
+    </section>
+
+    <p class="mt-14 text-center text-sm text-muted-foreground">
+      See how everything connects in{" "}
+      <a class="font-medium text-primary underline underline-offset-2" href="/how-it-works">How it works</a>
+      {" · "}
+      <a class="font-medium text-primary underline underline-offset-2" href="/docs/reference/slash-commands">Slash command reference</a>
+    </p>
+  </div>
+
+  <script is:inline>
+    ;(function () {
+      function bind() {
+        var input = document.getElementById("workflow-filter")
+        if (!input) return
+        function run() {
+          var q = (input.value || "").toLowerCase().trim()
+          document.querySelectorAll("[data-wf-card]").forEach(function (el) {
+            var s = (el.getAttribute("data-search") || "").toLowerCase()
+            el.style.display = !q || s.indexOf(q) !== -1 ? "" : "none"
+          })
+        }
+        input.addEventListener("input", run)
+      }
+      bind()
+      document.addEventListener("astro:after-swap", bind)
+    })()
+  </script>
+</Layout>

@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 
-import { resolveExecutable } from "./executables.js";
+import { resolveExecutable } from "./executables";
 
 type ResolveExecutableFn = (name: string, fallbackPaths?: string[]) => string | undefined;
 

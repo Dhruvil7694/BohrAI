@@ -1,0 +1,225 @@
+---
+import { getCollection } from "astro:content"
+import Layout from "@/layouts/main.astro"
+import WorkflowPipelineDiagram from "@/components/diagrams/WorkflowPipelineDiagram.astro"
+import type { PipelineDiagramInput } from "@/lib/workflow-pipeline-layout"
+
+const workflowPages = await getCollection("workflowPages")
+const deepResearchEntry = workflowPages.find((w) => w.slug === "deep-research")
+if (!deepResearchEntry) throw new Error('Missing workflowPages entry "deep-research"')
+
+/** Same pipeline SVG component + layout language as `/workflows/[slug]` — session install → REPL → orchestration → tools → artifacts */
+const sessionPipelineDiagram: PipelineDiagramInput = {
+  columns: [
+    {
+      stage: "01 · YOU",
+      nodes: [{ variant: "outline", lines: ["you", "CLI / REPL"] }],
+    },
+    {
+      stage: "02 · INSTALL",
+      nodes: [{ lines: ["install CLI"] }, { lines: ["configure API keys"] }],
+    },
+    {
+      stage: "03 · SESSION",
+      nodes: [
+        { lines: ["start REPL"] },
+        { variant: "hero", lines: ["slash command", "workflow dispatch"] },
+      ],
+    },
+    {
+      stage: "04 · ORCHESTRATE",
+      nodes: [{ variant: "hero", lines: ["orchestrator", "AGENTS · TOOLS"] }],
+    },
+    {
+      stage: "05 · TOOLS",
+      nodes: [{ lines: ["AlphaXiv · web · repo"] }],
+    },
+    {
+      stage: "06 · OUTPUT",
+      nodes: [{ variant: "outline", lines: ["artifacts on disk", "markdown + provenance"] }],
+    },
+  ],
+}
+
+const steps = [
+  {
+    title: "Install and configure",
+    body: "Install the Bohr CLI, copy `.env.example` to `.env`, and add model provider keys. See Installation for OS-specific notes.",
+    href: "/docs/getting-started/installation",
+  },
+  {
+    title: "Open a session",
+    body: "Run `bohr` (or your wrapper). You land in the Pi-powered REPL where slash commands map to full workflows.",
+    href: "/docs/getting-started/quickstart",
+  },
+  {
+    title: "Choose a workflow",
+    body: "Pick by outcome: `/deepresearch` for cited briefs, `/lit` or `/lit-review` for surveys, `/paper` for manuscripts, `/audit` for claim-vs-code checks — see Workflows.",
+    href: "/workflows",
+  },
+  {
+    title: "Let orchestration run",
+    body: "The orchestrator sequences agents (researcher, writer, verifier, …), runs tools, and writes intermediate files under your workspace conventions.",
+    href: "/agents",
+  },
+  {
+    title: "Review artifacts",
+    body: "Outputs land as markdown and sidecars (e.g. provenance). Use `/preview` when configured, or open files in your editor.",
+    href: "/docs/tools/preview",
+  },
+] as const
+
+const picks = [
+  {
+    goal: "I need a cited brief on a messy topic",
+    cmd: "/deepresearch",
+    href: "/docs/workflows/deep-research",
+  },
+  {
+    goal: "I need a literature survey with gaps and disagreements",
+    cmd: "/lit-review",
+    href: "/docs/workflows/lit-review",
+  },
+  {
+    goal: "I need a paper-style draft with compliance checks",
+    cmd: "/paper",
+    href: "/docs/workflows/paper",
+  },
+  {
+    goal: "I need to challenge conclusions against evidence",
+    cmd: "/contradict · /reasoning-validate",
+    href: "/docs/workflows/contradict",
+  },
+] as const
+---
+
+<Layout
+  title="How Bohr works — process & diagrams"
+  description="From install to artifacts: session flow, a deep-research pipeline diagram, and how to pick a workflow."
+  active="explore"
+>
+  <article class="page-gutter-x pb-24 pt-10">
+    <header class="mb-10">
+      <p class="hub-kicker mb-2">Process</p>
+      <h1 class="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">How it works</h1>
+      <p class="mt-4 text-lg text-muted-foreground">
+        Bohr is <strong class="text-foreground">CLI-first</strong>: you drive everything from the REPL with slash commands. Orchestration coordinates{" "}
+        <a class="text-primary underline underline-offset-2" href="/agents">agents</a> and external{" "}
+        <a class="text-primary underline underline-offset-2" href="/docs/tools/alphaxiv">tools</a>; nothing depends on a proprietary web dashboard.
+      </p>
+    </header>
+
+    <section class="mb-14 space-y-4" aria-labelledby="steps-h">
+      <h2 id="steps-h" class="text-xl font-semibold text-foreground">
+        Steps
+      </h2>
+      <ol class="space-y-4">
+        {
+          steps.map((s, i) => (
+            <li class="rounded-xl border border-border bg-card/60 px-5 py-4">
+              <p class="text-xs font-semibold uppercase tracking-wider text-primary">
+                Step {i + 1}
+              </p>
+              <h3 class="mt-1 text-lg font-semibold text-foreground">{s.title}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
+              <a href={s.href} class="mt-3 inline-flex text-sm font-medium text-primary underline underline-offset-2">
+                Read more
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="mb-14" aria-labelledby="diagrams-h">
+      <h2 id="diagrams-h" class="mb-4 text-xl font-semibold text-foreground">
+        Diagrams
+      </h2>
+      <p class="mb-10 text-sm text-muted-foreground">
+        Same staged pipeline visuals as workflow pages (grid, outlines, hero blocks). Left: how a session flows from install to artifacts. Right: the{" "}
+        <strong class="text-foreground">/deepresearch</strong> diagram — identical data to{" "}
+        <a class="text-primary underline underline-offset-2" href="/workflows/deep-research">the Deep Research workflow page</a>; your run may merge or repeat stages depending on planner and iteration policy.
+      </p>
+
+      <div class="space-y-14">
+        <div class="scroll-mt-24">
+          <h3 class="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+            Session flow
+          </h3>
+          <p class="mb-5 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
+            Left-to-right: install and keys, REPL + slash commands, orchestration calling agents and tools, then files on disk.
+          </p>
+          <WorkflowPipelineDiagram
+            diagram={sessionPipelineDiagram}
+            instanceId="how-it-works-session"
+            label="Bohr session flow from install to artifacts"
+          />
+        </div>
+
+        <div class="scroll-mt-24">
+          <h3 class="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+            Example · /deepresearch pipeline
+          </h3>
+          <p class="mb-5 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
+            Stages and labels match the workflow hub; arrows show how work moves across the pipeline (same renderer as Flow diagram on workflow pages).
+          </p>
+          <WorkflowPipelineDiagram
+            diagram={deepResearchEntry.data.pipelineDiagram}
+            instanceId="how-it-works-deepresearch"
+            label={`${deepResearchEntry.data.title} workflow pipeline`}
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-14" aria-labelledby="pick-h">
+      <h2 id="pick-h" class="mb-4 text-xl font-semibold text-foreground">
+        Which workflow should I use?
+      </h2>
+      <p class="mb-4 text-sm text-muted-foreground">
+        “Company” here means your environment: Bohr runs locally (or in your Docker/VM). Pick by the artifact you want — not by vendor.
+      </p>
+      <div class="overflow-x-auto rounded-xl border border-border">
+        <table class="w-full text-left text-sm">
+          <thead class="border-b border-border bg-muted/40">
+            <tr>
+              <th class="px-4 py-3 font-semibold text-foreground">Goal</th>
+              <th class="px-4 py-3 font-semibold text-foreground">Command</th>
+              <th class="px-4 py-3 font-semibold text-foreground">Doc</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              picks.map((row) => (
+                <tr class="border-b border-border/80 last:border-0">
+                  <td class="px-4 py-3 text-muted-foreground">{row.goal}</td>
+                  <td class="px-4 py-3 font-mono text-xs text-foreground">{row.cmd}</td>
+                  <td class="px-4 py-3">
+                    <a class="text-primary underline underline-offset-2" href={row.href}>
+                      Guide
+                    </a>
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="rounded-xl border border-dashed border-border bg-muted/20 px-5 py-6" aria-labelledby="next-h">
+      <h2 id="next-h" class="text-lg font-semibold text-foreground">
+        Next
+      </h2>
+      <ul class="mt-3 list-inside list-disc space-y-2 text-sm text-muted-foreground">
+        <li>
+          Browse all <a class="text-primary underline underline-offset-2" href="/agents">agents</a> and{" "}
+          <a class="text-primary underline underline-offset-2" href="/workflows">workflows</a>.
+        </li>
+        <li>
+          Keep the <a class="text-primary underline underline-offset-2" href="/docs/reference/slash-commands">slash command reference</a> open while you work.
+        </li>
+      </ul>
+    </section>
+  </article>
+</Layout>

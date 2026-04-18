@@ -14,3 +14,7 @@ notes/*
 !notes/.gitkeep
 experiments/*
 !experiments/.gitkeep
+.worktrees/
+
+# Removed Next.js app — ignore any leftover folder (e.g. locked native deps on Windows).
+website-next/

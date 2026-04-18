@@ -6,7 +6,7 @@ Pi subagent behavior does **not** live here. The source of truth for bundled Pi 
 
 ## Pi subagents
 
-Bohr ships twenty-four bundled research subagents:
+Bohr ships twenty-five bundled research subagents:
 
 - `researcher`
 - `reviewer`
@@ -32,6 +32,7 @@ Bohr ships twenty-four bundled research subagents:
 - `method-math`
 - `figures-tables`
 - `paper-compliance`
+- `paper-orchestrator`
 
 They are defined in `.bohr/agents/` and invoked via the Pi `subagent` tool.
 

@@ -1,0 +1,250 @@
+---
+interface Props {
+  active?: "home" | "docs" | "explore"
+  variant?: "default" | "cli"
+}
+
+const { active = "home", variant = "default" } = Astro.props
+const cli = variant === "cli"
+const path = Astro.url.pathname
+
+function match(href: string): boolean {
+  if (href === "/") return path === "/"
+  return path === href || path.startsWith(`${href}/`)
+}
+
+const exploreLinks = [
+  { href: "/explore", label: "Explore" },
+  { href: "/agents", label: "Agents" },
+  { href: "/workflows", label: "Workflows" },
+  { href: "/how-it-works", label: "Process" },
+] as const
+
+const onCommands = path.includes("/reference/slash-commands")
+const onDocsHub = path === "/docs" || path.startsWith("/docs/")
+const onInstall = path.includes("/getting-started/installation")
+
+function exploreClass(href: string): string {
+  const on = match(href)
+  if (cli) {
+    return on
+      ? "rounded px-2 py-1.5 bg-muted text-foreground dark:bg-[#141414] dark:text-[#fafafa]"
+      : "rounded px-2 py-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring dark:text-[#a3a3a3] dark:hover:bg-[#141414] dark:hover:text-[#fafafa] dark:focus-visible:ring-[#737373]"
+  }
+  return on
+    ? "rounded-md bg-muted px-2.5 py-1.5 text-sm font-medium text-foreground md:px-3"
+    : "rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:px-3"
+}
+
+function cmdDocsClass(isCommands: boolean): string {
+  const on = isCommands ? onCommands : onDocsHub && !onCommands
+  if (cli) {
+    if (on)
+      return "rounded px-2 py-1.5 bg-muted text-foreground dark:bg-[#141414] dark:text-[#fafafa]"
+    return "rounded px-2 py-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring dark:text-[#a3a3a3] dark:hover:bg-[#141414] dark:hover:text-[#fafafa] dark:focus-visible:ring-[#737373]"
+  }
+  if (on)
+    return "rounded-md bg-muted px-3 py-2 text-sm font-medium text-foreground"
+  return "rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+}
+
+function installClass(): string {
+  if (cli) {
+    return onInstall
+      ? "border border-border bg-muted px-3 py-1.5 text-foreground dark:border-[#737373] dark:bg-[#141414] dark:text-[#fafafa]"
+      : "border border-border bg-transparent px-3 py-1.5 text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring dark:border-[#404040] dark:text-[#fafafa] dark:hover:bg-[#141414] dark:focus-visible:ring-[#737373]"
+  }
+  return onInstall
+    ? "rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
+    : "rounded-md border border-border bg-transparent px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+}
+---
+
+<nav
+  class:list={[
+    cli
+      ? "fixed left-0 right-0 top-0 z-50 w-full border-b border-border dark:border-[#333333]"
+      : "fixed left-0 right-0 top-0 z-50 w-full px-3 pt-3 sm:px-4 md:px-6 lg:px-8 xl:px-10 2xl:px-12",
+  ]}
+>
+  <div
+    class:list={[
+      "flex min-h-14 w-full max-w-none flex-col gap-3 py-2 sm:h-14 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:py-0 sm:px-4 md:px-6 lg:px-8 xl:px-10 2xl:px-12",
+      cli
+        ? "border-0 bg-background font-[family-name:var(--font-cli)] dark:bg-[#050505]"
+        : "rounded-xl border border-border/50 bg-background/85 shadow-[0_8px_24px_rgba(0,0,0,0.25)] backdrop-blur-md",
+    ]}
+  >
+    <div class="flex items-center justify-between gap-4 sm:justify-start">
+      <div class="flex items-center gap-4">
+        {cli && (
+          <span class="flex items-center gap-1.5 pl-1" aria-hidden="true">
+            <span class="inline-block size-3 rounded-full bg-neutral-400/70 dark:bg-[#444444]" />
+            <span class="inline-block size-3 rounded-full bg-neutral-400/70 dark:bg-[#444444]" />
+            <span class="inline-block size-3 rounded-full bg-neutral-400/70 dark:bg-[#444444]" />
+          </span>
+        )}
+        <a href="/" class:list={[cli ? "flex flex-col gap-0 leading-none" : "flex items-center gap-2"]}>
+          <span class:list={[cli ? "font-['VT323'] text-2xl tracking-wide text-foreground dark:text-[#fafafa]" : "font-['VT323'] text-2xl text-foreground"]}>
+            bohr
+          </span>
+          {
+            cli && (
+              <span class="hidden text-[10px] uppercase tracking-[0.2em] text-muted-foreground sm:block">CLI · research shell</span>
+            )
+          }
+        </a>
+      </div>
+      <!-- Mobile: horizontal scroll for explore -->
+      <div class:list={["flex gap-1 overflow-x-auto pb-0 sm:hidden", cli ? "text-[11px]" : ""]} aria-label="Explore site">
+        {exploreLinks.map((link) => (
+          <a href={link.href} class:list={[exploreClass(link.href), "shrink-0 whitespace-nowrap"]}>
+            {link.label}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-2 sm:flex-1 sm:flex-row sm:items-center sm:justify-center">
+      <div class:list={["hidden flex-wrap items-center justify-center gap-1 sm:flex md:gap-2", cli ? "text-xs" : ""]}>
+        {exploreLinks.map((link) => (
+          <a href={link.href} class:list={[exploreClass(link.href), "whitespace-nowrap"]}>
+            {link.label}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <div class:list={["flex flex-wrap items-center justify-end gap-2 sm:gap-3", cli ? "text-xs" : ""]}>
+      <a
+        href="/docs/reference/slash-commands"
+        class:list={[cmdDocsClass(true), "whitespace-nowrap"]}
+        aria-current={onCommands ? "page" : undefined}
+      >
+        Commands
+      </a>
+      <a href="/docs" class:list={[cmdDocsClass(false), "whitespace-nowrap"]} aria-current={onDocsHub && !onCommands ? "page" : undefined}>
+        Docs
+      </a>
+      <a
+        href="/docs/getting-started/installation"
+        class:list={[installClass(), "whitespace-nowrap"]}
+        aria-current={onInstall ? "page" : undefined}
+      >
+        Install
+      </a>
+      <button
+        id="theme-toggle"
+        type="button"
+        class:list={[
+          "inline-flex size-9 shrink-0 items-center justify-center focus-visible:outline-none",
+          cli
+            ? "rounded text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring dark:text-[#a3a3a3] dark:hover:bg-[#141414] dark:hover:text-[#fafafa] dark:focus-visible:ring-[#737373]"
+            : "rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        ]}
+        aria-label="Toggle theme"
+        aria-pressed="false"
+      >
+        <svg
+          id="sun-icon"
+          class="hidden size-4"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+        </svg>
+        <svg
+          id="moon-icon"
+          class="hidden size-4"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<script is:inline>
+  const THEME_SWAP_LISTENER_KEY = "__bohrThemeSwapListenerBound"
+
+  function getStoredTheme() {
+    try {
+      return localStorage.getItem("theme")
+    } catch {
+      return null
+    }
+  }
+
+  function setStoredTheme(theme) {
+    try {
+      localStorage.setItem("theme", theme)
+    } catch {
+      // Ignore storage errors (e.g. private mode restrictions).
+    }
+  }
+
+  function prefersDarkTheme() {
+    try {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches
+    } catch {
+      return false
+    }
+  }
+
+  function applyStoredTheme() {
+    const theme = getStoredTheme()
+    if (theme === "dark" || (!theme && prefersDarkTheme())) {
+      document.documentElement.classList.add("dark")
+    } else {
+      document.documentElement.classList.remove("dark")
+    }
+  }
+
+  function updateThemeIcons() {
+    const sunIcon = document.getElementById("sun-icon")
+    const moonIcon = document.getElementById("moon-icon")
+    const themeToggle = document.getElementById("theme-toggle")
+    if (!sunIcon || !moonIcon) return
+
+    const isDark = document.documentElement.classList.contains("dark")
+    sunIcon.classList.toggle("hidden", !isDark)
+    moonIcon.classList.toggle("hidden", isDark)
+    if (themeToggle) {
+      themeToggle.setAttribute("aria-pressed", isDark ? "true" : "false")
+    }
+  }
+
+  function setupThemeToggle() {
+    applyStoredTheme()
+    updateThemeIcons()
+
+    const btn = document.getElementById("theme-toggle")
+    if (!btn) return
+    if (btn.dataset.bound === "true") return
+
+    btn.dataset.bound = "true"
+    btn.addEventListener("click", function () {
+      document.documentElement.classList.toggle("dark")
+      const isDark = document.documentElement.classList.contains("dark")
+      setStoredTheme(isDark ? "dark" : "light")
+      updateThemeIcons()
+    })
+  }
+
+  setupThemeToggle()
+
+  if (!window[THEME_SWAP_LISTENER_KEY]) {
+    window[THEME_SWAP_LISTENER_KEY] = true
+    document.addEventListener("astro:after-swap", function () {
+      setupThemeToggle()
+    })
+  }
+</script>

@@ -1,173 +1,242 @@
 ---
 import Layout from "@/layouts/main.astro"
-import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { BOHR_SEMVER } from "@/data/bohr-root-version"
 
-const workflows = [
-  { command: "/deepresearch", description: "Multi-agent investigation across papers, web, and code" },
-  { command: "/lit", description: "Literature review from primary sources with consensus mapping" },
-  { command: "/lit-review", description: "Full literature pipeline: collect, score, theme, contradict, gap, validate" },
-  { command: "/paper", description: "Publication-grade pipeline with formal methods, figures, and compliance checks" },
-  { command: "/review", description: "Simulated peer review with severity scores and a revision plan" },
-  { command: "/audit", description: "Paper-to-code mismatch audit for reproducibility claims" },
-  { command: "/replicate", description: "Replication plan and execution in a sandboxed Docker container" },
-  { command: "/compare", description: "Side-by-side source comparison with agreement and conflict matrix" },
-  { command: "/draft", description: "Polished paper-style draft with inline citations from findings" },
-  { command: "/autoresearch", description: "Autonomous loop: hypothesize, experiment, measure, repeat" },
-  { command: "/watch", description: "Recurring monitor for new papers, code, or product updates" },
-  { command: "/hypothesis", description: "Generate falsifiable hypotheses and prioritize decisive tests" },
-  { command: "/contradict", description: "Adversarially stress-test claims with counter-evidence" },
-  { command: "/evidence-score", description: "Score claim support strength with a transparent rubric" },
-  { command: "/experiment", description: "Design and run minimal experiments to resolve uncertainty" },
-  { command: "/citation-check", description: "Validate citation-to-claim alignment sentence by sentence" },
-  { command: "/memory-log", description: "Consolidate durable decisions, assumptions, and next actions" },
-  { command: "/plan-research", description: "Plan orchestration: agent order, checkpoints, and stop criteria" },
-  { command: "/knowledge-graph", description: "Build reusable entity-relation graph from findings" },
-  { command: "/reasoning-validate", description: "Check if conclusions logically follow from evidence" },
-  { command: "/iterate", description: "Run looped research until confidence and contradiction goals are met" },
-]
+const docsCommands = "/docs/reference/slash-commands"
 
-const agents = [
-  { name: "Researcher", description: "Hunts for evidence across papers, the web, repos, and docs" },
-  { name: "Writer", description: "Structures notes into briefs, drafts, and paper-style output" },
-  { name: "Hypothesis", description: "Builds testable hypotheses and clear falsification criteria" },
-  { name: "Experiment", description: "Designs minimal experiments and records reproducible results" },
-  { name: "Research Planner", description: "Chooses agent sequence, checkpoints, and stop conditions" },
-  { name: "Knowledge Graph", description: "Structures research into reusable entities and relations" },
-  { name: "Memory", description: "Maintains durable decisions, assumptions, and open questions" },
-  { name: "Literature Collector", description: "Collects paper candidates with structured metadata" },
-  { name: "Literature Quality", description: "Scores and filters papers for inclusion quality" },
-  { name: "Literature Synthesizer", description: "Clusters included papers into thematic groups" },
-  { name: "Literature Gap", description: "Identifies open problems and underexplored areas" },
-  { name: "Literature Review Writer", description: "Produces survey-style thematic literature reviews" },
-  { name: "Method Math", description: "Formalizes equations, notation, and method sections" },
-  { name: "Figures Tables", description: "Builds publication-ready figures, tables, and captions" },
-]
-
-const sources = [
-  { name: "AlphaXiv", description: "Paper search, Q&A, code reading, and annotations via the alpha CLI", href: "https://alphaxiv.org" },
-  { name: "Web search", description: "Searches via Gemini or Perplexity" },
-  { name: "Session search", description: "Indexed recall across prior research sessions" },
-  { name: "Preview", description: "Browser and PDF export of generated artifacts" },
-]
-
-const compute = [
-  { name: "Docker", description: "Isolated local containers for safe experiments", href: "https://www.docker.com/" },
-  { name: "Modal", description: "Serverless GPU compute for burst training and inference", href: "https://modal.com/" },
-  { name: "RunPod", description: "Persistent GPU pods with SSH access for long-running runs", href: "https://www.runpod.io/" },
-]
-
-const scenarioExamples = [
+const slashCommands = [
   {
-    audience: "Startup",
-    title: "Validate a feature bet before roadmap commitment",
-    command: 'bohr deepresearch "AI sales assistant market for SMB, pricing benchmarks, retention risks"',
-    outcome: "Decision brief with competitor matrix, pricing bands, and go/no-go risks.",
+    cmd: "/audit",
+    desc: "Compare a paper's claims against its codebase for reproducibility.",
   },
   {
-    audience: "AI/ML Research",
-    title: "Map consensus before starting a new experiment track",
-    command: 'bohr lit "test-time compute scaling for reasoning models"',
-    outcome: "Literature synthesis with agreements, conflicts, and open questions.",
+    cmd: "/autoresearch",
+    desc: "Automated experiment loop: analyze, measure, hypothesize, test.",
   },
   {
-    audience: "Product",
-    title: "Choose between two architecture directions",
-    command: 'bohr compare "RAG vs long-context fine-tuning for customer support QA"',
-    outcome: "Trade-off report covering latency, cost, implementation complexity, and risk.",
+    cmd: "/compare",
+    desc: "Agreement / disagreement matrix across sources on a topic.",
   },
   {
-    audience: "Research Engineering",
-    title: "Pressure-test a headline paper claim before adoption",
-    command: 'bohr replicate "chain-of-thought improves grade-school math under strict eval"',
-    outcome: "Replication protocol with experiment checklist and failure-mode log.",
+    cmd: "/deepresearch",
+    desc: "Durable research brief with inline citations and provenance.",
   },
   {
-    audience: "Analyst",
-    title: "Build an executive-ready landscape memo quickly",
-    command: 'bohr draft "foundation model vendor positioning for enterprise procurement"',
-    outcome: "Clean memo with source-grounded positioning and recommendation paths.",
+    cmd: "/draft",
+    desc: "Turn findings into a structured, multi-step manuscript draft.",
   },
   {
-    audience: "Leadership",
-    title: "Monitor fast-moving topics without manual tracking",
-    command: 'bohr watch "open-source reasoning model releases and benchmark shifts"',
-    outcome: "Recurring update stream with notable changes and implication notes.",
-  },
-]
-
-const templates = [
-  {
-    name: "Fast Research Brief",
-    steps: ['bohr plan-research "topic"', 'bohr deepresearch "topic"', "bohr citation-check outputs/<slug>.md"],
-    output: "Plan + cited brief + citation integrity report",
+    cmd: "/lit",
+    desc: "Literature review with search, synthesis, and gap mapping.",
   },
   {
-    name: "Claim Stress Test",
-    steps: ['bohr hypothesis "claim"', "bohr contradict outputs/<slug>-hypotheses.md", "bohr reasoning-validate outputs/<slug>-contradictions.md"],
-    output: "Hypotheses + contradictions + logic validation",
+    cmd: "/replicate",
+    desc: "Replication plan or workflow for a paper, claim, or benchmark.",
   },
   {
-    name: "Evidence-Weighted Comparison",
-    steps: ['bohr compare "A vs B on topic"', "bohr evidence-score outputs/<slug>.md", "bohr knowledge-graph outputs/<slug>.md"],
-    output: "Comparison brief + support scores + reusable graph",
+    cmd: "/review",
+    desc: "Simulated peer review with severity and revision guidance.",
   },
   {
-    name: "Iterative Convergence",
-    steps: ['bohr plan-research "topic"', 'bohr iterate "topic"', 'bohr memory-log "topic"'],
-    output: "Iterative brief + loop log + durable memory",
+    cmd: "/watch",
+    desc: "Recurring monitoring on a topic or literature area.",
   },
-]
+  {
+    cmd: "/plan-research",
+    desc: "Orchestration plan: agents, checkpoints, and stop criteria.",
+  },
+] as const
 
 const installCommands = [
   { label: "curl", command: "curl -fsSL https://bohr-ai.internal/install | bash" },
-]
+] as const
+
+const demoQuery =
+  "What are the most effective optimization techniques for transformer architectures?"
+
+const demoPapers = [
+  {
+    title: "Adafactor",
+    year: "2019",
+    note: "Adaptive learning rates with factorized second-moment estimates; popular for memory-efficient large-model training.",
+  },
+  {
+    title: "Attention Is All You Need",
+    year: "2017",
+    note: "Foundational transformer architecture; baseline for most efficiency work on sequence models.",
+  },
+  {
+    title: "LongNet",
+    year: "2023",
+    note: "Dilated attention scaling toward very long contexts; representative of recent linear-attention trends.",
+  },
+] as const
 ---
 
-<Layout title="Bohr AI — Private AI research system" active="home">
-  <div class="w-full px-4 sm:px-6 lg:px-10 2xl:px-16">
+<Layout
+  title="Bohr — CLI research shell"
+  description="Run slash-command research workflows in a terminal-native Pi agent: literature, synthesis, validation."
+  active="home"
+  shell="cli"
+>
+  <div class="cli-home-root page-gutter-x w-full min-w-0 flex-1 pb-12 pt-2 sm:pb-16 sm:pt-4">
+    <div
+      class="w-full max-w-none border border-[#333333] bg-[#0a0a0a] shadow-[0_0_0_1px_rgba(255,255,255,0.03)]"
+    >
+      <!-- Title bar -->
+      <div
+        class="flex items-center justify-center border-b border-[#262626] px-3 py-2.5 text-center text-[10px] uppercase tracking-[0.18em] text-[#737373] sm:px-4 sm:text-[11px]"
+      >
+        bohr — local session
+      </div>
 
-    <section class="w-full pb-16 pt-16 sm:pt-20">
-      <div class="mx-auto grid w-full max-w-[1600px] items-center gap-10 lg:grid-cols-2 lg:gap-16">
-        <div class="flex flex-col gap-6 text-left">
-          <p class="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">Private Research Infrastructure</p>
-          <h1 class="max-w-3xl text-5xl font-bold leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
-            Bohr AI for serious research teams
-          </h1>
-          <p class="max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
-            Run source-grounded research workflows with structured analysis, reproducible outputs, and agent-driven verification.
+      <!-- Brand -->
+      <div class="border-b border-[#262626] px-4 py-8 text-center sm:px-8 sm:py-12 md:px-12 md:py-14">
+        <p class="font-['VT323'] text-[clamp(2.75rem,10vw+1rem,8rem)] leading-none tracking-tight text-[#fafafa]">
+          bohr
+        </p>
+        <p class="mt-3 font-[family-name:var(--font-cli)] text-sm text-[#737373]">v{BOHR_SEMVER}</p>
+      </div>
+
+      <!-- Status + commands -->
+      <div class="grid gap-0 border-b border-[#262626] md:grid-cols-2">
+        <section
+          class="border-b border-[#262626] p-4 font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-[#d4d4d4] sm:p-5 sm:text-[13px] md:border-b-0 md:border-r lg:p-6 xl:p-8"
+          aria-label="Session status"
+        >
+          <p class="mb-3 text-[11px] uppercase tracking-[0.16em] text-[#737373]">System status</p>
+          <dl class="space-y-2.5">
+            <div class="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
+              <dt class="shrink-0 text-[#737373]">model</dt>
+              <dd class="min-w-0 break-all text-[#e5e5e5]">anthropic/claude-opus-4-20250514</dd>
+            </div>
+            <div class="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
+              <dt class="shrink-0 text-[#737373]">session</dt>
+              <dd class="min-w-0 break-all font-mono text-[12px] text-[#a3a3a3]">
+                a8f3c21e-4b90-7d14 · active
+              </dd>
+            </div>
+            <div class="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
+              <dt class="shrink-0 text-[#737373]">host</dt>
+              <dd class="text-[#a3a3a3]">your machine · docker optional</dd>
+            </div>
+            <div class="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
+              <dt class="shrink-0 text-[#737373]">inventory</dt>
+              <dd class="text-[#a3a3a3]">25+ tools · default agents</dd>
+            </div>
+            <div class="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
+              <dt class="shrink-0 text-[#737373]">agents</dt>
+              <dd class="text-[#e5e5e5]">researcher, reviewer, verifier, writer, …</dd>
+            </div>
+            <div class="flex flex-col gap-1 border-t border-[#1f1f1f] pt-3">
+              <dt class="text-[#737373]">last activity</dt>
+              <dd class="text-[12px] text-[#a3a3a3]">
+                bohr[1 query] &quot;data efficiency transformer architecture optimiz…&quot;
+              </dd>
+            </div>
+          </dl>
+          <p class="mt-6 border border-[#333333] bg-[#050505] px-3 py-2 text-[12px] text-[#d4d4d4]">
+            <span class="select-none text-[#737373]">&gt;</span>
+            <span class="text-[#fafafa]">{demoQuery}</span>
           </p>
-          <div class="flex flex-wrap items-center gap-3 pt-2">
-            <a href="/docs/getting-started/installation">
-              <Button client:load size="lg">Get Started</Button>
-            </a>
-            <a
-              href="/docs/getting-started/installation"
-              class="inline-flex h-11 items-center justify-center rounded-md border border-border px-5 text-sm font-medium text-foreground transition-colors hover:bg-card"
-            >
-              View Docs
-            </a>
-          </div>
-          <p class="text-sm text-muted-foreground">
-            Need just the skills? <a href="/docs/getting-started/installation" class="text-primary hover:underline">Install the skills-only bundle</a>.
+        </section>
+
+        <section
+          class="p-4 font-[family-name:var(--font-cli)] text-[12px] leading-relaxed sm:p-5 sm:text-[13px] lg:p-6 xl:p-8"
+          aria-label="Slash commands"
+        >
+          <p class="mb-3 text-[11px] uppercase tracking-[0.16em] text-[#737373]">Research workflows</p>
+          <p class="mb-4 text-[12px] text-[#737373]">
+            Type in the Bohr REPL. Full list in
+            <a class="text-[#fafafa] underline decoration-[#525252] underline-offset-2 hover:decoration-[#a3a3a3]" href={docsCommands}
+              >slash commands</a
+            >.
           </p>
+          <ul
+            class="max-h-[min(48vh,24rem)] space-y-3 overflow-y-auto overscroll-contain pr-1 text-[#d4d4d4] sm:max-h-[min(52vh,26rem)] md:max-h-[min(58vh,28rem)] lg:max-h-[min(68vh,34rem)] xl:max-h-[min(75vh,40rem)] 2xl:max-h-[min(78vh,44rem)]"
+          >
+            {slashCommands.map((item) => (
+              <li class="border-l border-[#333333] pl-3">
+                <a
+                  href={docsCommands}
+                  class="font-mono text-[#fafafa] hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#737373]"
+                >
+                  {item.cmd}
+                </a>
+                <span class="text-[#737373]"> — </span>
+                <span class="text-[#a3a3a3]">{item.desc}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+
+      <!-- Output + hero -->
+      <div class="grid grid-cols-1 gap-0 md:grid-cols-2 xl:grid-cols-12 xl:items-stretch">
+        <div
+          class="border-b border-[#262626] p-4 font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-[#d4d4d4] sm:p-5 sm:text-[13px] md:border-b-0 md:border-r xl:col-span-7 xl:border-b-0 lg:p-6 xl:p-8"
+        >
+          <p class="mb-3 flex flex-wrap items-baseline gap-2 text-[11px] uppercase tracking-[0.16em] text-[#737373]">
+            <span class="inline-block translate-y-px font-sans text-[#a3a3a3]" aria-hidden="true">↗</span>
+            output stream
+          </p>
+          <p class="mb-2 flex flex-wrap items-baseline gap-2 text-[#e5e5e5]">
+            <span class="font-sans text-[#737373]" aria-hidden="true">↗</span>
+            <span>{demoQuery}</span>
+          </p>
+          <p class="mb-6 text-[12px] text-[#a3a3a3]">
+            Below is an illustrative excerpt: ranked papers and one-line cues—your live run streams tool calls,
+            citations, and file paths in the REPL.
+          </p>
+          <p class="mb-3 flex items-center gap-2 text-[12px] text-[#737373]">
+            <span aria-hidden="true">↗</span> search · top papers
+          </p>
+          <ol class="list-decimal space-y-4 pl-5 marker:text-[#525252]">
+            {demoPapers.map((p, i) => (
+              <li class="pl-1">
+                <span class="text-[#fafafa]">
+                  {i + 1}. {p.title}
+                </span>
+                <span class="text-[#737373]"> ({p.year})</span>
+                <span class="mt-1 block text-[12px] leading-snug text-[#a3a3a3]">{p.note}</span>
+              </li>
+            ))}
+          </ol>
         </div>
+        <div
+          class="flex flex-col justify-center border-[#262626] bg-[#050505] p-3 sm:p-4 md:border-l xl:col-span-5 xl:border-l xl:border-t-0"
+        >
+          <figure class="mx-auto w-full max-w-full">
+            <img
+              src="/hero.png"
+              width={960}
+              height={540}
+              alt="Bohr CLI session preview"
+              class="mx-auto h-auto max-h-[min(42vh,280px)] w-full border border-[#262626] object-contain sm:max-h-[min(48vh,360px)] md:max-h-[55vh] lg:max-h-none lg:max-w-full"
+              loading="eager"
+              decoding="async"
+            />
+            <figcaption class="mt-3 text-center text-[11px] text-[#737373]">
+              Same tool in your terminal — this page is a static preview.
+            </figcaption>
+          </figure>
+        </div>
+      </div>
 
-        <div class="w-full rounded-2xl border border-border bg-card/70 p-4 sm:p-5">
-          <div class="flex w-full max-w-full flex-col">
-            <div class="flex max-w-full self-start overflow-x-auto">
+      <!-- Install -->
+      <div class="border-t border-[#262626] p-4 sm:p-6 lg:p-8">
+        <p class="mb-3 text-[11px] uppercase tracking-[0.16em] text-[#737373]">Install</p>
+        <div class="font-[family-name:var(--font-cli)] text-[13px]">
+          <div class="flex max-w-full flex-col overflow-hidden rounded-sm border border-[#333333] bg-[#050505]">
+            <div class="flex overflow-x-auto border-b border-[#262626]" role="group" aria-label="Install command format">
               {installCommands.map((entry, i) => (
                 <button
+                  type="button"
                   class:list={[
-                    "install-toggle shrink-0 px-4 py-2 text-sm font-medium transition-colors cursor-pointer",
-                    i === 0 ? "rounded-tl-lg" : "",
-                    i === installCommands.length - 1 ? "rounded-tr-lg" : "",
-                    entry.label === installCommands[0].label
-                      ? "bg-muted text-foreground"
-                      : "bg-muted/30 text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                    "install-toggle cli-install-tab shrink-0 px-4 py-2.5 text-left text-[12px] transition-colors cursor-pointer",
                   ]}
                   data-command={entry.command}
-                  aria-label={`Show ${entry.label} install command`}
+                  aria-pressed={i === 0 ? "true" : "false"}
                 >
                   {entry.label}
                 </button>
@@ -175,212 +244,160 @@ const installCommands = [
             </div>
             <button
               id="install-cmd"
-              class="group flex w-full min-w-0 max-w-full items-start justify-between gap-3 rounded-b-lg rounded-tr-lg border border-border bg-background px-4 py-3 text-left font-mono text-xs transition-colors hover:bg-muted/30 cursor-pointer sm:items-center sm:text-sm"
+              type="button"
+              class="group flex w-full min-w-0 items-start justify-between gap-3 px-4 py-3 text-left text-[12px] text-[#d4d4d4] transition-colors hover:bg-[#111111] sm:items-center"
               data-command={installCommands[0].command}
               aria-label="Copy install command"
             >
-              <span id="install-command" class="flex-1 min-w-0 break-all whitespace-normal leading-relaxed sm:overflow-hidden sm:text-ellipsis sm:whitespace-nowrap">{installCommands[0].command}</span>
-              <svg id="install-copy" class="mt-0.5 size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground sm:mt-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              <svg id="install-check" class="mt-0.5 hidden size-4 shrink-0 text-primary sm:mt-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+              <span id="install-command" class="min-w-0 flex-1 break-all leading-relaxed">
+                {installCommands[0].command}
+              </span>
+              <svg
+                id="install-copy"
+                class="mt-0.5 size-4 shrink-0 text-[#737373] group-hover:text-[#fafafa] sm:mt-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <rect x="9" y="9" width="13" height="13" rx="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+              <svg
+                id="install-check"
+                class="mt-0.5 hidden size-4 shrink-0 text-[#a3a3a3] sm:mt-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
             </button>
           </div>
-          <div class="mt-4 grid gap-2 text-sm text-muted-foreground">
-            <p>Private deployment configured for internal teams.</p>
-            <p>Every workflow is designed for evidence-first outputs.</p>
-          </div>
+          <p id="install-feedback" class="mt-2 min-h-[1.25rem] text-[12px] text-[#737373]" aria-live="polite" />
+          <p class="mt-4 text-[12px] text-[#737373]">
+            Prefer a guided setup?
+            <a
+              class="text-[#fafafa] underline decoration-[#525252] underline-offset-2 hover:decoration-[#a3a3a3]"
+              href="/docs/getting-started/installation">Installation docs</a
+            >.
+          </p>
         </div>
       </div>
-    </section>
+    </div>
 
-    <section class="w-full py-16">
-      <div class="flex flex-col items-center gap-8 text-center">
-        <div class="flex flex-col gap-2">
-          <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">What you ask &rarr; what Bohr delivers</h2>
-          <p class="text-muted-foreground">Real-world requests with concrete, source-grounded outputs.</p>
-        </div>
-        <div class="grid w-full max-w-6xl gap-4 text-left md:grid-cols-2">
-          {scenarioExamples.map((example) => (
-            <Card client:load size="sm" className="h-full">
-              <CardHeader client:load className="gap-3">
-                <p class="text-[11px] font-medium uppercase tracking-[0.15em] text-muted-foreground">{example.audience}</p>
-                <CardTitle client:load className="text-base leading-tight">{example.title}</CardTitle>
-                <p class="rounded-md border border-border bg-background px-3 py-2 font-mono text-xs text-primary">
-                  {example.command}
-                </p>
-                <CardDescription client:load className="text-sm leading-relaxed">{example.outcome}</CardDescription>
-              </CardHeader>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="w-full py-16">
-      <div class="flex flex-col items-center gap-8 text-center">
-        <div class="flex flex-col gap-2">
-          <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Research &amp; Review Templates</h2>
-          <p class="text-muted-foreground">Step-by-step command paths users can run one-by-one.</p>
-        </div>
-        <div class="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-2">
-          {templates.map((tpl) => (
-            <Card client:load size="sm">
-              <CardHeader client:load>
-                <CardTitle client:load>{tpl.name}</CardTitle>
-                <CardContent client:load className="p-0">
-                  <div class="mt-3 space-y-2">
-                    {tpl.steps.map((step) => (
-                      <p class="rounded-md border border-border bg-background px-3 py-2 font-mono text-xs text-primary">{step}</p>
-                    ))}
-                  </div>
-                  <p class="mt-3 text-sm text-muted-foreground">{tpl.output}</p>
-                </CardContent>
-              </CardHeader>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="w-full py-16">
-      <div class="flex flex-col items-center gap-8 text-center">
-        <div class="flex flex-col gap-2">
-          <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Workflows</h2>
-          <p class="text-muted-foreground">Slash commands or natural language. Your call.</p>
-        </div>
-        <div class="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-          {workflows.map((wf) => (
-            <Card client:load size="sm">
-              <CardHeader client:load>
-                <CardTitle client:load className="font-mono text-sm text-primary">{wf.command}</CardTitle>
-                <CardDescription client:load>{wf.description}</CardDescription>
-              </CardHeader>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="w-full py-16">
-      <div class="flex flex-col items-center gap-8 text-center">
-        <div class="flex flex-col gap-2">
-          <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Agents</h2>
-          <p class="text-muted-foreground">You ask a question. The right team assembles.</p>
-        </div>
-        <div class="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
-          {agents.map((agent) => (
-            <Card client:load size="sm" className="text-center">
-              <CardHeader client:load className="items-center">
-                <CardTitle client:load>{agent.name}</CardTitle>
-                <CardDescription client:load>{agent.description}</CardDescription>
-              </CardHeader>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="w-full py-16">
-      <div class="flex flex-col items-center gap-8 text-center">
-        <div class="flex flex-col gap-2">
-          <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Skills &amp; Tools</h2>
-          <p class="text-muted-foreground">How Bohr AI searches, remembers, and exports work.</p>
-        </div>
-        <div class="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
-          {sources.map((source) => (
-            <Card client:load size="sm" className="text-center">
-              <CardHeader client:load className="items-center">
-                <CardTitle client:load>
-                  {source.href ? (
-                    <a href={source.href} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
-                      {source.name}
-                    </a>
-                  ) : (
-                    source.name
-                  )}
-                </CardTitle>
-                <CardDescription client:load>{source.description}</CardDescription>
-              </CardHeader>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="w-full py-16">
-      <div class="flex flex-col items-center gap-8 text-center">
-        <div class="flex flex-col gap-2">
-          <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Compute</h2>
-          <p class="text-muted-foreground">Run experiments locally or burst onto managed GPU infrastructure when needed.</p>
-        </div>
-        <div class="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {compute.map((provider) => (
-            <Card client:load size="sm" className="text-center">
-              <CardHeader client:load className="items-center">
-                <CardTitle client:load>
-                  <a href={provider.href} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
-                    {provider.name}
-                  </a>
-                </CardTitle>
-                <CardDescription client:load>{provider.description}</CardDescription>
-              </CardHeader>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="flex flex-col items-center gap-6 py-20 text-center">
-      <p class="text-muted-foreground">
-        Built on <a href="https://github.com/badlogic/pi-mono" class="text-primary hover:underline">Pi</a> and <a href="https://www.alphaxiv.org/" class="text-primary hover:underline">alphaXiv</a>. Capabilities ship as Pi skills and every output stays source-grounded.
-      </p>
-      <div class="flex flex-wrap items-center justify-center gap-3">
-        <a href="/docs/getting-started/installation">
-          <Button client:load size="lg">Get Started</Button>
-        </a>
-      </div>
-    </section>
-
+    <nav
+      class="mt-8 w-full max-w-none border border-[#333333] bg-[#0a0a0a] px-4 py-4 font-[family-name:var(--font-cli)] text-[12px] sm:mt-10 sm:px-6 sm:text-[13px] lg:px-8"
+      aria-label="Learn Bohr"
+    >
+      <p class="mb-3 text-[11px] uppercase tracking-[0.16em] text-[#737373]">Learn the product</p>
+      <ul class="flex flex-col gap-3 text-[#d4d4d4] sm:flex-row sm:flex-wrap sm:gap-x-6 sm:gap-y-2 md:gap-x-8">
+        <li>
+          <a class="text-[#fafafa] underline decoration-[#525252] underline-offset-2 hover:decoration-[#a3a3a3]" href="/explore">Explore</a>
+          <span class="text-[#525252]"> — </span>
+          <span class="text-[#a3a3a3]">map of docs & hubs</span>
+        </li>
+        <li>
+          <a class="text-[#fafafa] underline decoration-[#525252] underline-offset-2 hover:decoration-[#a3a3a3]" href="/agents">Agents</a>
+          <span class="text-[#525252]"> — </span>
+          <span class="text-[#a3a3a3]">who does what</span>
+        </li>
+        <li>
+          <a class="text-[#fafafa] underline decoration-[#525252] underline-offset-2 hover:decoration-[#a3a3a3]" href="/workflows">Workflows</a>
+          <span class="text-[#525252]"> — </span>
+          <span class="text-[#a3a3a3]">slash-command outcomes</span>
+        </li>
+        <li>
+          <a class="text-[#fafafa] underline decoration-[#525252] underline-offset-2 hover:decoration-[#a3a3a3]" href="/how-it-works">Process</a>
+          <span class="text-[#525252]"> — </span>
+          <span class="text-[#a3a3a3]">steps & diagrams</span>
+        </li>
+        <li>
+          <a class="text-[#fafafa] underline decoration-[#525252] underline-offset-2 hover:decoration-[#a3a3a3]" href="/docs">Docs</a>
+          <span class="text-[#525252]"> — </span>
+          <span class="text-[#a3a3a3]">full guides</span>
+        </li>
+      </ul>
+    </nav>
   </div>
 
   <script is:inline>
-    (function () {
+    ;(function () {
       function init() {
         var toggles = Array.from(document.querySelectorAll(".install-toggle"))
         var btn = document.getElementById("install-cmd")
         var text = document.getElementById("install-command")
         var copyIcon = document.getElementById("install-copy")
         var checkIcon = document.getElementById("install-check")
-        if (!btn || !text || !copyIcon || !checkIcon) return
+        var feedback = document.getElementById("install-feedback")
+        if (!btn || !text || !copyIcon || !checkIcon || !feedback) return
+        var feedbackTimeout
 
-        toggles.forEach(function (toggle) {
-          if (toggle._b) return
-          toggle._b = true
-          toggle.addEventListener("click", function () {
-            var cmd = toggle.getAttribute("data-command")
-            if (!cmd) return
-            btn.setAttribute("data-command", cmd)
-            text.textContent = cmd
-            toggles.forEach(function (t) {
-              t.classList.remove("bg-muted", "text-foreground")
-              t.classList.add("bg-muted/30", "text-muted-foreground", "hover:text-foreground", "hover:bg-muted/50")
+        function setFeedback(message) {
+          feedback.textContent = message
+          if (feedbackTimeout) window.clearTimeout(feedbackTimeout)
+          feedbackTimeout = window.setTimeout(function () {
+            feedback.textContent = ""
+          }, 2200)
+        }
+
+        function setCopyIcons(showSuccess) {
+          if (showSuccess) {
+            copyIcon.classList.add("hidden")
+            checkIcon.classList.remove("hidden")
+          } else {
+            copyIcon.classList.remove("hidden")
+            checkIcon.classList.add("hidden")
+          }
+        }
+
+        function copyWithFallback(value) {
+          if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+            return navigator.clipboard.writeText(value).then(function () {
+              return true
+            }).catch(function () {
+              return false
             })
-            toggle.classList.remove("bg-muted/30", "text-muted-foreground", "hover:text-foreground", "hover:bg-muted/50")
-            toggle.classList.add("bg-muted", "text-foreground")
-          })
-        })
+          }
+          return Promise.resolve(false)
+        }
 
-        if (!btn._b) {
-          btn._b = true
+            toggles.forEach(function (toggle) {
+              if (toggle._bohrInstallBound) return
+              toggle._bohrInstallBound = true
+              toggle.addEventListener("click", function () {
+                var cmd = toggle.getAttribute("data-command")
+                if (!cmd) return
+                btn.setAttribute("data-command", cmd)
+                text.textContent = cmd
+                toggles.forEach(function (t) {
+                  t.setAttribute("aria-pressed", "false")
+                })
+                toggle.setAttribute("aria-pressed", "true")
+                setCopyIcons(false)
+                setFeedback("Selected " + (toggle.textContent || "").trim())
+              })
+            })
+
+        if (!btn._bohrInstallBound) {
+          btn._bohrInstallBound = true
           btn.addEventListener("click", function () {
             var cmd = btn.getAttribute("data-command")
             if (!cmd) return
-            navigator.clipboard.writeText(cmd).then(function () {
-              copyIcon.classList.add("hidden")
-              checkIcon.classList.remove("hidden")
-              setTimeout(function () {
-                copyIcon.classList.remove("hidden")
-                checkIcon.classList.add("hidden")
-              }, 2000)
+            copyWithFallback(cmd).then(function (copied) {
+              if (copied) {
+                setCopyIcons(true)
+                setFeedback("Copied to clipboard.")
+                setTimeout(function () {
+                  setCopyIcons(false)
+                }, 2000)
+                return
+              }
+              setCopyIcons(false)
+              setFeedback("Copy failed — select the command and copy manually.")
             })
           })
         }

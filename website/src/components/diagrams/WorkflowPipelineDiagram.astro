@@ -1,0 +1,330 @@
+---
+import {
+  computePipelineLayout,
+  escapeSvgText,
+  type PipelineDiagramInput,
+} from "@/lib/workflow-pipeline-layout"
+
+interface Props {
+  diagram: PipelineDiagramInput
+  instanceId: string
+  /** Descriptive label for a11y (e.g. workflow title) */
+  label: string
+}
+
+const { diagram, instanceId, label } = Astro.props
+const L = computePipelineLayout(diagram, instanceId.replace(/[^a-zA-Z0-9_-]+/g, "-"))
+const stages = diagram.columns.map((c) => c.stage)
+---
+
+<div class="wf-dev-pipeline overflow-x-auto rounded-2xl border shadow-[inset_0_1px_0_rgba(0,0,0,0.05)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]" role="img" aria-label={label}>
+  <div class="wf-dev-pipeline-grid min-w-[min(100%,720px)] bg-[length:12px_12px] p-6 sm:p-8">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox={`0 0 ${L.width} ${L.height}`}
+      class="wf-pipeline-svg h-auto w-full leading-tight"
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <defs>
+        <marker
+          id={L.markerId}
+          markerUnits="strokeWidth"
+          markerWidth="5"
+          markerHeight="5"
+          refX="4"
+          refY="2.5"
+          orient="auto"
+        >
+          <path d="M0,0 L5,2.5 L0,5 z" fill="var(--wf-edge-strong)" />
+        </marker>
+      </defs>
+
+      {
+        stages.map((st, i) => (
+          <text
+            class="wf-svg-stage"
+            x={L.columnCenters[i]!}
+            y="16"
+            fill="var(--wf-stage)"
+            text-anchor="middle"
+          >
+            {st}
+          </text>
+        ))
+      }
+
+      <line
+        x1="24"
+        y1={String(L.dividerY)}
+        x2={String(L.width - 24)}
+        y2={String(L.dividerY)}
+        stroke="var(--wf-divider)"
+        stroke-width="1"
+        stroke-dasharray="4 5"
+        opacity="0.85"
+      />
+
+      {
+        L.meshPaths.map((p) => (
+          <path
+            d={p.d}
+            stroke="var(--wf-edge)"
+            stroke-width="1.05"
+            fill="none"
+            opacity={p.opacity}
+            marker-end={`url(#${L.markerId})`}
+          />
+        ))
+      }
+
+      {
+        L.arrowPath && (
+          <path
+            d={L.arrowPath}
+            stroke="var(--wf-edge-strong)"
+            stroke-width="1.35"
+            fill="none"
+            marker-end={`url(#${L.markerId})`}
+          />
+        )
+      }
+
+      {
+        L.loopPath && (
+          <path
+            d={L.loopPath}
+            stroke="var(--wf-loop)"
+            stroke-width="1.2"
+            fill="none"
+            stroke-dasharray="6 5"
+            opacity="0.95"
+          />
+        )
+      }
+
+      {
+        L.placed.flatMap((col) =>
+          col.map((node) => {
+            const nx = node.x
+            const ny = node.y
+            const nw = node.w
+            const nh = node.h
+            const v = node.variant
+
+            if (v === "outline") {
+              const lines = node.lines.map((t, li) => (
+                <text
+                  class="wf-svg-node"
+                  x={nx + 14}
+                  y={ny + 26 + li * 18}
+                  fill={li === 0 ? "var(--wf-outline-t1)" : "var(--wf-outline-t2)"}
+                >
+                  {escapeSvgText(t)}
+                </text>
+              ))
+              return (
+                <>
+                  <rect
+                    x={nx}
+                    y={ny}
+                    width={nw}
+                    height={nh}
+                    rx="6"
+                    fill="none"
+                    stroke="var(--wf-outline-stroke)"
+                    stroke-width="1.2"
+                    stroke-dasharray="5 4"
+                  />
+                  {lines}
+                </>
+              )
+            }
+
+            if (v === "hero") {
+              const title = escapeSvgText(node.lines[0]!)
+              const sub = node.lines[1]
+              return (
+                <>
+                  <rect
+                    x={nx}
+                    y={ny}
+                    width={nw}
+                    height={nh}
+                    rx="5"
+                    fill="var(--wf-hero-fill)"
+                    stroke="var(--wf-hero-stroke)"
+                    stroke-width="1"
+                  />
+                  <text
+                    class="wf-svg-hero-title"
+                    x={nx + nw / 2}
+                    y={ny + 25}
+                    fill="var(--wf-hero-title)"
+                    text-anchor="middle"
+                  >
+                    {title}
+                  </text>
+                  {sub && (
+                    <text
+                      class="wf-svg-hero-sub"
+                      x={nx + nw / 2}
+                      y={ny + 43}
+                      fill="var(--wf-hero-sub)"
+                      text-anchor="middle"
+                    >
+                      {escapeSvgText(sub)}
+                    </text>
+                  )}
+                </>
+              )
+            }
+
+            const texts = node.lines.map((t, li) => (
+              <text
+                class="wf-svg-node"
+                x={nx + 14}
+                y={ny + 22 + li * 14}
+                fill="var(--wf-node-text)"
+              >
+                {escapeSvgText(t)}
+              </text>
+            ))
+
+            return (
+              <>
+                <rect
+                  x={nx}
+                  y={ny}
+                  width={nw}
+                  height={nh}
+                  rx="4"
+                  fill="var(--wf-node-fill)"
+                  stroke="var(--wf-node-stroke)"
+                  stroke-width="1"
+                />
+                {texts}
+              </>
+            )
+          }),
+        )
+      }
+
+      {
+        L.loopCaption && (
+          <text
+            class="wf-svg-loop"
+            x={L.width / 2}
+            y={L.height - 8}
+            fill="var(--wf-stage)"
+            text-anchor="middle"
+          >
+            {L.loopCaption}
+          </text>
+        )
+      }
+    </svg>
+  </div>
+</div>
+
+<style>
+  /**
+   * Same family as the rest of the site (`--font-sans` → IBM Plex Sans Variable).
+   * Single size scale for every pipeline diagram (process + workflow pages).
+   */
+  .wf-dev-pipeline {
+    --wf-font-stage: 10px;
+    --wf-font-node: 10px;
+    --wf-font-hero-title: 13px;
+    --wf-font-hero-sub: 9px;
+    --wf-font-loop: 9px;
+    background: var(--wf-panel-bg);
+    border-color: var(--wf-panel-border);
+    --wf-panel-bg: oklch(0.99 0 0);
+    --wf-panel-border: oklch(0.88 0 0);
+    --wf-grid-line: rgba(0, 0, 0, 0.06);
+    --wf-stage: oklch(0.42 0 0);
+    --wf-divider: oklch(0.82 0 0);
+    --wf-edge: oklch(0.5 0 0);
+    --wf-edge-strong: oklch(0.38 0 0);
+    --wf-loop: oklch(0.55 0 0);
+    --wf-outline-stroke: oklch(0.55 0 0);
+    --wf-outline-t1: oklch(0.2 0 0);
+    --wf-outline-t2: oklch(0.48 0 0);
+    --wf-node-fill: oklch(1 0 0);
+    --wf-node-stroke: oklch(0.85 0 0);
+    --wf-node-text: oklch(0.22 0 0);
+    --wf-hero-fill: oklch(0.18 0 0);
+    --wf-hero-stroke: oklch(0.18 0 0);
+    --wf-hero-title: oklch(0.99 0 0);
+    --wf-hero-sub: oklch(0.82 0 0);
+  }
+
+  :global(.dark) .wf-dev-pipeline {
+    --wf-panel-bg: #050505;
+    --wf-panel-border: rgba(255, 255, 255, 0.1);
+    --wf-grid-line: rgba(255, 255, 255, 0.045);
+    --wf-stage: #a3a3a3;
+    --wf-divider: #525252;
+    --wf-edge: #9ca3af;
+    --wf-edge-strong: #e5e5e5;
+    --wf-loop: #737373;
+    --wf-outline-stroke: #737373;
+    --wf-outline-t1: #e5e5e5;
+    --wf-outline-t2: #a3a3a3;
+    --wf-node-fill: #141414;
+    --wf-node-stroke: #525252;
+    --wf-node-text: #e5e5e5;
+    --wf-hero-fill: #fafafa;
+    --wf-hero-stroke: #fafafa;
+    --wf-hero-title: #0a0a0a;
+    --wf-hero-sub: #404040;
+  }
+
+  .wf-dev-pipeline-grid {
+    background-image:
+      linear-gradient(var(--wf-grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--wf-grid-line) 1px, transparent 1px);
+  }
+
+  .wf-pipeline-svg {
+    font-family: var(--font-sans, 'IBM Plex Sans Variable', ui-sans-serif, system-ui, sans-serif);
+    font-size: var(--wf-font-node);
+    text-rendering: geometricPrecision;
+  }
+
+  .wf-dev-pipeline svg text {
+    font-family: inherit;
+    user-select: none;
+  }
+
+  .wf-dev-pipeline svg :global(.wf-svg-stage) {
+    font-size: var(--wf-font-stage);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+  }
+
+  .wf-dev-pipeline svg :global(.wf-svg-node) {
+    font-size: var(--wf-font-node);
+    font-weight: 500;
+  }
+
+  .wf-dev-pipeline svg :global(.wf-svg-hero-title) {
+    font-size: var(--wf-font-hero-title);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .wf-dev-pipeline svg :global(.wf-svg-hero-sub) {
+    font-size: var(--wf-font-hero-sub);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    opacity: 0.92;
+  }
+
+  .wf-dev-pipeline svg :global(.wf-svg-loop) {
+    font-size: var(--wf-font-loop);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+  }
+</style>

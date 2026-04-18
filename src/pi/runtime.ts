@@ -7,7 +7,7 @@ import {
 	MERMAID_FALLBACK_PATHS,
 	PANDOC_FALLBACK_PATHS,
 	resolveExecutable,
-} from "../system/executables.js";
+} from "../system/executables";
 
 export type PiRuntimeOptions = {
 	appRoot: string;

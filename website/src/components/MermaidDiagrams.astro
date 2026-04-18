@@ -1,0 +1,113 @@
+---
+/**
+ * Client-rendered Mermaid diagrams (dark theme).
+ * Chart text is embedded as JSON (not define:vars) so multiline workflow diagrams survive the build.
+ */
+interface Diagram {
+  id: string
+  chart: string
+}
+
+interface Props {
+  diagrams: Diagram[]
+}
+
+const { diagrams } = Astro.props
+---
+
+<div class="not-prose wf-mermaid-root space-y-6">
+  {
+    diagrams.map((d) => (
+      <div class="wf-mermaid-block rounded-xl border border-border bg-card px-4 py-6 shadow-sm">
+        <script type="application/json" class="wf-mermaid-payload" set:html={JSON.stringify({ id: d.id, chart: d.chart.trim() })} />
+        <div
+          class="wf-mermaid-viz overflow-x-auto text-center [&_svg]:mx-auto [&_svg]:max-w-none"
+          data-mermaid-id={d.id}
+          aria-busy="true"
+        >
+          <p class="text-sm text-muted-foreground">Loading diagram…</p>
+        </div>
+      </div>
+    ))
+  }
+</div>
+
+<script>
+  import mermaid from "mermaid"
+
+  /** Shared promise so concurrent callers (initial run + astro:after-swap) never double-initialize Mermaid. */
+  let initPromise: Promise<void> | null = null
+
+  function ensureMermaid(): Promise<void> {
+    if (!initPromise) {
+      initPromise = (async () => {
+        await mermaid.initialize({
+          startOnLoad: false,
+          theme: "dark",
+          securityLevel: "loose",
+          fontFamily: "ui-monospace, JetBrains Mono, monospace",
+          themeVariables: {
+            darkMode: true,
+            background: "#141414",
+            primaryColor: "#262626",
+            primaryTextColor: "#fafafa",
+            lineColor: "#737373",
+            secondaryColor: "#1a1a1a",
+            tertiaryColor: "#0a0a0a",
+          },
+        })
+      })()
+    }
+    return initPromise!
+  }
+
+  async function renderDiagrams() {
+    try {
+      await ensureMermaid()
+    } catch (err) {
+      document.querySelectorAll(".wf-mermaid-root .wf-mermaid-viz").forEach((vizEl) => {
+        vizEl.innerHTML =
+          `<p class="text-sm text-muted-foreground px-2 text-left">Could not load diagram renderer.</p><!-- ${String(err)} -->`
+      })
+      return
+    }
+
+    const blocks = document.querySelectorAll(".wf-mermaid-root .wf-mermaid-block")
+    for (const block of blocks) {
+      const payloadEl = block.querySelector(".wf-mermaid-payload")
+      const vizEl = block.querySelector(".wf-mermaid-viz")
+      if (!payloadEl || !vizEl) continue
+
+      let id = ""
+      let chart = ""
+      try {
+        const raw = payloadEl.textContent || "{}"
+        const parsed = JSON.parse(raw) as { id: string; chart: string }
+        id = parsed.id
+        chart = parsed.chart
+      } catch {
+        vizEl.innerHTML =
+          '<p class="text-sm text-red-400 px-2 text-left">Could not read diagram data.</p>'
+        continue
+      }
+
+      if (!chart) {
+        vizEl.innerHTML = '<p class="text-sm text-muted-foreground px-2 text-left">Empty diagram.</p>'
+        continue
+      }
+
+      const rid = `mm-${id.replace(/[^a-zA-Z0-9_-]/g, "_")}-${Math.random().toString(36).slice(2, 9)}`
+      try {
+        const { svg } = await mermaid.render(rid, chart)
+        vizEl.innerHTML = svg
+        vizEl.setAttribute("aria-busy", "false")
+      } catch (err) {
+        vizEl.innerHTML =
+          `<p class="text-sm text-muted-foreground px-2 text-left">Could not render diagram. Check Mermaid syntax.</p><!-- ${String(err)} -->`
+      }
+    }
+  }
+
+  void renderDiagrams()
+  document.addEventListener("astro:after-swap", () => void renderDiagrams())
+</script>

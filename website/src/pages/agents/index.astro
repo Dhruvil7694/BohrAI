@@ -1,0 +1,114 @@
+---
+import { getCollection } from "astro:content"
+import Layout from "@/layouts/main.astro"
+import { getAgentTags } from "@/data/agent-card-meta"
+
+const entries = await getCollection("docs", ({ data }) => data.section === "Agents")
+entries.sort((a, b) => a.data.order - b.data.order)
+---
+
+<Layout title="Agents — Bohr AI" description="Bundled research agents: roles, inputs, and when they run." active="explore">
+  <div class="w-full pb-20 pt-10">
+    <header class="page-gutter-x mb-10 w-full">
+      <p class="hub-kicker mb-2">Reference</p>
+      <h1 class="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Agents</h1>
+      <p class="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
+        Each entry is a specialized Pi subagent. Workflows dispatch them in sequence—you rarely call them by name. Open a card for inputs, outputs, and where the agent runs.
+      </p>
+    </header>
+
+    <div class="page-gutter-x mb-8 w-full">
+      <label class="sr-only" for="agent-filter">Filter agents</label>
+      <input
+        id="agent-filter"
+        class="hub-search w-full"
+        type="search"
+        placeholder="Filter by name, role, or tag…"
+        autocomplete="off"
+      />
+    </div>
+
+    <ul
+      class="page-gutter-x grid w-full grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"
+      id="agent-grid"
+    >
+      {
+        entries.map((e) => {
+          const tags = getAgentTags(e.slug)
+          const searchBlob = `${e.data.title} ${e.data.description} ${tags.join(" ")}`.toLowerCase()
+          return (
+            <li class="min-w-0" data-hub-card data-search={searchBlob}>
+              <a
+                href={`/docs/${e.slug}`}
+                class="agent-card-pro group flex h-full min-h-[280px] w-full flex-col rounded-lg border border-neutral-200 bg-white p-3 text-left shadow-[0_2px_16px_rgba(15,23,42,0.06)] transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(15,23,42,0.1)] dark:border-white/[0.09] dark:bg-[#060606] dark:shadow-none dark:hover:shadow-[0_10px_36px_rgba(0,0,0,0.55)] sm:min-h-[300px]"
+              >
+                {/* Single dark-grey inset panel for every card */}
+                <div class="flex min-h-[11rem] flex-1 flex-col rounded-md bg-black px-6 pb-7 pt-8 sm:min-h-[12.5rem] sm:px-7 sm:pb-8 sm:pt-9 dark:bg-black">
+                  <h2 class="text-xl font-bold uppercase tracking-wide leading-snug text-white sm:text-2xl">{e.data.title}</h2>
+                  <p class="mt-3 line-clamp-4 text-sm leading-relaxed text-neutral-200 sm:text-[15px]">
+                    {e.data.description}
+                  </p>
+                  <div class="mt-auto flex flex-wrap gap-2 pt-6">
+                    {tags.map((tag) => (
+                      <span class="inline-flex max-w-full items-center truncate rounded-full bg-black px-3 py-1 text-[11px] font-medium leading-none text-white sm:text-xs">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div class="mt-3 flex shrink-0 items-center justify-between gap-3 px-1 pb-1 pt-2">
+                  <span class="text-sm font-bold text-neutral-950 dark:text-neutral-100">
+                    Explore {e.data.title}
+                  </span>
+                  <svg
+                    class="size-5 shrink-0 text-neutral-950 transition-transform duration-200 group-hover:translate-x-0.5 dark:text-neutral-100"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M5 12h14" />
+                    <path d="m12 5 7 7-7 7" />
+                  </svg>
+                </div>
+              </a>
+            </li>
+          )
+        })
+      }
+    </ul>
+  </div>
+
+  <script is:inline>
+    ;(function () {
+      function bind() {
+        var input = document.getElementById("agent-filter")
+        if (!input) return
+        function run() {
+          var q = (input.value || "").toLowerCase().trim()
+          document.querySelectorAll("#agent-grid [data-hub-card]").forEach(function (el) {
+            var s = (el.getAttribute("data-search") || "").toLowerCase()
+            el.style.display = !q || s.indexOf(q) !== -1 ? "" : "none"
+          })
+        }
+        input.removeEventListener("input", input._run || run)
+        input._run = run
+        input.addEventListener("input", run)
+      }
+      bind()
+      document.addEventListener("astro:after-swap", bind)
+    })()
+  </script>
+</Layout>
+
+<style>
+  .agent-card-pro:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+</style>

@@ -6,8 +6,8 @@
 import { spawn } from 'child_process';
 import { resolve } from 'path';
 import { writeFileSync, readFileSync, existsSync } from 'fs';
-import { buildPiArgs, buildPiEnv, resolvePiPaths, type PiRuntimeOptions } from '../pi/runtime';
-import { getBohrAgentDir } from '../config/paths';
+import { buildPiArgs, buildPiEnv, resolvePiPaths, type PiRuntimeOptions } from '../pi/runtime.js';
+import { getBohrAgentDir } from '../config/paths.js';
 
 export interface SubagentExecutionOptions {
   agent: string;

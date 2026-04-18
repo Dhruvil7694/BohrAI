@@ -2,8 +2,8 @@ import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { constants } from "node:os";
 
-import { buildPiArgs, buildPiEnv, type PiRuntimeOptions, resolvePiPaths, toNodeImportSpecifier } from "./runtime";
-import { ensureSupportedNodeVersion } from "../system/node-version";
+import { buildPiArgs, buildPiEnv, type PiRuntimeOptions, resolvePiPaths, toNodeImportSpecifier } from "./runtime.js";
+import { ensureSupportedNodeVersion } from "../system/node-version.js";
 
 export function exitCodeFromSignal(signal: NodeJS.Signals): number {
 	const signalNumber = constants.signals[signal];

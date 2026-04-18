@@ -3,8 +3,8 @@ import { dirname } from "node:path";
 
 import { ModelRegistry, type PackageSource } from "@mariozechner/pi-coding-agent";
 
-import { CORE_PACKAGE_SOURCES, shouldPruneLegacyDefaultPackages } from "./package-presets";
-import { createModelRegistry } from "../model/registry";
+import { CORE_PACKAGE_SOURCES, shouldPruneLegacyDefaultPackages } from "./package-presets.js";
+import { createModelRegistry } from "../model/registry.js";
 
 export type ThinkingLevel = "off" | "minimal" | "low" | "medium" | "high" | "xhigh";
 
@@ -117,7 +117,7 @@ export function normalizeBohrSettings(
 	}
 
 	const modelRegistry = createModelRegistry(authPath);
-	const availableModels = modelRegistry.getAvailable().map((model) => ({
+	const availableModels = modelRegistry.getAvailable().map((model: { provider: string; id: string }) => ({
 		provider: model.provider,
 		id: model.id,
 	}));

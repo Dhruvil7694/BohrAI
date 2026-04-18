@@ -2,8 +2,8 @@
  * API endpoints for paper generation UI
  */
 
-import { PaperOrchestrator, PaperGenerationConfig, OrchestrationState } from './orchestrator';
-import { exportToWord, exportToPDF } from './exporters';
+import { PaperOrchestrator, PaperGenerationConfig, OrchestrationState } from './orchestrator.js';
+import { exportToWord, exportToPDF } from './exporters.js';
 
 export interface APIResponse<T = any> {
   success: boolean;
@@ -112,10 +112,10 @@ export async function startGeneration(
     }
     
     // Start execution in background
-    orchestrator.execute((state) => {
+    orchestrator.execute((state: OrchestrationState) => {
       // Progress callback - could emit WebSocket events here
-      console.log(`Progress: ${state.phase} - ${state.tasks.filter(t => t.status === 'complete').length}/${state.tasks.length} tasks`);
-    }).catch(error => {
+      console.log(`Progress: ${state.phase} - ${state.tasks.filter((t: { status: string }) => t.status === 'complete').length}/${state.tasks.length} tasks`);
+    }).catch((error: unknown) => {
       console.error('Execution error:', error);
     });
     

@@ -47,12 +47,12 @@ const modules = entries.filter((e) => e.data.category === "module")
       <p class="mb-6 max-w-2xl font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-neutral-600 dark:text-neutral-400">
         Full research flows - literature, paper, audit, replication, and more.
       </p>
-      <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4" id="workflow-grid-pipelines">
+      <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4" id="workflow-grid-pipelines" data-gsap-reveal>
         {
           pipelines.map((e) => {
             const blob = `${e.data.title} ${e.data.summary} ${e.data.slashCommand} ${e.data.cliName} pipeline`.toLowerCase()
             return (
-              <li data-wf-card data-search={blob}>
+              <li data-wf-card data-search={blob} data-gsap-stagger-item>
                 <WorkflowCard
                   title={e.data.title}
                   summary={e.data.summary}
@@ -73,12 +73,12 @@ const modules = entries.filter((e) => e.data.category === "module")
       <p class="mb-6 max-w-2xl font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-neutral-600 dark:text-neutral-400">
         Focused stages you can compose - hypothesis, graphs, citation checks, iteration, and more.
       </p>
-      <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4" id="workflow-grid-modules">
+      <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4" id="workflow-grid-modules" data-gsap-reveal>
         {
           modules.map((e) => {
             const blob = `${e.data.title} ${e.data.summary} ${e.data.slashCommand} ${e.data.cliName} module`.toLowerCase()
             return (
-              <li data-wf-card data-search={blob}>
+              <li data-wf-card data-search={blob} data-gsap-stagger-item>
                 <WorkflowCard
                   title={e.data.title}
                   summary={e.data.summary}

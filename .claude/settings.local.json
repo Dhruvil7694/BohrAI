@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E \"\\\\.\\(ts|tsx|js|astro\\)$\")",
+      "Bash(npm install *)",
+      "Bash(npx astro *)",
+      "Bash(gh run *)",
+      "Bash(xargs python3 -c ' *)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(netstat -ano)",
+      "Bash(tasklist /FI \"PID eq 51504\" /NH)",
+      "Bash(tasklist /FI \"PID eq 59708\" /NH)",
+      "Bash(wmic process *)",
+      "Bash(curl -s \"http://localhost:4322/\")",
+      "Bash(curl -s \"http://localhost:4326/\")"
+    ]
+  }
+}

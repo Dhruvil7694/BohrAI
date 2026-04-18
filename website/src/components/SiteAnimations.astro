@@ -1,0 +1,97 @@
+---
+// Global animation controller — imported once in main.astro.
+// Homepage (.cli-home-root) manages its own GSAP animations; this handles all inner pages.
+---
+
+<script>
+  import gsap from "gsap"
+  import { ScrollTrigger } from "gsap/ScrollTrigger"
+
+  gsap.registerPlugin(ScrollTrigger)
+
+  let isFirstLoad = true
+
+  function run() {
+    ScrollTrigger.getAll().forEach((t) => t.kill())
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    const isHome = !!document.querySelector(".cli-home-root")
+    const wasFirst = isFirstLoad
+    if (isFirstLoad) isFirstLoad = false
+
+    // ── Navbar entrance (first load only, all pages) ───────────────────────
+    if (wasFirst && !reduced) {
+      const nav = document.querySelector<HTMLElement>("nav")
+      if (nav) {
+        gsap.fromTo(nav, { y: -72, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.6, ease: "power3.out" })
+      }
+    }
+
+    // Homepage animates itself — skip the rest for home
+    if (isHome) return
+
+    // ── Inner-page entrance ────────────────────────────────────────────────
+    const header = document.querySelector<HTMLElement>("main header, article header")
+    if (header) {
+      const dur = reduced ? 0 : 0.7
+      const delay = wasFirst ? (reduced ? 0 : 0.2) : 0
+      const kicker = header.querySelector<HTMLElement>(".hub-kicker, p:first-child")
+      const heading = header.querySelector<HTMLElement>("h1")
+      const sub = header.querySelector<HTMLElement>("p:not(.hub-kicker) + p, p:last-child, p.mt-5, p.mt-3")
+
+      if (kicker) gsap.fromTo(kicker, { autoAlpha: 0, y: reduced ? 0 : 14 }, { autoAlpha: 1, y: 0, duration: dur || 0.01, delay, ease: "power2.out" })
+      if (heading) gsap.fromTo(heading, { autoAlpha: 0, y: reduced ? 0 : 32 }, { autoAlpha: 1, y: 0, duration: dur || 0.01, delay: delay + (reduced ? 0 : 0.1), ease: "power3.out" })
+      if (sub && sub !== kicker) gsap.fromTo(sub, { autoAlpha: 0, y: reduced ? 0 : 18 }, { autoAlpha: 1, y: 0, duration: dur || 0.01, delay: delay + (reduced ? 0 : 0.2), ease: "power2.out" })
+    }
+
+    if (reduced) return
+
+    // ── Scroll reveals — [data-gsap-reveal] sections ─────────────────────
+    const revealTargets = gsap.utils.toArray<HTMLElement>("[data-gsap-reveal]")
+
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return
+          revealObserver.unobserve(entry.target)
+
+          const target = entry.target as HTMLElement
+          const staggerItems = target.querySelectorAll<HTMLElement>("[data-gsap-stagger-item]")
+
+          if (staggerItems.length > 0) {
+            gsap.fromTo(
+              staggerItems,
+              { autoAlpha: 0, y: 28 },
+              {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.75,
+                ease: "power3.out",
+                stagger: 0.07,
+                clearProps: "opacity,visibility,transform",
+              },
+            )
+          } else {
+            gsap.fromTo(
+              target,
+              { autoAlpha: 0, y: 32 },
+              {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.85,
+                ease: "power3.out",
+                clearProps: "opacity,visibility,transform",
+              },
+            )
+          }
+        })
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+    )
+
+    revealTargets.forEach((t) => revealObserver.observe(t))
+  }
+
+  run()
+  document.addEventListener("astro:after-swap", run)
+</script>

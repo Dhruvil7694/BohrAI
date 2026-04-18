@@ -58,10 +58,10 @@ const tiles = [
       </p>
     </header>
 
-    <ul class="grid gap-4 sm:grid-cols-2">
+    <ul class="grid gap-4 sm:grid-cols-2" data-gsap-reveal>
       {
         tiles.map((t) => (
-          <li>
+          <li data-gsap-stagger-item>
             <a href={t.href} class="hub-card group h-full no-underline">
               <span class="font-['Cormorant_Garamond',Georgia,'Times_New_Roman',serif] text-xl font-normal italic leading-snug text-[var(--bohr-shell-fg)] transition-colors group-hover:text-[var(--bohr-shell-accent-serif)]">
                 {t.title}

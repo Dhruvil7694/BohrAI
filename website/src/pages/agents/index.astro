@@ -35,13 +35,14 @@ entries.sort((a, b) => a.data.order - b.data.order)
     <ul
       class="page-gutter-x grid w-full grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"
       id="agent-grid"
+      data-gsap-reveal
     >
       {
         entries.map((e) => {
           const tags = getAgentTags(e.slug)
           const searchBlob = `${e.data.title} ${e.data.description} ${tags.join(" ")}`.toLowerCase()
           return (
-            <li class="min-w-0" data-hub-card data-search={searchBlob}>
+            <li class="min-w-0" data-hub-card data-search={searchBlob} data-gsap-stagger-item>
               <a
                 href={`/docs/${e.slug}`}
                 class="agent-card-pro group relative flex h-full min-h-[260px] w-full flex-col overflow-hidden rounded-2xl border border-border/45 bg-gradient-to-b from-card/95 via-card/80 to-muted/15 p-5 text-left font-sans shadow-[0_12px_40px_-16px_rgba(0,0,0,0.65)] ring-1 ring-border/30 transition-[border-color,box-shadow,transform] duration-200 ease-out hover:-translate-y-1 hover:border-primary/35 hover:shadow-[0_20px_44px_-22px_rgba(0,0,0,0.72)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:min-h-[272px] sm:p-6"

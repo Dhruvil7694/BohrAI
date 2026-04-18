@@ -1,340 +1,1347 @@
----
+﻿---
 import Layout from "@/layouts/main.astro"
 import { BOHR_SEMVER } from "@/data/bohr-root-version"
+import { BOHR_GITHUB_REPO_URL, BOHR_INSTALL_SH_URL } from "@/data/site-urls"
 
-const docsCommands = "/docs/reference/slash-commands"
+const installCommands = [
+  { label: "curl", command: `curl -fsSL ${BOHR_INSTALL_SH_URL} | bash` },
+  { label: "brew", command: "brew tap bohr-ai/tap && brew install bohr" },
+  { label: "pipx", command: "pipx install bohr-ai" },
+] as const
 
-const slashCommands = [
+const pillars = [
   {
-    cmd: "/audit",
-    desc: "Compare a paper's claims against its codebase for reproducibility.",
+    roman: "I.",
+    title: "Multi-agent, by design",
+    body:
+      "Researcher, reviewer, verifier, writer, contradiction - 20+ specialised subagents coordinated by an orchestrator.",
   },
   {
-    cmd: "/autoresearch",
-    desc: "Automated experiment loop: analyze, measure, hypothesize, test.",
+    roman: "II.",
+    title: "Cited & verified",
+    body:
+      "Every claim is anchored to a source; a verifier agent cross-checks citations against their text before delivery.",
   },
   {
-    cmd: "/compare",
-    desc: "Agreement / disagreement matrix across sources on a topic.",
+    roman: "III.",
+    title: "CLI-first",
+    body:
+      "Nothing depends on a proprietary dashboard. Artifacts land as markdown in your repo, versionable with git.",
   },
+  {
+    roman: "IV.",
+    title: "Adversarial loop",
+    body:
+      "Findings are stress-tested by a contradiction agent and a reasoning validator until convergence criteria are met.",
+  },
+] as const
+
+/** Homepage workflow strip - maps to `/workflows/[slug]` pages. */
+const workflowsShowcase = [
   {
     cmd: "/deepresearch",
-    desc: "Durable research brief with inline citations and provenance.",
+    index: "01",
+    slug: "deep-research",
+    desc: "Durable research brief with inline citations, provenance, and verification.",
   },
   {
-    cmd: "/draft",
-    desc: "Turn findings into a structured, multi-step manuscript draft.",
+    cmd: "/lit-review",
+    index: "02",
+    slug: "lit-review",
+    desc: "End-to-end literature survey with themes, contradictions, gaps and validation.",
   },
   {
-    cmd: "/lit",
-    desc: "Literature review with search, synthesis, and gap mapping.",
-  },
-  {
-    cmd: "/replicate",
-    desc: "Replication plan or workflow for a paper, claim, or benchmark.",
+    cmd: "/paper",
+    index: "03",
+    slug: "paper",
+    desc: "Publication-grade manuscript with method, figures, citation & compliance passes.",
   },
   {
     cmd: "/review",
-    desc: "Simulated peer review with severity and revision guidance.",
+    index: "04",
+    slug: "review",
+    desc: "Simulated peer review with severity-graded feedback and revision guidance.",
+  },
+  {
+    cmd: "/audit",
+    index: "05",
+    slug: "audit",
+    desc: "Compare a paper's claims against its public codebase for reproducibility.",
+  },
+  {
+    cmd: "/replicate",
+    index: "06",
+    slug: "replication",
+    desc: "Replication plan or workflow for a paper, claim, or benchmark.",
+  },
+  {
+    cmd: "/compare",
+    index: "07",
+    slug: "compare",
+    desc: "Agreement / disagreement matrix across sources on a topic.",
+  },
+  {
+    cmd: "/autoresearch",
+    index: "08",
+    slug: "autoresearch",
+    desc: "Autonomous experiment loop that iteratively optimizes toward a stated goal.",
+  },
+  {
+    cmd: "/draft",
+    index: "09",
+    slug: "draft",
+    desc: "Turn findings into a structured, multi-step manuscript draft.",
   },
   {
     cmd: "/watch",
+    index: "10",
+    slug: "watch",
     desc: "Recurring monitoring on a topic or literature area.",
   },
+] as const
+
+const terminalSamples = [
   {
-    cmd: "/plan-research",
-    desc: "Orchestration plan: agents, checkpoints, and stop criteria.",
+    id: "transformers",
+    label: "Transformers",
+    workspace: "~/research/transformers",
+    pid: "18332",
+    model: "CLAUDE-OPUS-4",
+    tools: "25 TOOLS",
+    prompt: "/deepresearch optimization techniques for transformer architectures",
+    keywords: ["transformer", "attention", "optimization", "architecture"],
+    lines: [
+      { kind: "status", label: "PLAN", text: "research-planner scoped 7 stages | 4 researchers | stop@conf>0.85" },
+      { kind: "status", label: "FAN-OUT", text: "AlphaXiv, web, and code search dispatched in parallel" },
+      { kind: "status", label: "CHECK", text: "contradiction agent found 2 efficiency tradeoff disputes" },
+      { kind: "status", label: "VERIFY", text: "verifier anchored 87/87 citations before final promotion" },
+      { kind: "artifact", text: "outputs/transformer-optimization.md | 4,281 words | 87 citations" },
+      { kind: "artifact", text: "outputs/transformer-optimization.provenance.md" },
+    ],
+  },
+  {
+    id: "lit-review",
+    label: "Literature review",
+    workspace: "~/research/scaling-laws",
+    pid: "18407",
+    model: "CLAUDE-OPUS-4",
+    tools: "25 TOOLS",
+    prompt: "/lit-review post-chinchilla scaling laws and inference-time compute",
+    keywords: ["literature", "lit-review", "scaling", "chinchilla", "inference"],
+    lines: [
+      { kind: "status", label: "COLLECT", text: "collector gathered 42 candidate papers across 2022-2026" },
+      { kind: "status", label: "SYNTH", text: "synthesizer grouped findings into training, data, and test-time axes" },
+      { kind: "status", label: "GAP", text: "gap pass flagged sparse public evidence for inference-time scaling laws" },
+      { kind: "status", label: "REVIEW", text: "reviewer requested tighter wording around heterogeneous benchmarks" },
+      { kind: "artifact", text: "outputs/scaling-laws.md | qualitative meta-analysis" },
+      { kind: "artifact", text: "notes/scaling-laws-verification.md" },
+    ],
+  },
+  {
+    id: "audit",
+    label: "Code audit",
+    workspace: "~/research/repro-audit",
+    pid: "18591",
+    model: "CLAUDE-OPUS-4",
+    tools: "25 TOOLS",
+    prompt: "/audit does the released repo support the paper's reproducibility claims?",
+    keywords: ["audit", "reproducibility", "repo", "codebase", "claims"],
+    lines: [
+      { kind: "status", label: "MAP", text: "repo mapper aligned paper claims to scripts, configs, and checkpoints" },
+      { kind: "status", label: "EXEC", text: "experiment pass verified 3/5 benchmark scripts are runnable as documented" },
+      { kind: "status", label: "RISK", text: "missing seed control and hidden preprocessing steps marked as MAJOR" },
+      { kind: "status", label: "WRITE", text: "audit brief drafted with severity-graded evidence table" },
+      { kind: "artifact", text: "outputs/repro-audit.md | claim/code agreement matrix" },
+      { kind: "artifact", text: "outputs/repro-audit.provenance.md" },
+    ],
   },
 ] as const
 
-const installCommands = [
-  { label: "curl", command: "curl -fsSL https://bohr-ai.internal/install | bash" },
-] as const
-
-const demoQuery =
-  "What are the most effective optimization techniques for transformer architectures?"
-
-const demoPapers = [
-  {
-    title: "Adafactor",
-    year: "2019",
-    note: "Adaptive learning rates with factorized second-moment estimates; popular for memory-efficient large-model training.",
-  },
-  {
-    title: "Attention Is All You Need",
-    year: "2017",
-    note: "Foundational transformer architecture; baseline for most efficiency work on sequence models.",
-  },
-  {
-    title: "LongNet",
-    year: "2023",
-    note: "Dilated attention scaling toward very long contexts; representative of recent linear-attention trends.",
-  },
-] as const
+const defaultTerminalSample = terminalSamples[0]
 ---
 
 <Layout
-  title="Bohr — CLI research shell"
+  title="Bohr - CLI research shell"
   description="Run slash-command research workflows in a terminal-native Pi agent: literature, synthesis, validation."
   active="home"
   shell="cli"
 >
-  <div class="cli-home-root page-gutter-x w-full min-w-0 flex-1 pb-12 pt-2 sm:pb-16 sm:pt-4">
-    <div
-      class="w-full max-w-none border border-[#333333] bg-[#0a0a0a] shadow-[0_0_0_1px_rgba(255,255,255,0.03)]"
-    >
-      <!-- Title bar -->
-      <div
-        class="flex items-center justify-center border-b border-[#262626] px-3 py-2.5 text-center text-[10px] uppercase tracking-[0.18em] text-[#737373] sm:px-4 sm:text-[11px]"
+  <div
+    class="cli-home-root page-gutter-x mx-auto flex w-full max-w-5xl min-w-0 flex-1 flex-col gap-4 pb-12 pt-2 sm:gap-5 sm:pb-16 sm:pt-4"
+  >
+      <!-- Hero - editorial / laboratory masthead -->
+      <section
+        data-gsap-hero
+        class="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] flex min-h-[calc(100svh-5.25rem)] w-screen flex-col bg-[var(--bohr-shell-bg)] text-center"
+        aria-label="Bohr hero"
       >
-        bohr — local session
-      </div>
-
-      <!-- Brand -->
-      <div class="border-b border-[#262626] px-4 py-8 text-center sm:px-8 sm:py-12 md:px-12 md:py-14">
-        <p class="font-['VT323'] text-[clamp(2.75rem,10vw+1rem,8rem)] leading-none tracking-tight text-[#fafafa]">
-          bohr
-        </p>
-        <p class="mt-3 font-[family-name:var(--font-cli)] text-sm text-[#737373]">v{BOHR_SEMVER}</p>
-      </div>
-
-      <!-- Status + commands -->
-      <div class="grid gap-0 border-b border-[#262626] md:grid-cols-2">
-        <section
-          class="border-b border-[#262626] p-4 font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-[#d4d4d4] sm:p-5 sm:text-[13px] md:border-b-0 md:border-r lg:p-6 xl:p-8"
-          aria-label="Session status"
+        <div
+          data-gsap-hero-shell
+          class="relative flex w-full max-w-none flex-1 flex-col px-4 pb-10 pt-10 sm:px-5 sm:pb-14 sm:pt-12 md:px-6 md:pb-16 lg:px-8 xl:px-10"
         >
-          <p class="mb-3 text-[11px] uppercase tracking-[0.16em] text-[#737373]">System status</p>
-          <dl class="space-y-2.5">
-            <div class="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
-              <dt class="shrink-0 text-[#737373]">model</dt>
-              <dd class="min-w-0 break-all text-[#e5e5e5]">anthropic/claude-opus-4-20250514</dd>
-            </div>
-            <div class="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
-              <dt class="shrink-0 text-[#737373]">session</dt>
-              <dd class="min-w-0 break-all font-mono text-[12px] text-[#a3a3a3]">
-                a8f3c21e-4b90-7d14 · active
-              </dd>
-            </div>
-            <div class="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
-              <dt class="shrink-0 text-[#737373]">host</dt>
-              <dd class="text-[#a3a3a3]">your machine · docker optional</dd>
-            </div>
-            <div class="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
-              <dt class="shrink-0 text-[#737373]">inventory</dt>
-              <dd class="text-[#a3a3a3]">25+ tools · default agents</dd>
-            </div>
-            <div class="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
-              <dt class="shrink-0 text-[#737373]">agents</dt>
-              <dd class="text-[#e5e5e5]">researcher, reviewer, verifier, writer, …</dd>
-            </div>
-            <div class="flex flex-col gap-1 border-t border-[#1f1f1f] pt-3">
-              <dt class="text-[#737373]">last activity</dt>
-              <dd class="text-[12px] text-[#a3a3a3]">
-                bohr[1 query] &quot;data efficiency transformer architecture optimiz…&quot;
-              </dd>
-            </div>
-          </dl>
-          <p class="mt-6 border border-[#333333] bg-[#050505] px-3 py-2 text-[12px] text-[#d4d4d4]">
-            <span class="select-none text-[#737373]">&gt;</span>
-            <span class="text-[#fafafa]">{demoQuery}</span>
-          </p>
-        </section>
-
-        <section
-          class="p-4 font-[family-name:var(--font-cli)] text-[12px] leading-relaxed sm:p-5 sm:text-[13px] lg:p-6 xl:p-8"
-          aria-label="Slash commands"
-        >
-          <p class="mb-3 text-[11px] uppercase tracking-[0.16em] text-[#737373]">Research workflows</p>
-          <p class="mb-4 text-[12px] text-[#737373]">
-            Type in the Bohr REPL. Full list in
-            <a class="text-[#fafafa] underline decoration-[#525252] underline-offset-2 hover:decoration-[#a3a3a3]" href={docsCommands}
-              >slash commands</a
-            >.
-          </p>
-          <ul
-            class="max-h-[min(48vh,24rem)] space-y-3 overflow-y-auto overscroll-contain pr-1 text-[#d4d4d4] sm:max-h-[min(52vh,26rem)] md:max-h-[min(58vh,28rem)] lg:max-h-[min(68vh,34rem)] xl:max-h-[min(75vh,40rem)] 2xl:max-h-[min(78vh,44rem)]"
+          <div
+            data-gsap-hero-top
+            class="mb-10 grid grid-cols-1 gap-3 text-[10px] uppercase tracking-[0.24em] sm:mb-14 sm:grid-cols-3 sm:items-center sm:gap-6 sm:text-[11px]"
           >
-            {slashCommands.map((item) => (
-              <li class="border-l border-[#333333] pl-3">
-                <a
-                  href={docsCommands}
-                  class="font-mono text-[#fafafa] hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#737373]"
-                >
-                  {item.cmd}
-                </a>
-                <span class="text-[#737373]"> — </span>
-                <span class="text-[#a3a3a3]">{item.desc}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </div>
+            <span class="font-[family-name:var(--font-cli)] text-[var(--bohr-shell-fg)] sm:text-left">00 | INDEX</span>
+            <span class="font-[family-name:var(--font-cli)] text-neutral-600 sm:text-center dark:text-[#a3a3a3]"
+              >- BOHR RESEARCH LABORATORY | LOCAL SESSION -</span
+            >
+            <span class="font-[family-name:var(--font-cli)] text-[var(--bohr-shell-fg)] sm:text-right">PUBLISHED MMXXVI</span>
+          </div>
 
-      <!-- Output + hero -->
-      <div class="grid grid-cols-1 gap-0 md:grid-cols-2 xl:grid-cols-12 xl:items-stretch">
-        <div
-          class="border-b border-[#262626] p-4 font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-[#d4d4d4] sm:p-5 sm:text-[13px] md:border-b-0 md:border-r xl:col-span-7 xl:border-b-0 lg:p-6 xl:p-8"
-        >
-          <p class="mb-3 flex flex-wrap items-baseline gap-2 text-[11px] uppercase tracking-[0.16em] text-[#737373]">
-            <span class="inline-block translate-y-px font-sans text-[#a3a3a3]" aria-hidden="true">↗</span>
-            output stream
-          </p>
-          <p class="mb-2 flex flex-wrap items-baseline gap-2 text-[#e5e5e5]">
-            <span class="font-sans text-[#737373]" aria-hidden="true">↗</span>
-            <span>{demoQuery}</span>
-          </p>
-          <p class="mb-6 text-[12px] text-[#a3a3a3]">
-            Below is an illustrative excerpt: ranked papers and one-line cues—your live run streams tool calls,
-            citations, and file paths in the REPL.
-          </p>
-          <p class="mb-3 flex items-center gap-2 text-[12px] text-[#737373]">
-            <span aria-hidden="true">↗</span> search · top papers
-          </p>
-          <ol class="list-decimal space-y-4 pl-5 marker:text-[#525252]">
-            {demoPapers.map((p, i) => (
-              <li class="pl-1">
-                <span class="text-[#fafafa]">
-                  {i + 1}. {p.title}
-                </span>
-                <span class="text-[#737373]"> ({p.year})</span>
-                <span class="mt-1 block text-[12px] leading-snug text-[#a3a3a3]">{p.note}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-        <div
-          class="flex flex-col justify-center border-[#262626] bg-[#050505] p-3 sm:p-4 md:border-l xl:col-span-5 xl:border-l xl:border-t-0"
-        >
-          <figure class="mx-auto w-full max-w-full">
-            <img
-              src="/hero.png"
-              width={960}
-              height={540}
-              alt="Bohr terminal — REPL session with Bohr branding"
-              class="mx-auto h-auto max-h-[min(42vh,280px)] w-full border border-[#262626] object-contain sm:max-h-[min(48vh,360px)] md:max-h-[55vh] lg:max-h-none lg:max-w-full"
-              loading="eager"
-              decoding="async"
-            />
-            <figcaption class="mt-3 text-center text-[11px] text-[#737373]">
-              Bohr terminal session — same REPL on your machine; this page is a static preview.
-            </figcaption>
-          </figure>
-        </div>
-      </div>
+          <h1 data-gsap-hero-title class="flex flex-wrap items-baseline justify-center gap-2 sm:gap-3 md:gap-4">
+            <span
+              class="font-['Inter',system-ui,sans-serif] text-[clamp(6rem,min(46vw,38vh),20rem)] font-bold leading-[0.86] tracking-[-0.045em] text-[var(--bohr-shell-fg)]"
+            >
+              Bohr
+            </span>
+            <span
+              class="font-['Cormorant_Garamond',Georgia,'Times_New_Roman',serif] text-[clamp(5.75rem,min(43vw,36vh),19rem)] font-normal italic leading-[0.86] text-[var(--bohr-shell-accent-serif)]"
+            >
+              AI
+            </span>
+          </h1>
 
-      <!-- Install -->
-      <div class="border-t border-[#262626] p-4 sm:p-6 lg:p-8">
-        <p class="mb-3 text-[11px] uppercase tracking-[0.16em] text-[#737373]">Install</p>
-        <div class="font-[family-name:var(--font-cli)] text-[13px]">
-          <div class="flex max-w-full flex-col overflow-hidden rounded-sm border border-[#333333] bg-[#050505]">
-            <div class="flex overflow-x-auto border-b border-[#262626]" role="group" aria-label="Install command format">
-              {installCommands.map((entry, i) => (
+          <p
+            data-gsap-hero-meta
+            class="mt-4 font-[family-name:var(--font-cli)] text-[11px] tracking-[0.08em] text-neutral-600 sm:text-xs dark:text-[#737373]"
+          >
+            v{BOHR_SEMVER}
+          </p>
+
+          <div data-gsap-hero-rule class="mt-12 flex w-full items-center gap-4 sm:mt-14">
+            <span class="h-px min-h-px flex-1 bg-neutral-900/20 dark:bg-[#333333]" aria-hidden="true" />
+            <span class="shrink-0 font-[family-name:var(--font-cli)] text-[10px] uppercase tracking-[0.26em] text-neutral-600 sm:text-[11px] dark:text-[#a3a3a3]">
+              VOL. II | NO. 17 - CLI RESEARCH SHELL
+            </span>
+            <span class="h-px min-h-px flex-1 bg-neutral-900/20 dark:bg-[#333333]" aria-hidden="true" />
+          </div>
+
+          <p
+            data-gsap-hero-copy
+            class="mx-auto mt-12 max-w-[min(42rem,calc(100vw-2.5rem))] font-['Cormorant_Garamond',Georgia,'Times_New_Roman',serif] text-[clamp(1.45rem,4.8vw,2rem)] font-normal italic leading-[1.55] text-[var(--bohr-shell-fg)] sm:mt-14 md:leading-[1.6]"
+          >
+            A multi-agent research shell that assembles, critiques and verifies a paper the way a lab does - from literature
+            sweep to peer review, in your terminal.
+          </p>
+
+          <div data-gsap-hero-ctas class="mt-12 flex flex-col items-center justify-center gap-4 sm:mt-14 sm:flex-row sm:gap-5">
+            <a
+              data-gsap-cta
+              class="inline-flex min-w-[13rem] items-center justify-center rounded-[2px] bg-[var(--bohr-shell-fg)] px-8 py-3.5 font-[family-name:var(--font-cli)] text-[12px] font-medium uppercase tracking-[0.18em] text-[var(--bohr-shell-bg)] transition-colors hover:bg-neutral-800 hover:text-[var(--bohr-shell-bg)] dark:bg-[#fafafa] dark:text-black dark:hover:bg-[#e5e5e5]"
+              href="/docs/getting-started/installation"
+            >
+              Install Bohr ->
+            </a>
+            <a
+              data-gsap-cta
+              class="inline-flex min-w-[13rem] items-center justify-center rounded-[2px] border border-[var(--bohr-shell-fg)] bg-transparent px-8 py-3.5 font-[family-name:var(--font-cli)] text-[12px] uppercase tracking-[0.18em] text-[var(--bohr-shell-fg)] transition-colors hover:bg-black/5 dark:border-[#fafafa] dark:text-[var(--bohr-shell-fg)] dark:hover:bg-[#fafafa]/10"
+              href="#session-preview"
+            >
+              See a session
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Live terminal UI (static replay) -->
+      <section
+        id="session-preview"
+        data-gsap-reveal
+        data-gsap-scrolltrigger="session"
+        class="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] -mt-4 w-screen scroll-mt-24 bg-[var(--bohr-shell-bg)] pb-12 pt-10 sm:-mt-5 sm:pb-16 sm:pt-12"
+        aria-labelledby="live-terminal-heading"
+      >
+        <div class="relative flex w-full max-w-none flex-col gap-8 px-4 sm:gap-10 sm:px-5 md:px-6 lg:px-8 xl:px-10">
+          <div
+            data-gsap-stagger-item
+            class="flex flex-col gap-3 text-[10px] uppercase tracking-[0.22em] text-neutral-500 sm:flex-row sm:items-center sm:justify-between sm:text-[11px]"
+          >
+            <span class="font-[family-name:var(--font-cli)] text-neutral-500">-- FIG. 01 | LIVE SESSION</span>
+            <span class="font-[family-name:var(--font-cli)] text-neutral-500 sm:text-right">/DEEPRESEARCH - <span data-terminal-workspace-chip>{defaultTerminalSample.workspace}</span></span>
+          </div>
+
+          <h2
+            id="live-terminal-heading"
+            data-gsap-stagger-item
+            class="font-['Cormorant_Garamond',Georgia,'Times_New_Roman',serif] text-[clamp(1.75rem,5vw,2.75rem)] font-normal leading-tight tracking-tight text-[var(--bohr-shell-fg)]"
+          >
+            A real run, replayed.
+          </h2>
+
+          <div
+            data-gsap-stagger-item
+            class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <p class="font-[family-name:var(--font-cli)] text-[10px] uppercase tracking-[0.18em] text-neutral-500 sm:text-[11px]">
+              Click a sample or type your own workflow prompt
+            </p>
+            <div class="flex flex-wrap gap-2" role="group" aria-label="Terminal samples">
+              {terminalSamples.map((sample, index) => (
                 <button
                   type="button"
-                  class:list={[
-                    "install-toggle cli-install-tab shrink-0 px-4 py-2.5 text-left text-[12px] transition-colors cursor-pointer",
-                  ]}
-                  data-command={entry.command}
-                  aria-pressed={i === 0 ? "true" : "false"}
+                  class="terminal-sample-trigger rounded-[2px] border border-[color:var(--bohr-shell-border)] bg-transparent px-3 py-1.5 font-[family-name:var(--font-cli)] text-[10px] uppercase tracking-[0.12em] text-neutral-600 transition-colors hover:text-[var(--bohr-shell-fg)] aria-pressed:border-[var(--bohr-shell-fg)] aria-pressed:bg-[var(--bohr-shell-fg)] aria-pressed:text-[var(--bohr-shell-bg)] dark:text-neutral-400 dark:hover:text-neutral-100 dark:aria-pressed:border-neutral-100 dark:aria-pressed:bg-neutral-100 dark:aria-pressed:text-black"
+                  data-terminal-sample-id={sample.id}
+                  aria-pressed={index === 0 ? "true" : "false"}
                 >
-                  {entry.label}
+                  {sample.label}
                 </button>
               ))}
             </div>
-            <button
-              id="install-cmd"
-              type="button"
-              class="group flex w-full min-w-0 items-start justify-between gap-3 px-4 py-3 text-left text-[12px] text-[#d4d4d4] transition-colors hover:bg-[#111111] sm:items-center"
-              data-command={installCommands[0].command}
-              aria-label="Copy install command"
-            >
-              <span id="install-command" class="min-w-0 flex-1 break-all leading-relaxed">
-                {installCommands[0].command}
-              </span>
-              <svg
-                id="install-copy"
-                class="mt-0.5 size-4 shrink-0 text-[#737373] group-hover:text-[#fafafa] sm:mt-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-                aria-hidden="true"
-              >
-                <rect x="9" y="9" width="13" height="13" rx="2" />
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-              </svg>
-              <svg
-                id="install-check"
-                class="mt-0.5 hidden size-4 shrink-0 text-[#a3a3a3] sm:mt-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-                aria-hidden="true"
-              >
-                <path d="M20 6L9 17l-5-5" />
-              </svg>
-            </button>
           </div>
-          <p id="install-feedback" class="mt-2 min-h-[1.25rem] text-[12px] text-[#737373]" aria-live="polite" />
-          <p class="mt-4 text-[12px] text-[#737373]">
-            Prefer a guided setup?
-            <a
-              class="text-[#fafafa] underline decoration-[#525252] underline-offset-2 hover:decoration-[#a3a3a3]"
-              href="/docs/getting-started/installation">Installation docs</a
-            >.
-          </p>
+
+          <div
+            data-gsap-stagger-item
+            data-gsap-session-shell
+            class="group terminal-preview-shell min-h-[30rem] overflow-hidden rounded-lg border border-[color:var(--bohr-shell-border)] bg-[color-mix(in_oklab,var(--bohr-shell-fg)_5%,var(--bohr-shell-bg))] shadow-[0_1px_0_rgba(255,255,255,0.75)_inset,0_18px_48px_-20px_rgba(15,75,65,0.09)] ring-1 ring-black/[0.06] sm:min-h-[34rem] lg:min-h-[38rem] dark:border-white/10 dark:bg-neutral-950 dark:shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset,0_24px_80px_-24px_rgba(34,211,238,0.06)] dark:ring-transparent"
+          >
+            <div class="terminal-preview-sheen" aria-hidden="true" />
+            <div class="terminal-preview-scanlines" aria-hidden="true" />
+
+            <div class="relative z-[3] flex h-full min-h-0 [min-height:inherit] flex-col">
+              <!-- Title bar -->
+              <div
+                class="flex min-h-[2.5rem] flex-wrap items-center gap-2 border-b border-black/10 bg-[color-mix(in_oklab,var(--bohr-shell-fg)_7%,var(--bohr-shell-bg))] px-3 py-2 font-[family-name:var(--font-cli)] text-[10px] text-neutral-600 sm:flex-nowrap sm:px-4 sm:text-[11px] dark:border-white/10 dark:bg-[#0a0a0a] dark:text-neutral-400"
+              >
+                <div class="flex shrink-0 items-center gap-1.5" aria-hidden="true">
+                  <span class="size-2.5 rounded-full bg-[#ff5f57] shadow-[0_0_6px_rgba(255,95,87,0.45)]"></span>
+                  <span class="size-2.5 rounded-full bg-[#febc2e] shadow-[0_0_6px_rgba(254,188,46,0.35)]"></span>
+                  <span class="size-2.5 rounded-full bg-[#28c840] shadow-[0_0_6px_rgba(40,200,64,0.35)]"></span>
+                </div>
+                <p class="min-w-0 flex-1 text-center text-neutral-800 sm:px-2 dark:text-neutral-300">
+                  BOHR <span data-terminal-workspace-title>{defaultTerminalSample.workspace}</span>
+                </p>
+                <div class="flex w-full flex-wrap items-center justify-end gap-x-3 gap-y-1.5 sm:w-auto sm:shrink-0">
+                  <span class="inline-flex items-center gap-1.5 rounded-[2px] border border-emerald-700/25 bg-emerald-600/[0.08] px-2 py-0.5 dark:border-emerald-500/30 dark:bg-emerald-500/[0.07]">
+                    <span
+                      class="terminal-live-led size-1.5 shrink-0 rounded-full bg-emerald-600 dark:bg-emerald-400"
+                      aria-hidden="true"
+                    />
+                    <span class="text-[9px] font-medium uppercase tracking-[0.16em] text-emerald-800 dark:text-emerald-400/95">Live</span>
+                  </span>
+                  <p class="text-neutral-600 dark:text-neutral-500">
+                    PID <span data-terminal-pid>{defaultTerminalSample.pid}</span> - <span data-terminal-model>{defaultTerminalSample.model}</span> - <span data-terminal-tools>{defaultTerminalSample.tools}</span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Terminal body -->
+              <div
+                data-gsap-session-body
+                class="min-h-0 flex-1 overflow-visible bg-[color-mix(in_oklab,var(--bohr-shell-fg)_4%,var(--bohr-shell-bg))] px-3 py-4 font-[family-name:var(--font-cli)] text-[11px] leading-[1.65] text-neutral-800 sm:px-5 sm:text-[12px] sm:leading-relaxed dark:bg-[#060606]/80 dark:text-neutral-200"
+              >
+                <div class="space-y-1 text-neutral-600 dark:text-neutral-500">
+                  <p>
+                    # bohr v{BOHR_SEMVER} - <span data-terminal-meta-model>{defaultTerminalSample.model}</span> -
+                    <span data-terminal-meta-tools>{defaultTerminalSample.tools}</span> - host: local machine
+                  </p>
+                  <p>
+                    # workspace: <span data-terminal-meta-workspace>{defaultTerminalSample.workspace}</span> - session:
+                    <span data-terminal-meta-session>preview-transformers</span>
+                  </p>
+                </div>
+
+                <p class="mt-5 text-neutral-900 dark:text-neutral-200">
+                  <span class="text-neutral-600 dark:text-neutral-400">bohr&gt;</span>{" "}
+                  <span data-terminal-command-display class="text-neutral-950 dark:text-neutral-100">{defaultTerminalSample.prompt}</span>
+                </p>
+
+                <div class="my-5 border-t border-black/10 dark:border-white/10" aria-hidden="true" />
+
+                <div id="terminal-output" aria-live="polite" class="space-y-2.5">
+                  {defaultTerminalSample.lines.map((line) => (
+                    <p data-terminal-line class={line.kind === "artifact" ? "text-neutral-700 dark:text-neutral-300" : "text-neutral-900 dark:text-neutral-200"}>
+                      {line.kind === "status" ? (
+                        <>
+                          <span class="text-teal-700 dark:text-cyan-400">&gt; {line.label}</span>{" "}
+                          <span>{line.text}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span class="text-neutral-500 dark:text-neutral-400">FILE</span>{" "}
+                          <span class="text-amber-900/90 dark:text-amber-200/90">{line.text}</span>
+                        </>
+                      )}
+                    </p>
+                  ))}
+                </div>
+              </div>
+
+              <form
+                id="terminal-command-form"
+                class="flex flex-col gap-3 border-t border-black/10 bg-[color-mix(in_oklab,var(--bohr-shell-fg)_6%,var(--bohr-shell-bg))] px-3 py-3 font-[family-name:var(--font-cli)] text-[11px] sm:flex-row sm:items-center sm:px-5 sm:text-[12px] dark:border-white/10 dark:bg-[#050505]"
+              >
+                <label for="terminal-command-input" class="shrink-0 text-neutral-600 dark:text-neutral-400">
+                  bohr&gt;
+                </label>
+                <input
+                  id="terminal-command-input"
+                  class="min-w-0 flex-1 rounded-[2px] border border-[color:var(--bohr-shell-border)] bg-transparent px-3 py-2 text-neutral-900 outline-none transition-colors placeholder:text-neutral-500 focus:border-[var(--bohr-shell-fg)] dark:text-neutral-100 dark:placeholder:text-neutral-500"
+                  type="text"
+                  name="terminal-command"
+                  value={defaultTerminalSample.prompt}
+                  spellcheck="false"
+                  autocomplete="off"
+                />
+                <button
+                  id="terminal-command-submit"
+                  type="submit"
+                  class="inline-flex shrink-0 items-center justify-center rounded-[2px] border border-[var(--bohr-shell-fg)] px-4 py-2 uppercase tracking-[0.12em] text-[var(--bohr-shell-fg)] transition-colors hover:bg-[var(--bohr-shell-fg)] hover:text-[var(--bohr-shell-bg)]"
+                >
+                  Run sample
+                </button>
+              </form>
+            </div>
+          </div>
+
         </div>
-      </div>
-    </div>
+      </section>
+
+      <!-- Pillars -->
+      <section
+        data-gsap-reveal
+        class="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] -mt-4 w-screen bg-[var(--bohr-shell-bg)] pb-14 pt-12 sm:-mt-5 sm:pb-16 sm:pt-14"
+        aria-labelledby="pillars-heading"
+      >
+        <div class="relative w-full max-w-none px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
+          <p class="font-[family-name:var(--font-cli)] text-[10px] uppercase tracking-[0.22em] text-neutral-500 sm:text-[11px]">
+            - 01 | PILLARS
+          </p>
+          <div
+            class="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start lg:gap-16 xl:gap-24"
+          >
+            <h2
+              id="pillars-heading"
+              class="font-['Cormorant_Garamond',Georgia,'Times_New_Roman',serif] text-[clamp(1.85rem,4.5vw,3rem)] font-normal italic leading-[1.12] tracking-tight text-[var(--bohr-shell-fg)]"
+            >
+              Research, not autocomplete.
+            </h2>
+            <p
+              class="font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-neutral-700 lg:pt-1 lg:text-[13px] dark:text-neutral-300"
+            >
+              Bohr AI is built for people who write papers, run replications and defend claims. The shell orchestrates
+              specialised agents, verifies against sources, and leaves a trail - not a chat log.
+            </p>
+          </div>
+
+          <!-- Closed grid: full perimeter border + internal dividers -->
+          <div
+            data-gsap-stagger-group
+            class="mt-14 border border-[color:var(--bohr-shell-border)] sm:mt-16"
+          >
+            <div
+              class="grid grid-cols-1 divide-y divide-[color:var(--bohr-shell-border)] bg-neutral-950/[0.03] lg:grid-cols-4 lg:divide-x lg:divide-y-0 dark:bg-black/20"
+            >
+              {pillars.map((pillar) => (
+                <article
+                  data-gsap-stagger-item
+                  class="flex flex-col px-5 py-9 font-[family-name:var(--font-cli)] sm:px-6 sm:py-10 lg:min-h-[14rem] lg:px-6 xl:px-8"
+                >
+                  <p class="text-[11px] uppercase tracking-[0.14em] text-neutral-500">{pillar.roman}</p>
+                  <p class="mt-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--bohr-shell-fg)] sm:text-[12px]">
+                    {pillar.title}
+                  </p>
+                  <p class="mt-4 text-[12px] leading-relaxed text-neutral-600 sm:text-[13px] dark:text-neutral-400">{pillar.body}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Workflows spotlight -->
+      <section
+        data-gsap-reveal
+        data-gsap-scrolltrigger="workflow"
+        class="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] -mt-4 w-screen bg-[var(--bohr-shell-bg)] pb-14 pt-12 sm:-mt-5 sm:pb-16 sm:pt-14"
+        aria-labelledby="workflows-heading"
+      >
+        <div class="relative w-full max-w-none px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
+          <div class="lg:grid lg:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] xl:gap-14">
+            <header data-gsap-stagger-item data-gsap-workflow-header class="max-w-xl lg:sticky lg:top-28 lg:self-start">
+              <p class="font-[family-name:var(--font-cli)] text-[10px] uppercase tracking-[0.22em] text-neutral-500 sm:text-[11px]">
+                - 02 | WORKFLOWS
+              </p>
+              <h2
+                id="workflows-heading"
+                class="mt-6 font-['Cormorant_Garamond',Georgia,'Times_New_Roman',serif] text-[clamp(1.85rem,4vw,2.65rem)] font-normal leading-[1.15] tracking-tight text-[var(--bohr-shell-fg)]"
+              >
+                Ten slash commands, one shell.
+              </h2>
+              <p class="mt-5 font-['Inter',system-ui,sans-serif] text-[13px] leading-relaxed text-neutral-600 lg:text-[14px] dark:text-neutral-400">
+                Each command is a full pipeline - planner, researchers, scorer, validator, writer, verifier, reviewer -
+                with agents dispatched in the right order.
+              </p>
+              <a
+                class="mt-8 inline-flex items-center gap-2 font-[family-name:var(--font-cli)] text-[12px] uppercase tracking-[0.14em] text-[var(--bohr-shell-fg)] underline decoration-neutral-600 underline-offset-4 transition-colors hover:decoration-neutral-400"
+                href="/workflows"
+              >
+                All workflows ->
+              </a>
+            </header>
+
+            <div data-gsap-stagger-group class="mt-12 min-w-0 w-full lg:mt-2">
+              <ul class="w-full" role="list">
+                {workflowsShowcase.map((w) => (
+                  <li class="border-b border-[color:var(--bohr-shell-border)] last:border-b-0">
+                    <a
+                      data-gsap-stagger-item
+                      data-gsap-workflow-row
+                      href={`/workflows/${w.slug}`}
+                      aria-label={`${w.cmd} - ${w.desc}`}
+                      class="group grid w-full grid-cols-[minmax(0,13.5rem)_2.75rem] grid-rows-[auto_auto] gap-x-4 gap-y-3 py-5 transition-transform duration-200 ease-out hover:translate-x-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-black/15 dark:focus-visible:ring-white/25 sm:grid-cols-[13.5rem_2.75rem_minmax(0,1fr)] sm:grid-rows-1 sm:items-baseline sm:gap-x-6 sm:gap-y-0 sm:py-6 md:gap-x-10"
+                    >
+                      <span class="min-w-0 font-[family-name:var(--font-cli)] text-[13px] font-medium text-[var(--bohr-shell-fg)]">
+                        {w.cmd}
+                      </span>
+                      <span class="font-[family-name:var(--font-cli)] text-[11px] tabular-nums text-neutral-600 sm:w-[2.75rem] sm:shrink-0 sm:text-right">
+                        {w.index}
+                      </span>
+                      <span class="col-span-2 font-['Inter',system-ui,sans-serif] text-[13px] leading-relaxed text-neutral-700 sm:col-span-1 dark:text-neutral-200">
+                        {w.desc}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Why Bohr vs generic writers -->
+      <section
+        data-gsap-reveal
+        class="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] -mt-4 w-screen bg-[var(--bohr-shell-bg)] py-14 sm:-mt-5 sm:py-16"
+        aria-labelledby="why-bohr-heading"
+      >
+        <div class="relative w-full max-w-none px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
+          <!-- Same rhythm as Pillars: mono index | serif headline | mono body -->
+          <div
+            class="grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start lg:gap-16 xl:gap-24"
+          >
+            <div>
+              <p class="font-[family-name:var(--font-cli)] text-[10px] uppercase tracking-[0.22em] text-neutral-500 sm:text-[11px]">
+                - 03 | RESEARCH-GRADE | NOT A FREE ESSAY BOT
+              </p>
+              <h2
+                id="why-bohr-heading"
+                class="mt-6 font-['Cormorant_Garamond',Georgia,'Times_New_Roman',serif] text-[clamp(1.85rem,4.5vw,2.75rem)] font-normal italic leading-[1.12] tracking-tight text-[var(--bohr-shell-fg)]"
+              >
+                Grounded workflows, not one-shot prose
+              </h2>
+            </div>
+            <p class="font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-neutral-700 lg:pt-1 lg:text-[13px] dark:text-neutral-300">
+              Generic AI writers optimize for fluent paragraphs in one chat. Bohr runs{" "}
+              <strong class="font-medium text-[var(--bohr-shell-fg)]">multi-agent pipelines</strong>
+              {" "}with citations, verifier passes, and artifacts on disk - so tokens go to{" "}
+              <strong class="font-medium text-[var(--bohr-shell-fg)]">evidence and synthesis</strong>, not blind regurgitation.
+            </p>
+          </div>
+
+          <p class="mt-14 font-[family-name:var(--font-cli)] text-[10px] uppercase tracking-[0.22em] text-neutral-500 sm:mt-16 sm:text-[11px]">
+            Works with your provider
+          </p>
+          <div
+            class="mt-4 flex flex-wrap gap-x-3 gap-y-2 font-[family-name:var(--font-cli)] text-[11px]"
+            aria-label="Compatible API providers"
+          >
+            <span class="rounded-[2px] border border-[color:var(--bohr-shell-border)] bg-white/70 px-2.5 py-1 text-neutral-800 dark:bg-[var(--bohr-shell-bg)] dark:text-neutral-300">OpenAI</span>
+            <span class="rounded-[2px] border border-[color:var(--bohr-shell-border)] bg-white/70 px-2.5 py-1 text-neutral-800 dark:bg-[var(--bohr-shell-bg)] dark:text-neutral-300">Anthropic</span>
+            <span class="rounded-[2px] border border-[color:var(--bohr-shell-border)] bg-white/70 px-2.5 py-1 text-neutral-800 dark:bg-[var(--bohr-shell-bg)] dark:text-neutral-300">Google</span>
+            <span class="rounded-[2px] border border-[color:var(--bohr-shell-border)] bg-white/70 px-2.5 py-1 text-neutral-800 dark:bg-[var(--bohr-shell-bg)] dark:text-neutral-300">xAI</span>
+            <span class="rounded-[2px] border border-[color:var(--bohr-shell-border)] bg-white/70 px-2.5 py-1 text-neutral-800 dark:bg-[var(--bohr-shell-bg)] dark:text-neutral-300">DeepSeek</span>
+            <span class="rounded-[2px] border border-[color:var(--bohr-shell-border)] bg-white/70 px-2.5 py-1 text-neutral-600 dark:bg-[var(--bohr-shell-bg)]">+ OpenRouter &amp; more</span>
+          </div>
+
+          <div data-gsap-stagger-group class="mt-14 grid gap-5 sm:grid-cols-2 sm:mt-16 lg:gap-8">
+            <div
+              data-gsap-stagger-item
+              class="flex h-full flex-col rounded-[2px] border border-[color:var(--bohr-shell-border)] bg-[var(--bohr-shell-bg)] p-6 sm:p-7"
+            >
+              <div class="mb-5 flex items-center gap-2.5">
+                <span
+                  class="flex size-7 shrink-0 items-center justify-center rounded-[2px] border border-[color:var(--bohr-shell-border)] text-neutral-500"
+                  aria-hidden="true"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12" />
+                  </svg>
+                </span>
+                <h3 class="font-[family-name:var(--font-cli)] text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--bohr-shell-fg)]">
+                  Typical free writer
+                </h3>
+              </div>
+              <ul class="space-y-3 font-[family-name:var(--font-cli)] text-[12px] leading-snug text-neutral-700 dark:text-neutral-400">
+                <li class="flex gap-3">
+                  <span class="mt-0.5 shrink-0 text-neutral-600" aria-hidden="true">-</span>
+                  <span>Single model, single thread</span>
+                </li>
+                <li class="flex gap-3">
+                  <span class="mt-0.5 shrink-0 text-neutral-600" aria-hidden="true">-</span>
+                  <span>Sounds academic; weak traceability</span>
+                </li>
+                <li class="flex gap-3">
+                  <span class="mt-0.5 shrink-0 text-neutral-600" aria-hidden="true">-</span>
+                  <span>Re-prompt until it "feels" right</span>
+                </li>
+              </ul>
+            </div>
+
+            <div
+              data-gsap-stagger-item
+              class="flex h-full flex-col rounded-[2px] border border-[color:var(--bohr-shell-border)] bg-[var(--bohr-shell-bg)] p-6 sm:p-7"
+            >
+              <div class="mb-5 flex items-center gap-2.5">
+                <span
+                  class="flex size-7 shrink-0 items-center justify-center rounded-[2px] border border-[color:var(--bohr-shell-border)] text-[var(--bohr-shell-fg)]"
+                  aria-hidden="true"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25">
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                </span>
+                <h3 class="font-[family-name:var(--font-cli)] text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--bohr-shell-fg)]">
+                  Bohr
+                </h3>
+              </div>
+              <ul class="space-y-3 font-[family-name:var(--font-cli)] text-[12px] leading-snug text-neutral-800 dark:text-neutral-300">
+                <li class="flex gap-3">
+                  <span class="mt-0.5 shrink-0 text-neutral-500" aria-hidden="true">+</span>
+                  <span>Slash workflows &amp; specialised agents</span>
+                </li>
+                <li class="flex gap-3">
+                  <span class="mt-0.5 shrink-0 text-neutral-500" aria-hidden="true">+</span>
+                  <span>Provenance, verification, compliance passes</span>
+                </li>
+                <li class="flex gap-3">
+                  <span class="mt-0.5 shrink-0 text-neutral-500" aria-hidden="true">+</span>
+                  <span>File handoffs &amp; token-aware subagents</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div
+            class="mt-10 flex flex-col gap-6 border-t border-[#1f1f1f] pt-8 sm:mt-12 sm:flex-row sm:items-center sm:justify-between sm:gap-8"
+          >
+            <div class="flex flex-wrap gap-2 font-[family-name:var(--font-cli)] text-[11px]">
+              <span class="rounded-[2px] border border-[color:var(--bohr-shell-border)] bg-[var(--bohr-shell-bg)] px-2.5 py-1 text-neutral-500">Fewer filler tokens</span>
+              <span class="rounded-[2px] border border-[color:var(--bohr-shell-border)] bg-[var(--bohr-shell-bg)] px-2.5 py-1 text-neutral-500">Grounded citations</span>
+              <span class="rounded-[2px] border border-[color:var(--bohr-shell-border)] bg-[var(--bohr-shell-bg)] px-2.5 py-1 text-neutral-500">Cost docs</span>
+            </div>
+            <div class="flex flex-col items-center gap-4 sm:flex-row sm:justify-end">
+              <a
+                class="inline-flex items-center gap-2 rounded-[2px] border border-[color:var(--bohr-shell-border)] bg-[var(--bohr-shell-bg)] px-4 py-2.5 font-[family-name:var(--font-cli)] text-[12px] uppercase tracking-[0.12em] text-[var(--bohr-shell-fg)] transition-transform duration-200 ease-out hover:translate-x-1"
+                href="/docs/getting-started/why-bohr"
+              >
+                Full comparison
+                <span aria-hidden="true" class="text-neutral-500">-></span>
+              </a>
+              <a
+                class="font-[family-name:var(--font-cli)] text-[12px] text-neutral-400 underline decoration-[#404040] underline-offset-[5px] transition-transform duration-200 ease-out hover:translate-x-1"
+                href="/docs/reference/cost-token-estimation"
+              >
+                Cost &amp; token estimates
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Installation - one-liner + tabs -->
+      <section
+        data-gsap-reveal
+        class="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] -mt-4 w-screen bg-[var(--bohr-shell-bg)] pb-14 pt-12 sm:-mt-5 sm:pb-16 sm:pt-14"
+        aria-labelledby="installation-heading"
+      >
+        <div class="relative w-full max-w-none px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
+          <div class="rounded-[18px] bg-[color-mix(in_oklab,var(--bohr-shell-fg)_2%,var(--bohr-shell-bg))] p-6 shadow-[0_24px_60px_-44px_rgba(15,23,42,0.45)] sm:p-8 lg:p-10 xl:p-12 dark:bg-[color-mix(in_oklab,var(--bohr-shell-bg)_92%,white_8%)] dark:shadow-[0_26px_72px_-48px_rgba(0,0,0,0.9)]">
+            <div
+              class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:items-center lg:gap-12 xl:gap-16"
+            >
+              <div>
+                <p class="font-[family-name:var(--font-cli)] text-[10px] uppercase tracking-[0.22em] text-neutral-500 sm:text-[11px]">
+                  - 04 | INSTALLATION
+                </p>
+                <h2
+                  id="installation-heading"
+                  class="mt-6 font-['Cormorant_Garamond',Georgia,'Times_New_Roman',serif] text-[clamp(1.85rem,3.8vw,2.65rem)] font-normal italic leading-[1.12] tracking-tight text-[var(--bohr-shell-fg)]"
+                >
+                  One line.<br />Your terminal.
+                </h2>
+                <p class="mt-6 font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-neutral-600 lg:text-[13px] dark:text-neutral-400">
+                  Bohr runs locally, with optional Docker. Add your model keys to{" "}
+                  <strong class="font-medium text-neutral-900 dark:text-neutral-200">.env</strong> and you're in the REPL.
+                </p>
+              </div>
+
+              <div class="min-w-0 font-[family-name:var(--font-cli)]">
+                <div class="overflow-hidden rounded-[16px] bg-[color-mix(in_oklab,var(--bohr-shell-fg)_5%,var(--bohr-shell-bg))] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_24px_42px_-34px_rgba(15,23,42,0.65)] dark:bg-[rgba(0,0,0,0.9)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_28px_56px_-38px_rgba(0,0,0,0.95)]">
+                  <div class="flex gap-2 px-3 pb-1 pt-3 sm:px-4" role="group" aria-label="Install command format">
+                    {installCommands.map((entry, i) => (
+                      <button
+                        type="button"
+                        class:list={[
+                          "cli-install-tab install-toggle shrink-0 flex-1 rounded-[10px] px-3 py-2.5 text-center text-[11px] uppercase tracking-[0.12em] transition-colors sm:px-4 sm:text-[12px]",
+                          "cursor-pointer",
+                        ]}
+                        data-command={entry.command}
+                        aria-pressed={i === 0 ? "true" : "false"}
+                      >
+                        {entry.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div class="flex min-h-[3.5rem] flex-col gap-3 px-4 pb-4 pt-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5">
+                    <code
+                      id="install-command"
+                      class="min-w-0 flex-1 break-all text-left text-[11px] leading-relaxed text-[var(--bohr-shell-fg)] sm:text-[12px] dark:text-neutral-200"
+                    >
+                      {installCommands[0].command}
+                    </code>
+                    <button
+                      id="install-copy-btn"
+                      type="button"
+                      class="shrink-0 self-start rounded-[10px] bg-black/[0.06] px-3 py-2 text-left font-[family-name:var(--font-cli)] text-[10px] uppercase tracking-[0.18em] text-[var(--bohr-shell-fg)] transition-[transform,background-color] duration-200 ease-out hover:translate-x-0.5 hover:bg-black/[0.1] sm:self-auto dark:bg-white/[0.08] dark:hover:bg-white/[0.14]"
+                      data-command={installCommands[0].command}
+                      aria-label="Copy install command"
+                    >
+                      <span id="install-copy-label">COPY</span>
+                    </button>
+                  </div>
+                </div>
+
+                <p id="install-feedback" class="mt-3 min-h-[1.25rem] text-[11px] text-neutral-600" aria-live="polite" />
+
+                <p class="mt-5 text-[11px] leading-relaxed text-neutral-500 sm:text-[12px]">
+                  Prefer a walkthrough? Read the{" "}
+                  <a
+                    class="font-medium text-neutral-800 underline decoration-neutral-400 underline-offset-4 transition-transform duration-200 ease-out hover:translate-x-0.5 hover:decoration-neutral-600 dark:text-neutral-300 dark:decoration-neutral-600 dark:hover:decoration-neutral-400"
+                    href="/docs/getting-started/installation"
+                  >
+                    installation guide ->
+                  </a>
+                  <span class="text-neutral-400 dark:text-neutral-600" aria-hidden="true">
+                    {" "}
+                    |{" "}
+                  </span>
+                  <a
+                    class="font-medium text-neutral-800 underline decoration-neutral-400 underline-offset-4 transition-transform duration-200 ease-out hover:translate-x-0.5 hover:decoration-neutral-600 dark:text-neutral-300 dark:decoration-neutral-600 dark:hover:decoration-neutral-400"
+                    href={BOHR_GITHUB_REPO_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Clone on GitHub ->
+                  </a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
     <nav
-      class="mt-8 w-full max-w-none border border-[#333333] bg-[#0a0a0a] px-4 py-4 font-[family-name:var(--font-cli)] text-[12px] sm:mt-10 sm:px-6 sm:text-[13px] lg:px-8"
+      data-gsap-reveal
+      class="rounded-[2px] border border-[color:var(--bohr-shell-border)] bg-[var(--bohr-shell-bg)] px-5 py-6 font-[family-name:var(--font-cli)] sm:px-7 sm:py-8 lg:px-10"
       aria-label="Learn Bohr"
     >
-      <p class="mb-3 text-[11px] uppercase tracking-[0.16em] text-[#737373]">Learn the product</p>
-      <ul class="flex flex-col gap-3 text-[#d4d4d4] sm:flex-row sm:flex-wrap sm:gap-x-6 sm:gap-y-2 md:gap-x-8">
+      <p class="text-[10px] uppercase tracking-[0.22em] text-neutral-500 sm:text-[11px]">
+        Learn the product
+      </p>
+      <ul
+        class="mt-6 flex flex-col gap-5 text-[12px] leading-snug sm:mt-7 sm:flex-row sm:flex-wrap sm:gap-x-10 sm:gap-y-4 md:gap-x-12 lg:flex-nowrap lg:justify-between lg:gap-x-6 xl:gap-x-10"
+        role="list"
+      >
         <li>
-          <a class="text-[#fafafa] underline decoration-[#525252] underline-offset-2 hover:decoration-[#a3a3a3]" href="/explore">Explore</a>
-          <span class="text-[#525252]"> — </span>
-          <span class="text-[#a3a3a3]">map of docs & hubs</span>
+          <a
+            class="inline-flex flex-wrap items-baseline gap-x-2 text-neutral-800 transition-transform duration-200 ease-out hover:translate-x-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/15 dark:text-neutral-300 dark:focus-visible:ring-white/25"
+            href="/explore"
+          >
+            <span class="underline decoration-neutral-700 underline-offset-[5px] dark:decoration-neutral-500">Explore</span>
+            <span class="text-neutral-600" aria-hidden="true">-</span>
+            <span class="text-neutral-600 dark:text-neutral-400">map of docs &amp; hubs</span>
+          </a>
         </li>
         <li>
-          <a class="text-[#fafafa] underline decoration-[#525252] underline-offset-2 hover:decoration-[#a3a3a3]" href="/agents">Agents</a>
-          <span class="text-[#525252]"> — </span>
-          <span class="text-[#a3a3a3]">who does what</span>
+          <a
+            class="inline-flex flex-wrap items-baseline gap-x-2 text-neutral-800 transition-transform duration-200 ease-out hover:translate-x-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/15 dark:text-neutral-300 dark:focus-visible:ring-white/25"
+            href="/agents"
+          >
+            <span class="underline decoration-neutral-700 underline-offset-[5px] dark:decoration-neutral-500">Agents</span>
+            <span class="text-neutral-600" aria-hidden="true">-</span>
+            <span class="text-neutral-600 dark:text-neutral-400">who does what</span>
+          </a>
         </li>
         <li>
-          <a class="text-[#fafafa] underline decoration-[#525252] underline-offset-2 hover:decoration-[#a3a3a3]" href="/workflows">Workflows</a>
-          <span class="text-[#525252]"> — </span>
-          <span class="text-[#a3a3a3]">slash-command outcomes</span>
+          <a
+            class="inline-flex flex-wrap items-baseline gap-x-2 text-neutral-800 transition-transform duration-200 ease-out hover:translate-x-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/15 dark:text-neutral-300 dark:focus-visible:ring-white/25"
+            href="/workflows"
+          >
+            <span class="underline decoration-neutral-700 underline-offset-[5px] dark:decoration-neutral-500">Workflows</span>
+            <span class="text-neutral-600" aria-hidden="true">-</span>
+            <span class="text-neutral-600 dark:text-neutral-400">slash-command outcomes</span>
+          </a>
         </li>
         <li>
-          <a class="text-[#fafafa] underline decoration-[#525252] underline-offset-2 hover:decoration-[#a3a3a3]" href="/how-it-works">Process</a>
-          <span class="text-[#525252]"> — </span>
-          <span class="text-[#a3a3a3]">steps & diagrams</span>
+          <a
+            class="inline-flex flex-wrap items-baseline gap-x-2 text-neutral-800 transition-transform duration-200 ease-out hover:translate-x-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/15 dark:text-neutral-300 dark:focus-visible:ring-white/25"
+            href="/how-it-works"
+          >
+            <span class="underline decoration-neutral-700 underline-offset-[5px] dark:decoration-neutral-500">Process</span>
+            <span class="text-neutral-600" aria-hidden="true">-</span>
+            <span class="text-neutral-600 dark:text-neutral-400">steps &amp; diagrams</span>
+          </a>
         </li>
         <li>
-          <a class="text-[#fafafa] underline decoration-[#525252] underline-offset-2 hover:decoration-[#a3a3a3]" href="/docs">Docs</a>
-          <span class="text-[#525252]"> — </span>
-          <span class="text-[#a3a3a3]">full guides</span>
+          <a
+            class="inline-flex flex-wrap items-baseline gap-x-2 text-neutral-800 transition-transform duration-200 ease-out hover:translate-x-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/15 dark:text-neutral-300 dark:focus-visible:ring-white/25"
+            href="/docs"
+          >
+            <span class="underline decoration-neutral-700 underline-offset-[5px] dark:decoration-neutral-500">Docs</span>
+            <span class="text-neutral-600" aria-hidden="true">-</span>
+            <span class="text-neutral-600 dark:text-neutral-400">full guides</span>
+          </a>
         </li>
       </ul>
     </nav>
   </div>
 
+  <script type="application/json" id="terminal-sample-data" set:html={JSON.stringify(terminalSamples)}></script>
+
+  <script>
+    import { gsap } from "gsap"
+    import { ScrollTrigger } from "gsap/ScrollTrigger"
+
+    gsap.registerPlugin(ScrollTrigger)
+
+    type HomeMotionWindow = Window & {
+      __bohrHomeMotionBound?: boolean
+      __bohrHomeMotionCleanup?: () => void
+    }
+
+    const homeMotionWindow = window as HomeMotionWindow
+
+    function clearMotion(root: Element) {
+      root
+        .querySelectorAll<HTMLElement>(
+          "[data-gsap-hero-top] > *, [data-gsap-hero-title] > *, [data-gsap-hero-meta], [data-gsap-hero-rule], [data-gsap-hero-copy], [data-gsap-cta], [data-gsap-reveal], [data-gsap-stagger-item]",
+        )
+        .forEach((element) => element.removeAttribute("style"))
+    }
+
+    function initHomepageMotion() {
+      homeMotionWindow.__bohrHomeMotionCleanup?.()
+      homeMotionWindow.__bohrHomeMotionCleanup = undefined
+
+      const root = document.querySelector(".cli-home-root")
+      if (!root) return
+
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        clearMotion(root)
+        return
+      }
+
+      const mm = gsap.matchMedia()
+      const revealTargets = gsap
+        .utils.toArray<HTMLElement>("[data-gsap-reveal]", root)
+        .filter((target) => !target.hasAttribute("data-gsap-scrolltrigger"))
+      let observer: IntersectionObserver | undefined
+
+      const ctx = gsap.context(() => {
+        const intro = gsap.timeline({
+          defaults: { duration: 0.7, ease: "power3.out", overwrite: "auto" },
+        })
+
+        intro
+          .from("[data-gsap-hero-top] > *", {
+            autoAlpha: 0,
+            y: 18,
+            stagger: 0.07,
+          })
+          .from(
+            "[data-gsap-hero-title] > *",
+            {
+              autoAlpha: 0,
+              yPercent: 20,
+              stagger: 0.1,
+              duration: 0.95,
+            },
+            "-=0.28",
+          )
+          .from(
+            "[data-gsap-hero-meta], [data-gsap-hero-rule], [data-gsap-hero-copy]",
+            {
+              autoAlpha: 0,
+              y: 22,
+              stagger: 0.08,
+            },
+            "-=0.45",
+          )
+          .from(
+            "[data-gsap-cta]",
+            {
+              autoAlpha: 0,
+              y: 16,
+              stagger: 0.1,
+              duration: 0.55,
+            },
+            "-=0.35",
+          )
+
+        observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return
+
+              const target = entry.target as HTMLElement
+              observer?.unobserve(target)
+
+              const staggerItems = target.querySelectorAll<HTMLElement>("[data-gsap-stagger-item]")
+
+              if (staggerItems.length > 0) {
+                gsap.fromTo(
+                  staggerItems,
+                  { autoAlpha: 0, y: 28 },
+                  {
+                    autoAlpha: 1,
+                    y: 0,
+                    duration: 0.8,
+                    ease: "power3.out",
+                    stagger: 0.08,
+                    clearProps: "opacity,visibility,transform",
+                  },
+                )
+                return
+              }
+
+              gsap.fromTo(
+                target,
+                { autoAlpha: 0, y: 32 },
+                {
+                  autoAlpha: 1,
+                  y: 0,
+                  duration: 0.9,
+                  ease: "power3.out",
+                  clearProps: "opacity,visibility,transform",
+                },
+              )
+            })
+          },
+          {
+            threshold: 0.18,
+            rootMargin: "0px 0px -12% 0px",
+          },
+        )
+
+        revealTargets.forEach((target) => observer?.observe(target))
+
+        const sessionSection = root.querySelector<HTMLElement>('[data-gsap-scrolltrigger="session"]')
+        const sessionShell = root.querySelector<HTMLElement>("[data-gsap-session-shell]")
+        const sessionBody = root.querySelector<HTMLElement>("[data-gsap-session-body]")
+
+        if (sessionSection && sessionShell && sessionBody) {
+          gsap.fromTo(
+            sessionShell,
+            { autoAlpha: 0, y: 36, scale: 0.985 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.9,
+              ease: "power3.out",
+              clearProps: "opacity,visibility,transform",
+              scrollTrigger: {
+                trigger: sessionSection,
+                start: "top 72%",
+                toggleActions: "play none none reverse",
+              },
+            },
+          )
+
+          const sessionLines = sessionBody.querySelectorAll(":scope > *")
+
+          mm.add("(min-width: 1024px)", () => {
+            const pinTimeline = gsap.timeline({
+              scrollTrigger: {
+                trigger: sessionShell,
+                start: "top top+=96",
+                end: "+=95%",
+                scrub: 0.9,
+                pin: true,
+                anticipatePin: 1,
+              },
+            })
+
+            pinTimeline
+              .fromTo(
+                ".terminal-preview-sheen",
+                { opacity: 0.38 },
+                { opacity: 0.74, ease: "none" },
+                0,
+              )
+              .fromTo(
+                ".terminal-preview-scanlines",
+                { opacity: 0.32 },
+                { opacity: 0.58, ease: "none" },
+                0,
+              )
+
+            gsap.set(sessionLines, { autoAlpha: 1 })
+          })
+
+          mm.add("(max-width: 1023px)", () => {
+            gsap.to(sessionShell, {
+              yPercent: -4,
+              rotateX: 1.4,
+              transformOrigin: "center top",
+              ease: "none",
+              scrollTrigger: {
+                trigger: sessionSection,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 0.8,
+              },
+            })
+
+            ScrollTrigger.batch(sessionLines, {
+              start: "top 82%",
+              once: true,
+              interval: 0.08,
+              batchMax: 6,
+              onEnter: (batch) =>
+                gsap.fromTo(
+                  batch,
+                  { autoAlpha: 0, x: -14 },
+                  {
+                    autoAlpha: 1,
+                    x: 0,
+                    duration: 0.45,
+                    ease: "power2.out",
+                    stagger: 0.05,
+                    overwrite: true,
+                    clearProps: "opacity,visibility,transform",
+                  },
+                ),
+            })
+          })
+        }
+
+        const workflowSection = root.querySelector<HTMLElement>('[data-gsap-scrolltrigger="workflow"]')
+        const workflowHeader = root.querySelector<HTMLElement>("[data-gsap-workflow-header]")
+        const workflowRows = gsap.utils.toArray<HTMLElement>("[data-gsap-workflow-row]", root)
+
+        if (workflowSection && workflowHeader) {
+          gsap.fromTo(
+            workflowHeader,
+            { autoAlpha: 0, y: 24 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.8,
+              ease: "power3.out",
+              clearProps: "opacity,visibility,transform",
+              scrollTrigger: {
+                trigger: workflowSection,
+                start: "top 72%",
+                toggleActions: "play none none reverse",
+              },
+            },
+          )
+        }
+
+        if (workflowRows.length > 0) {
+          ScrollTrigger.batch(workflowRows, {
+            start: "top 85%",
+            once: true,
+            interval: 0.1,
+            batchMax: 4,
+            onEnter: (batch) =>
+              gsap.fromTo(
+                batch,
+                { autoAlpha: 0, y: 24, x: -10 },
+                {
+                  autoAlpha: 1,
+                  y: 0,
+                  x: 0,
+                  duration: 0.62,
+                  ease: "power3.out",
+                  stagger: 0.08,
+                  overwrite: true,
+                  clearProps: "opacity,visibility,transform",
+                },
+              ),
+          })
+        }
+
+        ScrollTrigger.refresh()
+      }, root)
+
+      homeMotionWindow.__bohrHomeMotionCleanup = () => {
+        observer?.disconnect()
+        mm.revert()
+        ctx.revert()
+      }
+    }
+
+    initHomepageMotion()
+
+    if (!homeMotionWindow.__bohrHomeMotionBound) {
+      document.addEventListener("astro:page-load", initHomepageMotion)
+      document.addEventListener("astro:after-swap", initHomepageMotion)
+      homeMotionWindow.__bohrHomeMotionBound = true
+    }
+  </script>
+
+  <script is:inline>
+    ;(function () {
+      function initTerminalDemo() {
+        if (window.__bohrTerminalCleanup) window.__bohrTerminalCleanup()
+        window.__bohrTerminalCleanup = undefined
+
+        var dataEl = document.getElementById("terminal-sample-data")
+        var form = document.getElementById("terminal-command-form")
+        var input = document.getElementById("terminal-command-input")
+        var submit = document.getElementById("terminal-command-submit")
+        var output = document.getElementById("terminal-output")
+        var sessionBody = document.querySelector("[data-gsap-session-body]")
+        var workspaceChip = document.querySelector("[data-terminal-workspace-chip]")
+        var workspaceTitle = document.querySelector("[data-terminal-workspace-title]")
+        var pidNode = document.querySelector("[data-terminal-pid]")
+        var modelNode = document.querySelector("[data-terminal-model]")
+        var toolsNode = document.querySelector("[data-terminal-tools]")
+        var metaModelNode = document.querySelector("[data-terminal-meta-model]")
+        var metaToolsNode = document.querySelector("[data-terminal-meta-tools]")
+        var metaWorkspaceNode = document.querySelector("[data-terminal-meta-workspace]")
+        var metaSessionNode = document.querySelector("[data-terminal-meta-session]")
+        var commandNode = document.querySelector("[data-terminal-command-display]")
+        var buttons = Array.from(document.querySelectorAll(".terminal-sample-trigger"))
+
+        if (!dataEl || !form || !input || !submit || !output || !sessionBody || !commandNode) return
+
+        var timers = []
+        var samples = []
+
+        try {
+          samples = JSON.parse(dataEl.textContent || "[]")
+        } catch (error) {
+          return
+        }
+
+        if (!Array.isArray(samples) || samples.length === 0) return
+
+        function clearTimers() {
+          while (timers.length) {
+            window.clearTimeout(timers.pop())
+          }
+        }
+
+        function escapeHtml(value) {
+          return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/'/g, "&#39;")
+        }
+
+        function sessionIdFor(sample) {
+          return "preview-" + String(sample.id || "run").replace(/[^a-z0-9]+/gi, "-").replace(/^-+|-+$/g, "").toLowerCase()
+        }
+
+        function lineMarkup(line) {
+          if (line.kind === "artifact") {
+            return (
+              '<p data-terminal-line class="text-neutral-700 transition-[opacity,transform] duration-300 dark:text-neutral-300">' +
+              '<span class="text-neutral-500 dark:text-neutral-400">FILE</span> ' +
+              '<span class="text-amber-900/90 dark:text-amber-200/90">' +
+              escapeHtml(line.text) +
+              "</span></p>"
+            )
+          }
+
+          return (
+            '<p data-terminal-line class="text-neutral-900 transition-[opacity,transform] duration-300 dark:text-neutral-200">' +
+            '<span class="text-teal-700 dark:text-cyan-400">&gt; ' +
+            escapeHtml(line.label || "RUN") +
+            "</span> " +
+            "<span>" +
+            escapeHtml(line.text) +
+            "</span></p>"
+          )
+        }
+
+        function setText(node, value) {
+          if (node) node.textContent = value
+        }
+
+        function setActiveButton(activeId) {
+          buttons.forEach(function (button) {
+            button.setAttribute("aria-pressed", button.getAttribute("data-terminal-sample-id") === activeId ? "true" : "false")
+          })
+        }
+
+        function slugFromPrompt(prompt) {
+          var topic = String(prompt).replace(/^\/\S+\s*/, "").toLowerCase()
+          var slug = topic
+            .split(/[^a-z0-9]+/)
+            .filter(Boolean)
+            .slice(0, 4)
+            .join("-")
+          return slug || "custom-run"
+        }
+
+        function createAdhocSample(prompt) {
+          var cleanPrompt = prompt.trim() || "/deepresearch evaluate a custom topic"
+          var command = cleanPrompt.split(/\s+/)[0] || "/deepresearch"
+          var slug = slugFromPrompt(cleanPrompt)
+
+          return {
+            id: "custom",
+            label: "Custom",
+            workspace: "~/research/" + slug,
+            pid: "18624",
+            model: "CLAUDE-OPUS-4",
+            tools: "25 TOOLS",
+            prompt: cleanPrompt,
+            lines: [
+              { kind: "status", label: "QUEUE", text: "interactive replay staged from the prompt buffer" },
+              { kind: "status", label: "PLAN", text: command + " expanded into a fresh execution graph" },
+              { kind: "status", label: "FAN-OUT", text: "research, contradiction, and verification agents dispatched in parallel" },
+              { kind: "status", label: "WRITE", text: "writer prepared a draft artifact and handed it to verification" },
+              { kind: "artifact", text: "outputs/" + slug + ".md" },
+              { kind: "artifact", text: "outputs/" + slug + ".provenance.md" },
+            ],
+          }
+        }
+
+        function findSample(prompt) {
+          var normalized = String(prompt).toLowerCase()
+          return (
+            samples.find(function (sample) {
+              if (normalized.indexOf(String(sample.id).toLowerCase()) !== -1) return true
+              if (normalized.indexOf(String(sample.label).toLowerCase()) !== -1) return true
+              return Array.isArray(sample.keywords)
+                ? sample.keywords.some(function (keyword) {
+                    return normalized.indexOf(String(keyword).toLowerCase()) !== -1
+                  })
+                : false
+            }) || null
+          )
+        }
+
+        function animateLines(lines) {
+          output.innerHTML = ""
+          lines.forEach(function (line, index) {
+            var timer = window.setTimeout(function () {
+              output.insertAdjacentHTML("beforeend", lineMarkup(line))
+              var lastLine = output.lastElementChild
+              if (lastLine) {
+                lastLine.style.opacity = "0"
+                lastLine.style.transform = "translateY(10px)"
+                window.requestAnimationFrame(function () {
+                  lastLine.style.opacity = "1"
+                  lastLine.style.transform = "translateY(0)"
+                })
+              }
+              sessionBody.scrollTop = sessionBody.scrollHeight
+              if (index === lines.length - 1) submit.textContent = "Run sample"
+            }, 90 * index)
+            timers.push(timer)
+          })
+        }
+
+        function renderSample(sample, source) {
+          clearTimers()
+          setText(workspaceChip, sample.workspace)
+          setText(workspaceTitle, sample.workspace)
+          setText(pidNode, sample.pid)
+          setText(modelNode, sample.model)
+          setText(toolsNode, sample.tools)
+          setText(metaModelNode, sample.model)
+          setText(metaToolsNode, sample.tools)
+          setText(metaWorkspaceNode, sample.workspace)
+          setText(metaSessionNode, sessionIdFor(sample))
+          setText(commandNode, sample.prompt)
+          input.value = sample.prompt
+          sessionBody.scrollTop = 0
+          submit.textContent = source === "initial" ? "Run sample" : "Running..."
+          setActiveButton(sample.id === "custom" ? "" : sample.id)
+          animateLines(sample.lines)
+        }
+
+        buttons.forEach(function (button) {
+          if (button._bohrTerminalBound) return
+          button._bohrTerminalBound = true
+          button.addEventListener("click", function () {
+            var sampleId = button.getAttribute("data-terminal-sample-id")
+            var sample = samples.find(function (item) {
+              return item.id === sampleId
+            })
+            if (!sample) return
+            renderSample(sample, "button")
+          })
+        })
+
+        if (!form._bohrTerminalBound) {
+          form._bohrTerminalBound = true
+          form.addEventListener("submit", function (event) {
+            event.preventDefault()
+            var prompt = input.value.trim()
+            var matchedSample = findSample(prompt)
+            if (matchedSample) {
+              renderSample(
+                {
+                  id: matchedSample.id,
+                  label: matchedSample.label,
+                  workspace: matchedSample.workspace,
+                  pid: matchedSample.pid,
+                  model: matchedSample.model,
+                  tools: matchedSample.tools,
+                  prompt: prompt,
+                  lines: matchedSample.lines,
+                },
+                "submit",
+              )
+              return
+            }
+            renderSample(createAdhocSample(prompt), "submit")
+          })
+        }
+
+        renderSample(samples[0], "initial")
+        window.__bohrTerminalCleanup = clearTimers
+      }
+
+      initTerminalDemo()
+
+      if (!window.__bohrTerminalDemoBound) {
+        document.addEventListener("astro:page-load", initTerminalDemo)
+        document.addEventListener("astro:after-swap", initTerminalDemo)
+        window.__bohrTerminalDemoBound = true
+      }
+    })()
+  </script>
+
   <script is:inline>
     ;(function () {
       function init() {
         var toggles = Array.from(document.querySelectorAll(".install-toggle"))
-        var btn = document.getElementById("install-cmd")
+        var btn = document.getElementById("install-copy-btn")
         var text = document.getElementById("install-command")
-        var copyIcon = document.getElementById("install-copy")
-        var checkIcon = document.getElementById("install-check")
+        var copyLabel = document.getElementById("install-copy-label")
         var feedback = document.getElementById("install-feedback")
-        if (!btn || !text || !copyIcon || !checkIcon || !feedback) return
+        if (!btn || !text || !copyLabel || !feedback) return
         var feedbackTimeout
+
+        function paintInstallTabs(activeToggle) {
+          toggles.forEach(function (t) {
+            var on = t === activeToggle
+            t.setAttribute("aria-pressed", on ? "true" : "false")
+          })
+        }
 
         function setFeedback(message) {
           feedback.textContent = message
@@ -344,14 +1351,8 @@ const demoPapers = [
           }, 2200)
         }
 
-        function setCopyIcons(showSuccess) {
-          if (showSuccess) {
-            copyIcon.classList.add("hidden")
-            checkIcon.classList.remove("hidden")
-          } else {
-            copyIcon.classList.remove("hidden")
-            checkIcon.classList.add("hidden")
-          }
+        function setCopyLabel(showSuccess) {
+          copyLabel.textContent = showSuccess ? "COPIED" : "COPY"
         }
 
         function copyWithFallback(value) {
@@ -365,22 +1366,21 @@ const demoPapers = [
           return Promise.resolve(false)
         }
 
-            toggles.forEach(function (toggle) {
-              if (toggle._bohrInstallBound) return
-              toggle._bohrInstallBound = true
-              toggle.addEventListener("click", function () {
-                var cmd = toggle.getAttribute("data-command")
-                if (!cmd) return
-                btn.setAttribute("data-command", cmd)
-                text.textContent = cmd
-                toggles.forEach(function (t) {
-                  t.setAttribute("aria-pressed", "false")
-                })
-                toggle.setAttribute("aria-pressed", "true")
-                setCopyIcons(false)
-                setFeedback("Selected " + (toggle.textContent || "").trim())
-              })
-            })
+        if (toggles.length) paintInstallTabs(toggles[0])
+
+        toggles.forEach(function (toggle) {
+          if (toggle._bohrInstallBound) return
+          toggle._bohrInstallBound = true
+          toggle.addEventListener("click", function () {
+            var cmd = toggle.getAttribute("data-command")
+            if (!cmd) return
+            btn.setAttribute("data-command", cmd)
+            text.textContent = cmd
+            paintInstallTabs(toggle)
+            setCopyLabel(false)
+            setFeedback("")
+          })
+        })
 
         if (!btn._bohrInstallBound) {
           btn._bohrInstallBound = true
@@ -389,15 +1389,15 @@ const demoPapers = [
             if (!cmd) return
             copyWithFallback(cmd).then(function (copied) {
               if (copied) {
-                setCopyIcons(true)
+                setCopyLabel(true)
                 setFeedback("Copied to clipboard.")
-                setTimeout(function () {
-                  setCopyIcons(false)
+                window.setTimeout(function () {
+                  setCopyLabel(false)
                 }, 2000)
                 return
               }
-              setCopyIcons(false)
-              setFeedback("Copy failed — select the command and copy manually.")
+              setCopyLabel(false)
+              setFeedback("Copy failed - select the command and copy manually.")
             })
           })
         }

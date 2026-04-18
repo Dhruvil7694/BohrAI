@@ -15,6 +15,33 @@ Use this file to track chronology, not release notes. Keep entries short, factua
 - Blockers: ...
 - Next: ...
 
+### 2026-04-18 23:55 +05:30 - install-doc-host-overrides
+
+- Objective: Make installation docs and commands work cleanly across supported platforms and custom-host deployments.
+- Changed: Added `website/src/components/docs/InstallationDoc.astro` so `/docs/getting-started/installation` now renders env-driven install commands from `website/src/data/site-urls.ts`; updated `website/src/pages/docs/[...slug].astro` to route that one page through the custom component; clarified the root `README.md` installation section so deploy-versus-release responsibilities are explicit.
+- Verified: Ran `cmd /c npm run typecheck` and `cmd /c npm run build` in `website/` outside the sandbox; Astro reported 0 errors with only the same pre-existing hints, and the static build completed successfully.
+- Failed / learned: Markdown docs content cannot directly consume Astro env constants, so the installation page needed a targeted component-backed render path instead of more hardcoded URLs.
+- Blockers: Root `npm run typecheck` / `npm run build` still fail on pre-existing TypeScript issues outside this change; root `npm test` is sandbox-blocked by `spawn EPERM` unless rerun unrestricted.
+- Next: Spot-check the built installation page and, if needed, wire the deployment env vars before the next tagged release.
+
+### 2026-04-18 22:21 +05:30 — website-home-motion
+
+- Objective: Clean the homepage mojibake, add route transitions, strengthen workflow-card motion, and make the homepage terminal preview scroll-linked.
+- Changed: Replaced mojibake-heavy homepage/navigation/footer copy with ASCII-safe text; switched the shared layout from deprecated `ViewTransitions` to Astro `ClientRouter` with persisted nav/footer and animated main-content swaps; upgraded `website/src/components/WorkflowCard.astro` plus `website/src/pages/workflows/index.astro` with stronger layered card visuals and GSAP reveal/hover motion; added a scroll-linked narrative meter and stage updates to the homepage terminal preview in `website/src/pages/index.astro`.
+- Verified: Ran `npm.cmd run typecheck` in `website/` after the edits; Astro reported `0 errors` and `0 warnings` with only pre-existing hints.
+- Failed / learned: Sandbox execution blocks Astro's content sync with `spawn EPERM`, so the verification pass required an escalated rerun outside the sandbox.
+- Blockers: None for source changes; browser feel still needs human eyeballing for motion pacing.
+- Next: Spot-check the homepage and workflows hub in a browser, then tune motion timing only if any section feels too eager or too busy.
+
+### 2026-04-18 23:00 +05:30 â€” workflow-detail-docs-shell
+
+- Objective: Rework workflow detail pages into a cleaner documentation shell with a fixed sidebar and independent content scrolling.
+- Changed: Replaced `website/src/pages/workflows/[slug].astro` with a two-panel docs layout: richer sidebar briefing, section-map navigation, related-doc links, copy actions, internal-scroll TOC syncing, and a desktop-only fixed-height shell where the article pane scrolls independently from the navigation.
+- Verified: Ran `cmd /c npm run typecheck` in `website/`; Astro reported `0 errors` and only the same pre-existing hints in `MermaidDiagrams.astro` and `index.astro`.
+- Failed / learned: Sandbox execution still blocks Astro content sync with `spawn EPERM`, so verification again required an escalated rerun outside the sandbox.
+- Blockers: Browser-level UX still needs a visual pass to confirm the desktop height feels right across shorter and taller screens.
+- Next: Spot-check one workflow detail page on desktop and mobile, then tune shell height or spacing if the content panel feels cramped.
+
 ### 2026-04-12 00:00 local — capital-france
 
 - Objective: Run an unattended deep-research workflow for the question "What is the capital of France?"
@@ -267,3 +294,6 @@ Use this file to track chronology, not release notes. Keep entries short, factua
 - Failed / learned: The Élysée homepage does not explicitly state the core claim, so it should not be used as sole evidence for capital status.
 - Blockers: None for the verifier brief; any stronger legal memo would still need a more direct constitutional/statutory basis if that specific question is asked.
 - Next: Promote the brief into the final output or downgrade/remove any claim that leans on the Élysée URL alone.
+
+
+

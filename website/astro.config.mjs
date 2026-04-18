@@ -11,7 +11,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   integrations: [react()],
-  site: 'https://bohr-ai.internal',
+  site: process.env.PUBLIC_BOHR_SITE_URL || process.env.BOHR_SITE_URL || "https://bohr.local",
   markdown: {
     rehypePlugins: [rehypeSlug],
     shikiConfig: {

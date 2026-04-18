@@ -20,212 +20,316 @@ const kind = category === "pipeline" ? "Pipeline" : "Module"
 const cliInvoke = `bohr ${cliName}`
 
 const toc = [
-  { href: "#workflow-quick", label: "Quick reference" },
-  { href: "#workflow-glance", label: "At a glance" },
-  { href: "#workflow-run", label: "How to run" },
-  { href: "#workflow-flow", label: "Flow diagram" },
-  { href: "#workflow-guide", label: "Detailed guide" },
-]
+  { href: "#workflow-quick", label: "Quick reference", detail: "Command, type, and CLI entry point" },
+  { href: "#workflow-glance", label: "At a glance", detail: "Core outcomes and what this workflow covers" },
+  { href: "#workflow-run", label: "How to run", detail: "Prompting guidance and execution patterns" },
+  { href: "#workflow-flow", label: "Flow diagram", detail: "Stage ordering and agent handoffs" },
+  { href: "#workflow-guide", label: "Detailed guide", detail: "Full walkthrough, notes, and examples" },
+] as const
+
+const sidebarResources = [
+  {
+    href: `/docs/${docsSlug}`,
+    label: "Full documentation",
+    detail: "Arguments, examples, and troubleshooting",
+  },
+  {
+    href: "/docs/reference/slash-commands",
+    label: "Slash command reference",
+    detail: "Syntax and related command families",
+  },
+  {
+    href: "/workflows",
+    label: "All workflows",
+    detail: "Browse the rest of the workflow catalog",
+  },
+] as const
 ---
 
-<Layout title={`${title} — Workflow · Bohr AI`} description={summary} active="explore">
-  <div class="page-gutter-x pb-20 pt-8 sm:pt-10">
-    <nav class="mb-8 text-[13px] text-muted-foreground" aria-label="Breadcrumb">
-      <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
-        <li>
-          <a href="/workflows" class="transition-colors hover:text-foreground">Workflows</a>
-        </li>
-        <li class="text-border" aria-hidden="true">/</li>
-        <li class="text-foreground">{title}</li>
-      </ol>
-    </nav>
+<Layout title={`${title} - Workflow - Bohr AI`} description={summary} active="explore">
+  <div class="page-gutter-x pb-10 pt-6 sm:pt-8 lg:pb-6">
+    <div class="lg:grid lg:grid-cols-[18.5rem_minmax(0,1fr)] lg:items-stretch lg:gap-6 xl:grid-cols-[20rem_minmax(0,1fr)] xl:gap-8">
+      <aside
+        class="workflow-sidebar mb-6 lg:mb-0 lg:h-[calc(100dvh-7.75rem)] lg:overflow-hidden"
+        aria-label="Workflow navigation"
+      >
+        <div class="workflow-sidebar-scroll workflow-surface rounded-2xl border border-border/60 bg-[color-mix(in_oklab,var(--card)_90%,var(--background))] p-4 shadow-[0_18px_48px_-26px_rgba(0,0,0,0.22)] dark:bg-[color-mix(in_oklab,var(--card)_90%,black)] lg:flex lg:h-full lg:flex-col lg:overflow-y-auto lg:p-5">
+          <div class="border-b border-border/40 pb-4">
+            <nav class="docs-breadcrumb" aria-label="Breadcrumb">
+              <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <li>
+                  <a href="/workflows">Workflows</a>
+                </li>
+                <li class="text-border" aria-hidden="true">/</li>
+                <li class="text-[var(--bohr-shell-fg)]">{title}</li>
+              </ol>
+            </nav>
 
-    <div class="lg:grid lg:grid-cols-[minmax(0,1fr)_13.5rem] xl:grid-cols-[minmax(0,1fr)_15rem] lg:items-start lg:gap-10 xl:gap-14">
-      <div class="min-w-0">
-        <header class="mb-10 max-w-3xl">
-          <div class="mb-4">
-            <span
-              class:list={[
-                "inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
-                category === "pipeline"
-                  ? "border-primary/35 bg-primary/10 text-primary"
-                  : "border-border bg-muted/50 text-muted-foreground",
-              ]}
-            >
-              {kind}
-            </span>
-          </div>
-          <h1 class="text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{title}</h1>
-          <p class="mt-4 text-lg leading-relaxed text-muted-foreground">{summary}</p>
-        </header>
-
-        <section
-          id="workflow-quick"
-          class="workflow-surface mb-10 max-w-3xl scroll-mt-24 rounded-2xl border border-border/80 bg-muted/25 p-5 sm:p-6"
-          aria-labelledby="workflow-quick-h"
-        >
-          <h2 id="workflow-quick-h" class="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            Quick reference
-          </h2>
-          <dl class="grid gap-5 sm:grid-cols-3 sm:gap-6">
-            <div>
-              <dt class="text-xs font-medium text-muted-foreground">Type</dt>
-              <dd class="mt-1.5 text-sm font-medium text-foreground">{kind}</dd>
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+              <span
+                class:list={[
+                  "inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
+                  category === "pipeline"
+                    ? "border-primary/35 bg-primary/10 text-primary"
+                    : "border-border bg-muted/50 text-muted-foreground",
+                ]}
+              >
+                {kind}
+              </span>
+              <span class="rounded-full border border-border/60 px-2 py-0.5 font-[family-name:var(--font-cli)] text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                {toc.length} sections
+              </span>
             </div>
-            <div>
-              <dt class="text-xs font-medium text-muted-foreground">Slash command</dt>
-              <dd class="mt-1.5 flex flex-wrap items-center gap-2">
-                <code class="rounded-md border border-border/70 bg-background/80 px-2.5 py-1.5 font-mono text-[13px] text-foreground">
-                  {slashCommand}
-                </code>
+
+            <p class="mt-4 text-sm font-medium leading-relaxed text-[var(--bohr-shell-fg)]">{title}</p>
+          </div>
+
+          <section class="mt-5" aria-labelledby="workflow-sidebar-run">
+            <p id="workflow-sidebar-run" class="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Run
+            </p>
+            <div class="mt-3 space-y-2">
+              <div class="flex items-center gap-2 rounded-lg px-2 py-2">
+                <code class="min-w-0 flex-1 truncate font-[family-name:var(--font-cli)] text-[11px] text-[var(--bohr-shell-fg)]">{slashCommand}</code>
                 <button
                   type="button"
-                  class="rounded-md border border-border/60 bg-background px-2 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  class="rounded-md border border-border/60 bg-background px-2 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   data-copy-workflow={slashCommand}
                   aria-label={`Copy ${slashCommand}`}
                 >
                   Copy
                 </button>
-              </dd>
-            </div>
-            <div>
-              <dt class="text-xs font-medium text-muted-foreground">CLI</dt>
-              <dd class="mt-1.5 flex flex-wrap items-center gap-2">
-                <code class="rounded-md border border-border/70 bg-background/80 px-2.5 py-1.5 font-mono text-[13px] text-foreground">
-                  {cliInvoke}
-                </code>
+              </div>
+              <div class="flex items-center gap-2 rounded-lg px-2 py-2">
+                <code class="min-w-0 flex-1 truncate font-[family-name:var(--font-cli)] text-[11px] text-[var(--bohr-shell-fg)]">{cliInvoke}</code>
                 <button
                   type="button"
-                  class="rounded-md border border-border/60 bg-background px-2 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  class="rounded-md border border-border/60 bg-background px-2 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   data-copy-workflow={cliInvoke}
                   aria-label={`Copy ${cliInvoke}`}
                 >
                   Copy
                 </button>
-              </dd>
+              </div>
             </div>
-          </dl>
-        </section>
+          </section>
 
-        <section id="workflow-glance" class="mb-12 max-w-3xl scroll-mt-24" aria-labelledby="workflow-glance-h">
-          <h2 id="workflow-glance-h" class="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            At a glance
-          </h2>
-          <ul class="workflow-surface space-y-3 rounded-2xl border border-border/80 bg-card/40 p-5 sm:p-6">
-            {
-              keyPoints.map((point) => (
-                <li class="flex gap-3 text-[15px] leading-relaxed text-foreground/95">
-                  <span class="mt-2 size-1.5 shrink-0 rounded-full bg-primary/80" aria-hidden="true" />
-                  <span>{point}</span>
-                </li>
-              ))
-            }
-          </ul>
-        </section>
-
-        <section id="workflow-run" class="mb-12 max-w-3xl scroll-mt-24" aria-labelledby="workflow-run-h">
-          <h2 id="workflow-run-h" class="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            How to run
-          </h2>
-          <div class="workflow-surface rounded-2xl border border-border/80 bg-muted/20 p-5 sm:p-6">
-            <p class="text-[15px] leading-relaxed text-foreground/95">
-              In the Bohr research shell (REPL), enter <code class="rounded border border-border/60 bg-background px-1.5 py-0.5 font-mono text-sm">{slashCommand}</code>
-              followed by your topic or instructions. From a terminal, invoke the CLI as <code class="rounded border border-border/60 bg-background px-1.5 py-0.5 font-mono text-sm">{cliInvoke}</code>
-              — refer to the documentation for arguments, profiles, and environment setup.
+          <section class="mt-5 border-t border-border/40 pt-5" aria-labelledby="workflow-toc-h">
+            <p id="workflow-toc-h" class="mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              On this page
             </p>
-          </div>
-        </section>
+            <nav class="workflow-toc" aria-labelledby="workflow-toc-h">
+              <ul class="space-y-2">
+                {
+                  toc.map((item) => (
+                    <li>
+                      <a
+                        href={item.href}
+                        class="workflow-toc-link block rounded-lg border border-transparent px-3 py-2.5 transition-colors hover:bg-muted/28"
+                        data-workflow-toc-link={item.href}
+                      >
+                        <span class="block text-[12px] font-medium text-muted-foreground transition-colors">{item.label}</span>
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
+            </nav>
+          </section>
 
-        <section id="workflow-flow" class="mb-14 scroll-mt-24" aria-labelledby="workflow-flow-h">
-          <div class="mb-5 max-w-2xl">
-            <h2 id="workflow-flow-h" class="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              Flow diagram
-            </h2>
-            <p class="mt-3 text-[15px] leading-relaxed text-muted-foreground">
-              Stages and agent labels are indicative; your configuration may swap or rename modules. Arrows show how work moves across the pipeline.
+          <section class="mt-5 border-t border-border/40 pt-5" aria-labelledby="workflow-sidebar-resources">
+            <p id="workflow-sidebar-resources" class="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Links
             </p>
-          </div>
-          <WorkflowPipelineDiagram
-            diagram={pipelineDiagram}
-            instanceId={entry.slug}
-            label={`${title} workflow pipeline`}
-          />
-        </section>
-
-        <section id="workflow-guide" class="scroll-mt-24" aria-label="Detailed guide">
-          <article
-            class="prose prose-neutral max-w-3xl dark:prose-invert prose-headings:scroll-mt-24 prose-headings:font-semibold prose-h2:text-xl prose-h3:text-lg prose-p:text-[15px] prose-p:leading-relaxed prose-li:text-[15px] prose-li:leading-relaxed prose-a:text-primary prose-a:no-underline hover:prose-a:underline"
-          >
-            <Content />
-          </article>
-        </section>
-
-        <aside
-          class="workflow-surface mt-14 max-w-3xl rounded-2xl border border-border/70 bg-muted/20 p-6 sm:p-8"
-          aria-labelledby="workflow-resources-h"
-        >
-          <h2 id="workflow-resources-h" class="text-base font-semibold text-foreground">
-            Documentation & links
-          </h2>
-          <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
-            Configuration options, examples, and troubleshooting live in the full workflow doc. Slash syntax for all commands is centralized in the reference.
-          </p>
-          <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <a
-              href={`/docs/${docsSlug}`}
-              class="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-            >
-              Full documentation
-              <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </a>
-            <a
-              href="/docs/reference/slash-commands"
-              class="inline-flex items-center justify-center rounded-lg border border-transparent px-4 py-2.5 text-sm font-medium text-primary underline-offset-4 hover:underline"
-            >
-              Slash commands reference
-            </a>
-            <a
-              href="/workflows"
-              class="inline-flex items-center justify-center rounded-lg border border-transparent px-4 py-2.5 text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-            >
-              All workflows
-            </a>
-          </div>
-        </aside>
-      </div>
-
-      <aside class="relative mb-12 hidden lg:mb-0 lg:block" aria-label="Section navigation">
-        <nav
-          class="workflow-toc sticky top-[calc(4rem+12px)] rounded-xl border border-border/60 bg-muted/15 p-4 text-sm"
-          aria-labelledby="workflow-toc-h"
-        >
-          <p id="workflow-toc-h" class="mb-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            On this page
-          </p>
-          <ul class="space-y-2 border-l border-border/70 pl-3">
-            {
-              toc.map((item) => (
-                <li>
-                  <a
-                    href={item.href}
-                    class="block py-0.5 text-muted-foreground transition-colors hover:text-foreground [&.wf-toc-active]:font-medium [&.wf-toc-active]:text-foreground"
-                    data-workflow-toc-link={item.href}
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
-        </nav>
+            <ul class="mt-3 space-y-2">
+              {
+                sidebarResources.map((item) => (
+                  <li>
+                    <a
+                      href={item.href}
+                      class="block rounded-lg border border-transparent px-3 py-2.5 transition-colors hover:bg-muted/28"
+                    >
+                      <span class="block text-[12px] font-medium text-[var(--bohr-shell-fg)]">{item.label}</span>
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </section>
+        </div>
       </aside>
+
+      <div class="workflow-main-shell min-w-0 lg:h-[calc(100dvh-7.75rem)] lg:overflow-hidden">
+        <div class="workflow-surface rounded-2xl border border-border/60 bg-[color-mix(in_oklab,var(--card)_92%,var(--background))] shadow-[0_20px_56px_-28px_rgba(0,0,0,0.34)] dark:bg-[color-mix(in_oklab,var(--card)_88%,black)] lg:flex lg:h-full lg:flex-col lg:overflow-hidden">
+          <div
+            id="workflow-content-scroll"
+            class="workflow-content-scroll p-5 sm:p-6 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-y-contain lg:p-8 xl:p-10"
+          >
+            <header class="mb-10 max-w-4xl border-b border-border/50 pb-8">
+              <div class="mb-4">
+                <span
+                  class:list={[
+                    "inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
+                    category === "pipeline"
+                      ? "border-primary/35 bg-primary/10 text-primary"
+                      : "border-border bg-muted/50 text-muted-foreground",
+                  ]}
+                >
+                  {kind}
+                </span>
+              </div>
+              <h1 class="text-balance font-['Cormorant_Garamond',Georgia,'Times_New_Roman',serif] text-[clamp(2.1rem,4.3vw,3.4rem)] font-semibold italic leading-[0.98] tracking-tight text-[var(--bohr-shell-fg)]">
+                {title}
+              </h1>
+              <p class="mt-4 max-w-3xl font-[family-name:var(--font-cli)] text-[13px] leading-relaxed text-neutral-700 dark:text-neutral-300">
+                {summary}
+              </p>
+            </header>
+
+            <section
+              id="workflow-quick"
+              class="workflow-surface mb-10 scroll-mt-12 rounded-2xl border border-border/70 bg-muted/18 p-5 sm:p-6"
+              aria-labelledby="workflow-quick-h"
+            >
+              <div class="mb-5 flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p id="workflow-quick-h" class="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    Quick reference
+                  </p>
+                  <p class="mt-2 text-[14px] leading-relaxed text-muted-foreground">
+                    Core invocation details and the exact command surfaces users will touch first.
+                  </p>
+                </div>
+              </div>
+
+              <dl class="grid gap-4 sm:grid-cols-3">
+                <div class="rounded-xl border border-border/60 bg-background/75 p-4">
+                  <dt class="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Type</dt>
+                  <dd class="mt-2 text-sm font-medium text-foreground">{kind}</dd>
+                </div>
+                <div class="rounded-xl border border-border/60 bg-background/75 p-4">
+                  <dt class="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Slash command</dt>
+                  <dd class="mt-2 flex flex-wrap items-center gap-2">
+                    <code class="rounded-md border border-border/70 bg-background/80 px-2.5 py-1.5 font-mono text-[13px] text-foreground">
+                      {slashCommand}
+                    </code>
+                    <button
+                      type="button"
+                      class="rounded-md border border-border/60 bg-background px-2 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      data-copy-workflow={slashCommand}
+                      aria-label={`Copy ${slashCommand}`}
+                    >
+                      Copy
+                    </button>
+                  </dd>
+                </div>
+                <div class="rounded-xl border border-border/60 bg-background/75 p-4">
+                  <dt class="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">CLI</dt>
+                  <dd class="mt-2 flex flex-wrap items-center gap-2">
+                    <code class="rounded-md border border-border/70 bg-background/80 px-2.5 py-1.5 font-mono text-[13px] text-foreground">
+                      {cliInvoke}
+                    </code>
+                    <button
+                      type="button"
+                      class="rounded-md border border-border/60 bg-background px-2 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      data-copy-workflow={cliInvoke}
+                      aria-label={`Copy ${cliInvoke}`}
+                    >
+                      Copy
+                    </button>
+                  </dd>
+                </div>
+              </dl>
+            </section>
+
+            <section id="workflow-glance" class="mb-12 scroll-mt-12" aria-labelledby="workflow-glance-h">
+              <div class="mb-5 max-w-3xl">
+                <p id="workflow-glance-h" class="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  At a glance
+                </p>
+                <p class="mt-2 text-[14px] leading-relaxed text-muted-foreground">
+                  The shortest useful summary of what this workflow is for and what it produces.
+                </p>
+              </div>
+
+              <ul class="workflow-surface space-y-3 rounded-2xl border border-border/70 bg-card/40 p-5 sm:p-6">
+                {
+                  keyPoints.map((point) => (
+                    <li class="flex gap-3 text-[15px] leading-relaxed text-foreground/95">
+                      <span class="mt-2 size-1.5 shrink-0 rounded-full bg-primary/80" aria-hidden="true" />
+                      <span>{point}</span>
+                    </li>
+                  ))
+                }
+              </ul>
+            </section>
+
+            <section id="workflow-run" class="mb-12 scroll-mt-12" aria-labelledby="workflow-run-h">
+              <div class="mb-5 max-w-3xl">
+                <p id="workflow-run-h" class="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  How to run
+                </p>
+                <p class="mt-2 text-[14px] leading-relaxed text-muted-foreground">
+                  Start with the slash command in the REPL for interactive work, or call the CLI when you need a shell-native invocation.
+                </p>
+              </div>
+
+              <div class="workflow-surface rounded-2xl border border-border/70 bg-muted/18 p-5 sm:p-6">
+                <p class="text-[15px] leading-relaxed text-foreground/95">
+                  In the Bohr research shell (REPL), enter <code class="rounded border border-border/60 bg-background px-1.5 py-0.5 font-mono text-sm">{slashCommand}</code>
+                  {" "}followed by your topic or instructions. From a terminal, invoke the CLI as{" "}
+                  <code class="rounded border border-border/60 bg-background px-1.5 py-0.5 font-mono text-sm">{cliInvoke}</code>.
+                  Refer to the linked documentation for arguments, profiles, and environment setup.
+                </p>
+              </div>
+            </section>
+
+            <section id="workflow-flow" class="mb-14 scroll-mt-12" aria-labelledby="workflow-flow-h">
+              <div class="mb-5 max-w-3xl">
+                <p id="workflow-flow-h" class="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  Flow diagram
+                </p>
+                <p class="mt-2 text-[14px] leading-relaxed text-muted-foreground">
+                  Stages and agent labels are indicative. Your configuration may swap or rename modules, but the diagram still shows the intended execution shape and handoff order.
+                </p>
+              </div>
+
+              <WorkflowPipelineDiagram
+                diagram={pipelineDiagram}
+                instanceId={entry.slug}
+                label={`${title} workflow pipeline`}
+              />
+            </section>
+
+            <section id="workflow-guide" class="scroll-mt-12" aria-labelledby="workflow-guide-h">
+              <div class="mb-5 max-w-3xl">
+                <p id="workflow-guide-h" class="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  Detailed guide
+                </p>
+                <p class="mt-2 text-[14px] leading-relaxed text-muted-foreground">
+                  Full notes, usage guidance, and the longer explanation for how this workflow behaves in practice.
+                </p>
+              </div>
+
+              <article
+                class="prose prose-neutral max-w-4xl dark:prose-invert prose-headings:scroll-mt-12 prose-headings:font-semibold prose-h2:text-xl prose-h3:text-lg prose-p:text-[15px] prose-p:leading-relaxed prose-li:text-[15px] prose-li:leading-relaxed prose-a:text-primary prose-a:no-underline hover:prose-a:underline"
+              >
+                <Content />
+              </article>
+            </section>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script is:inline>
     ;(function () {
+      var workflowWindow = window
+      var WORKFLOW_SCROLL_KEY = "__bohrWorkflowDetailScrollBound"
+      var WORKFLOW_HASH_KEY = "__bohrWorkflowDetailHashBound"
+      var WORKFLOW_SWAP_KEY = "__bohrWorkflowDetailSwapBound"
+
       function bindCopy() {
         document.querySelectorAll("[data-copy-workflow]").forEach(function (btn) {
           if (btn.dataset.copyBound) return
@@ -247,54 +351,124 @@ const toc = [
         })
       }
 
-      /** Highlight TOC link matching hash or scroll position */
+      function bindTocLinks() {
+        document.querySelectorAll("[data-workflow-toc-link]").forEach(function (link) {
+          if (link.dataset.tocBound) return
+          link.dataset.tocBound = "true"
+          link.addEventListener("click", function (event) {
+            var href = link.getAttribute("href") || ""
+            if (!href || href.charAt(0) !== "#") return
+            var target = document.getElementById(href.slice(1))
+            if (!target) return
+            event.preventDefault()
+            target.scrollIntoView({ behavior: "smooth", block: "start" })
+            if (window.history && window.history.replaceState) {
+              window.history.replaceState(null, "", href)
+            }
+            syncToc()
+          })
+        })
+      }
+
+      function sectionOffsetTop(section, container) {
+        if (!section) return 0
+        if (!container || !window.matchMedia("(min-width: 1024px)").matches) return section.offsetTop
+        return container.scrollTop + section.getBoundingClientRect().top - container.getBoundingClientRect().top
+      }
+
       function syncToc() {
         var links = document.querySelectorAll("[data-workflow-toc-link]")
         links.forEach(function (a) {
           a.classList.remove("wf-toc-active")
         })
+
         var hash = (window.location.hash || "").slice(1)
         if (hash) {
-          var match = document.querySelector('[data-workflow-toc-link="#' + hash + '"]')
-          if (match) match.classList.add("wf-toc-active")
-          return
+          var explicitMatch = document.querySelector('[data-workflow-toc-link="#' + hash + '"]')
+          if (explicitMatch) explicitMatch.classList.add("wf-toc-active")
         }
+
         var sections = ["workflow-quick", "workflow-glance", "workflow-run", "workflow-flow", "workflow-guide"]
-        var scrollY = window.scrollY + 120
+        var container = document.getElementById("workflow-content-scroll")
+        var scrollY = container && window.matchMedia("(min-width: 1024px)").matches ? container.scrollTop + 120 : window.scrollY + 120
         var activeId = sections[0]
+
         for (var i = sections.length - 1; i >= 0; i--) {
           var el = document.getElementById(sections[i])
-          if (el && el.offsetTop <= scrollY) {
+          if (el && sectionOffsetTop(el, container) <= scrollY) {
             activeId = sections[i]
             break
           }
         }
+
         var link = document.querySelector('[data-workflow-toc-link="#' + activeId + '"]')
         if (link) link.classList.add("wf-toc-active")
       }
 
-      bindCopy()
-      syncToc()
-      window.addEventListener("scroll", syncToc, { passive: true })
-      window.addEventListener("hashchange", syncToc)
-      document.addEventListener("astro:after-swap", function () {
+      function jumpToHashIfNeeded() {
+        var hash = (window.location.hash || "").slice(1)
+        if (!hash) return
+        var target = document.getElementById(hash)
+        if (!target) return
+        target.scrollIntoView({ block: "start" })
+      }
+
+      function bind() {
         bindCopy()
+        bindTocLinks()
+        jumpToHashIfNeeded()
         syncToc()
-      })
+
+        var contentScroll = document.getElementById("workflow-content-scroll")
+        if (contentScroll && !contentScroll.dataset.scrollBound) {
+          contentScroll.dataset.scrollBound = "true"
+          contentScroll.addEventListener("scroll", syncToc, { passive: true })
+        }
+      }
+
+      bind()
+      if (!workflowWindow[WORKFLOW_SCROLL_KEY]) {
+        window.addEventListener("scroll", syncToc, { passive: true })
+        workflowWindow[WORKFLOW_SCROLL_KEY] = true
+      }
+      if (!workflowWindow[WORKFLOW_HASH_KEY]) {
+        window.addEventListener("hashchange", syncToc)
+        workflowWindow[WORKFLOW_HASH_KEY] = true
+      }
+      if (!workflowWindow[WORKFLOW_SWAP_KEY]) {
+        document.addEventListener("astro:after-swap", bind)
+        workflowWindow[WORKFLOW_SWAP_KEY] = true
+      }
     })()
   </script>
 </Layout>
 
 <style>
+  .workflow-sidebar-scroll,
+  .workflow-content-scroll {
+    scrollbar-gutter: stable;
+  }
+
   .workflow-surface {
     box-shadow: inset 0 1px 0 0 oklch(1 0 0 / 0.04);
   }
+
   :global(.dark) .workflow-surface {
     box-shadow: inset 0 1px 0 0 oklch(1 0 0 / 0.06);
   }
-  .workflow-toc a.wf-toc-active {
-    margin-left: -13px;
-    padding-left: 11px;
-    border-left: 2px solid var(--primary);
+
+  .workflow-toc .workflow-toc-link.wf-toc-active {
+    background: color-mix(in oklab, var(--bohr-shell-fg) 5%, var(--background));
+    box-shadow: none;
+  }
+
+  .workflow-toc .workflow-toc-link.wf-toc-active span:first-child {
+    color: var(--bohr-shell-fg);
+  }
+
+  @media (min-width: 1024px) {
+    :global(body) {
+      overflow-y: hidden;
+    }
   }
 </style>

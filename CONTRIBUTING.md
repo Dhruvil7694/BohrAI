@@ -4,10 +4,10 @@ Bohr is a research-first CLI built on Pi and alphaXiv. This guide is for humans 
 
 ## Quick Links
 
-- GitHub: https://github.com/your-org/bohr-ai
+- GitHub: https://github.com/Dhruvil7694/BohrAI
 - Docs: https://bohr-ai.internal/docs
 - Repo agent contract: [AGENTS.md](AGENTS.md)
-- Issues: https://github.com/your-org/bohr-ai/issues
+- Issues: https://github.com/Dhruvil7694/BohrAI/issues
 
 ## What Goes Where
 

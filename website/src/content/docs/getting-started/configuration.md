@@ -2,7 +2,7 @@
 title: Configuration
 description: Understand Bohr AI configuration files and environment variables.
 section: Getting Started
-order: 4
+order: 5
 ---
 
 Bohr AI stores all configuration and state under `~/.bohr/`. This directory is created on first run and contains settings, authentication tokens, session history, and installed packages.
@@ -98,6 +98,8 @@ Bohr AI respects the following environment variables, which take precedence over
 | `AWS_PROFILE` | Preferred AWS profile for Amazon Bedrock |
 | `TAVILY_API_KEY` | Tavily web search API key |
 | `SERPER_API_KEY` | Serper web search API key |
+
+For optional paper-generator token tuning (`CAVEMAN_MODE_DEFAULT`, `ENABLE_TOKEN_OPTIMIZATION`), see [Token optimization & caveman mode](/docs/reference/token-optimization). For illustrative **$/run** planning by provider, see [Cost & token estimation](/docs/reference/cost-token-estimation).
 
 ## Session storage
 

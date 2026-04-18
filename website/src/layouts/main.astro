@@ -1,7 +1,8 @@
 ---
 import "@/styles/global.css"
-import { ViewTransitions } from "astro:transitions"
+import { ClientRouter, fade, slide } from "astro:transitions"
 import Navbar from "../components/Navbar.astro"
+import Footer from "../components/Footer.astro"
 
 interface Props {
   title?: string
@@ -19,21 +20,21 @@ const {
 } = Astro.props
 ---
 
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="description" content={description} />
-    <title>{title}</title>
+    <title transition:animate={fade({ duration: "0.2s" })}>{title}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&family=VT323&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,500;1,600;1,700&family=Inter:wght@500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&family=VT323&display=swap"
       rel="stylesheet"
     />
-    <ViewTransitions />
+    <ClientRouter fallback="animate" />
     <script is:inline>
       ;(function () {
         const theme = localStorage.getItem("theme")
@@ -47,23 +48,27 @@ const {
   </head>
   <body
     class:list={[
-      "flex min-h-screen flex-col antialiased",
+      "flex min-h-screen flex-col antialiased bg-background text-foreground",
       shell === "cli"
-        ? "overflow-x-clip bg-[#050505] text-[#d4d4d4] selection:bg-[#e5e5e5] selection:text-[#0a0a0a]"
-        : "bg-background text-foreground",
+        ? "overflow-x-clip selection:bg-neutral-900/15 selection:text-foreground dark:bg-[#050505] dark:text-neutral-300 dark:selection:bg-[#e5e5e5] dark:selection:text-neutral-950"
+        : "",
     ]}
   >
-    <Navbar active={active} variant="cli" />
+    <Navbar active={active} />
 
     <main
+      transition:animate={slide({ duration: "0.3s" })}
       class:list={[
         "flex min-h-0 w-full min-w-0 flex-1 flex-col overflow-x-hidden",
         shell === "cli"
-          ? "pt-[5.25rem] font-[family-name:var(--font-cli)] text-[#d4d4d4] sm:pt-[4.75rem] md:pt-14"
+          ? "pt-[5.25rem] font-[family-name:var(--font-cli)] text-foreground sm:pt-[4.75rem] md:pt-14 dark:text-neutral-300"
           : "pt-[5.25rem] sm:pt-[4.75rem] md:pt-14",
       ]}
     >
       <slot />
     </main>
+    <div transition:persist="site-footer">
+      <Footer />
+    </div>
   </body>
 </html>

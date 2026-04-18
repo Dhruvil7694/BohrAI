@@ -8,11 +8,15 @@ entries.sort((a, b) => a.data.order - b.data.order)
 ---
 
 <Layout title="Agents — Bohr AI" description="Bundled research agents: roles, inputs, and when they run." active="explore">
-  <div class="w-full pb-20 pt-10">
-    <header class="page-gutter-x mb-10 w-full">
-      <p class="hub-kicker mb-2">Reference</p>
-      <h1 class="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Agents</h1>
-      <p class="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
+  <div class="w-full pb-20 pt-10 sm:pt-12">
+    <header class="page-gutter-x mb-12 w-full max-w-none">
+      <p class="hub-kicker mb-2">— EXPLORE · AGENTS</p>
+      <h1
+        class="mt-6 font-['Cormorant_Garamond',Georgia,'Times_New_Roman',serif] text-[clamp(1.85rem,3.8vw,2.75rem)] font-normal italic leading-[1.12] tracking-tight text-[var(--bohr-shell-fg)]"
+      >
+        Agents
+      </h1>
+      <p class="mt-5 max-w-3xl font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-neutral-700 sm:text-[13px] dark:text-neutral-300">
         Each entry is a specialized Pi subagent. Workflows dispatch them in sequence—you rarely call them by name. Open a card for inputs, outputs, and where the agent runs.
       </p>
     </header>
@@ -21,7 +25,7 @@ entries.sort((a, b) => a.data.order - b.data.order)
       <label class="sr-only" for="agent-filter">Filter agents</label>
       <input
         id="agent-filter"
-        class="hub-search w-full"
+        class="hub-search max-w-none rounded-[2px] border-[color:var(--bohr-shell-border)] font-[family-name:var(--font-cli)] text-[12px] sm:max-w-xl"
         type="search"
         placeholder="Filter by name, role, or tag…"
         autocomplete="off"
@@ -40,41 +44,73 @@ entries.sort((a, b) => a.data.order - b.data.order)
             <li class="min-w-0" data-hub-card data-search={searchBlob}>
               <a
                 href={`/docs/${e.slug}`}
-                class="agent-card-pro group flex h-full min-h-[280px] w-full flex-col rounded-lg border border-neutral-200 bg-white p-3 text-left shadow-[0_2px_16px_rgba(15,23,42,0.06)] transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(15,23,42,0.1)] dark:border-white/[0.09] dark:bg-[#060606] dark:shadow-none dark:hover:shadow-[0_10px_36px_rgba(0,0,0,0.55)] sm:min-h-[300px]"
+                class="agent-card-pro group relative flex h-full min-h-[260px] w-full flex-col overflow-hidden rounded-2xl border border-border/45 bg-gradient-to-b from-card/95 via-card/80 to-muted/15 p-5 text-left font-sans shadow-[0_12px_40px_-16px_rgba(0,0,0,0.65)] ring-1 ring-border/30 transition-[border-color,box-shadow,transform] duration-200 ease-out hover:-translate-y-1 hover:border-primary/35 hover:shadow-[0_20px_44px_-22px_rgba(0,0,0,0.72)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:min-h-[272px] sm:p-6"
               >
-                {/* Single dark-grey inset panel for every card */}
-                <div class="flex min-h-[11rem] flex-1 flex-col rounded-md bg-black px-6 pb-7 pt-8 sm:min-h-[12.5rem] sm:px-7 sm:pb-8 sm:pt-9 dark:bg-black">
-                  <h2 class="text-xl font-bold uppercase tracking-wide leading-snug text-white sm:text-2xl">{e.data.title}</h2>
-                  <p class="mt-3 line-clamp-4 text-sm leading-relaxed text-neutral-200 sm:text-[15px]">
-                    {e.data.description}
-                  </p>
-                  <div class="mt-auto flex flex-wrap gap-2 pt-6">
+                <span
+                  data-agent-card-glow
+                  class="pointer-events-none absolute inset-x-6 top-0 h-24 rounded-full bg-[radial-gradient(circle_at_top,rgba(34,197,94,0.2),transparent_72%)] opacity-0 blur-2xl transition-opacity duration-200 group-hover:opacity-100 dark:bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.22),transparent_72%)]"
+                  aria-hidden="true"
+                />
+                <span
+                  data-agent-card-grid
+                  class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                  aria-hidden="true"
+                >
+                  <span class="absolute inset-x-0 top-6 border-t border-dashed border-border/45" />
+                  <span class="absolute inset-y-0 right-7 border-r border-dashed border-border/35" />
+                </span>
+
+                <div class="relative z-[1] flex h-full flex-col">
+                  <div class="mb-4 flex flex-wrap items-center gap-2">
                     {tags.map((tag) => (
-                      <span class="inline-flex max-w-full items-center truncate rounded-full bg-black px-3 py-1 text-[11px] font-medium leading-none text-white sm:text-xs">
+                      <span
+                        data-agent-card-chip
+                        class="inline-flex max-w-full items-center truncate rounded-full border border-border bg-muted/50 px-2.5 py-0.5 font-[family-name:var(--font-cli)] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground transition-[border-color,color] duration-200 group-hover:border-primary/30 group-hover:text-foreground"
+                      >
                         {tag}
                       </span>
                     ))}
                   </div>
-                </div>
 
-                <div class="mt-3 flex shrink-0 items-center justify-between gap-3 px-1 pb-1 pt-2">
-                  <span class="text-sm font-bold text-neutral-950 dark:text-neutral-100">
-                    Explore {e.data.title}
-                  </span>
-                  <svg
-                    class="size-5 shrink-0 text-neutral-950 transition-transform duration-200 group-hover:translate-x-0.5 dark:text-neutral-100"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
+                  <div class="flex flex-1 flex-col">
+                    <div class="mb-4 flex items-start justify-between gap-3">
+                      <h2
+                        data-agent-card-title
+                        class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--bohr-shell-fg)] transition-colors duration-200 group-hover:text-primary sm:text-[12px]"
+                      >
+                        {e.data.title}
+                      </h2>
+                      <span class="shrink-0 rounded-full border border-border/60 px-2 py-0.5 font-[family-name:var(--font-cli)] text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                        Agent
+                      </span>
+                    </div>
+
+                    <p class="line-clamp-4 flex-1 font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-neutral-600 sm:text-[13px] dark:text-neutral-400">
+                      {e.data.description}
+                    </p>
+                  </div>
+
+                  <span
+                    data-agent-card-cta
+                    class="mt-6 inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-primary transition-colors duration-200"
                   >
-                    <path d="M5 12h14" />
-                    <path d="m12 5 7 7-7 7" />
-                  </svg>
+                    Open reference
+                    <svg
+                      data-agent-card-arrow
+                      class="size-4 shrink-0"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M5 12h14" />
+                      <path d="m12 5 7 7-7 7" />
+                    </svg>
+                  </span>
                 </div>
               </a>
             </li>
@@ -104,11 +140,70 @@ entries.sort((a, b) => a.data.order - b.data.order)
       document.addEventListener("astro:after-swap", bind)
     })()
   </script>
+
+  <script>
+    import { gsap } from "gsap"
+
+    type AgentMotionWindow = Window & {
+      __bohrAgentMotionBound?: boolean
+      __bohrAgentMotionCleanup?: () => void
+      __bohrAgentMotionFrame?: number
+    }
+
+    const agentMotionWindow = window as AgentMotionWindow
+
+    function clearCardStyles(cards: HTMLElement[]) {
+      cards.forEach((card) => {
+        card.removeAttribute("style")
+      })
+    }
+
+    function initAgentMotion() {
+      agentMotionWindow.__bohrAgentMotionCleanup?.()
+      agentMotionWindow.__bohrAgentMotionCleanup = undefined
+
+      const cards = gsap.utils.toArray<HTMLElement>(".agent-card-pro")
+      if (cards.length === 0) return
+
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        clearCardStyles(cards)
+        return
+      }
+
+      let tween: gsap.core.Tween | undefined
+      const frame = window.requestAnimationFrame(() => {
+        tween = gsap.fromTo(
+          cards,
+          { autoAlpha: 0, y: 18 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.45,
+            ease: "power2.out",
+            overwrite: true,
+            clearProps: "opacity,visibility,transform",
+          },
+        )
+      })
+      agentMotionWindow.__bohrAgentMotionFrame = frame
+
+      agentMotionWindow.__bohrAgentMotionCleanup = () => {
+        if (agentMotionWindow.__bohrAgentMotionFrame) {
+          window.cancelAnimationFrame(agentMotionWindow.__bohrAgentMotionFrame)
+          agentMotionWindow.__bohrAgentMotionFrame = undefined
+        }
+        tween?.kill()
+        clearCardStyles(cards)
+      }
+    }
+
+    initAgentMotion()
+
+    if (!agentMotionWindow.__bohrAgentMotionBound) {
+      document.addEventListener("astro:page-load", initAgentMotion)
+      document.addEventListener("astro:after-swap", initAgentMotion)
+      agentMotionWindow.__bohrAgentMotionBound = true
+    }
+  </script>
 </Layout>
 
-<style>
-  .agent-card-pro:focus-visible {
-    outline: 2px solid var(--ring);
-    outline-offset: 3px;
-  }
-</style>

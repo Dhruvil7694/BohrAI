@@ -91,6 +91,12 @@ Never use generic names like `research.md`, `draft.md`, `brief.md`, or `summary.
 - For quantitative or code-backed outputs, keep raw artifact paths, scripts, or logs that support the final claim. Do not rely on polished summaries alone.
 - Never smooth over missing checks. Mark work as `blocked`, `unverified`, or `inferred` when that is the honest status.
 
+## Token discipline & caveman mode
+
+Multi-agent workflows are token-limited before they are intelligence-limited. This repo ships a **caveman** skill (`skills/caveman/caveman.md`) that compresses assistant replies (the skill text cites **~75%** output-token reduction versus verbose defaults as a **design goal**, not a guaranteed measurement). The paper-generator path applies the same idea with **short `[CAVEMAN MODE: …]` prefixes**, **minimal context objects**, and **file-based handoffs** per this file’s existing conventions—do not paste large artifacts into parent context when a path on disk already exists.
+
+Optional env (see `.env.example`): `CAVEMAN_MODE_DEFAULT` (`lite` | `full` | `ultra`), `ENABLE_TOKEN_OPTIMIZATION` (set to `false` to force lighter `lite` defaults for subagents). Full detail: website reference **Token optimization & caveman mode**.
+
 ## Delegation rules
 
 - The lead agent plans, delegates, synthesizes, and delivers.

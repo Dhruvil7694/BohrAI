@@ -1,43 +1,130 @@
 ---
-interface Props {
-  variant?: "default" | "cli"
+import { BOHR_SEMVER } from "@/data/bohr-root-version"
+import { BOHR_GITHUB_REPO_URL } from "@/data/site-urls"
+
+function yearToRoman(year: number): string {
+  const pairs: [number, string][] = [
+    [1000, "M"],
+    [900, "CM"],
+    [500, "D"],
+    [400, "CD"],
+    [100, "C"],
+    [90, "XC"],
+    [50, "L"],
+    [40, "XL"],
+    [10, "X"],
+    [9, "IX"],
+    [5, "V"],
+    [4, "IV"],
+    [1, "I"],
+  ]
+  let n = year
+  let out = ""
+  for (const [v, s] of pairs) {
+    while (n >= v) {
+      out += s
+      n -= v
+    }
+  }
+  return out
 }
 
-const { variant = "default" } = Astro.props
-const cli = variant === "cli"
+const yearRoman = yearToRoman(new Date().getFullYear())
+
+const productLinks = [
+  { label: "Agents", href: "/agents" },
+  { label: "Workflows", href: "/workflows" },
+  { label: "Process", href: "/how-it-works" },
+] as const
+
+const docsLinks: { label: string; href: string; external?: boolean }[] = [
+  { label: "Quickstart", href: "/docs/getting-started/quickstart" },
+  { label: "Slash commands", href: "/docs/reference/slash-commands" },
+  { label: "Reference", href: "/docs/reference/package-stack" },
+  { label: "GitHub", href: BOHR_GITHUB_REPO_URL, external: true },
+]
 ---
 
 <footer
-  class:list={[
-    cli ? "border-t border-[#262626] bg-[#050505]" : "border-t border-border/60",
-  ]}
+  class="border-t border-[color:var(--bohr-shell-border)] bg-[var(--bohr-shell-bg)] text-[var(--bohr-shell-fg)]"
+  aria-label="Site footer"
 >
-  <div
-    class:list={[
-      "mx-auto flex w-full max-w-none flex-col items-center justify-between gap-3 px-3 py-6 sm:flex-row sm:px-5 md:px-8 lg:px-10 xl:px-12",
-      cli ? "font-[family-name:var(--font-cli)] text-xs text-[#737373]" : "",
-    ]}
-  >
-    <p class:list={[cli ? "" : "text-sm text-muted-foreground"]}>
-      &copy; {new Date().getFullYear()} Bohr — research-first CLI on Pi.
-    </p>
-    <div class:list={["flex items-center gap-4", cli ? "text-[#a3a3a3]" : "text-sm"]}>
-      <a
-        href="/docs"
-        class:list={[
-          cli
-            ? "transition-colors hover:text-[#fafafa] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#737373]"
-            : "text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        ]}>Documentation</a
-      >
-      <a
-        href="/docs/getting-started/installation"
-        class:list={[
-          cli
-            ? "transition-colors hover:text-[#fafafa] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#737373]"
-            : "text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        ]}>Installation</a
-      >
+  <div class="mx-auto w-full max-w-none px-4 pb-8 pt-12 sm:px-5 sm:pb-10 md:px-6 lg:px-8 lg:pb-12 lg:pt-14 xl:px-10">
+    <div class="font-[family-name:var(--font-cli)]">
+      <div class="grid gap-12 sm:gap-14 lg:grid-cols-[minmax(0,1.35fr)_repeat(3,minmax(0,1fr))] lg:gap-10 xl:gap-14">
+        <div class="max-w-md">
+          <p class="text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--bohr-shell-fg)]">BOHR/AI</p>
+          <p class="mt-4 text-[12px] leading-relaxed text-neutral-600 sm:text-[13px] dark:text-neutral-300">
+            A research shell for people who write papers.
+          </p>
+        </div>
+
+        <div>
+          <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-500 sm:text-[11px]">Product</p>
+          <ul class="mt-5 space-y-3 text-[12px] sm:text-[13px]" role="list">
+            {productLinks.map((item) => (
+              <li>
+                <a
+                  class="text-neutral-700 transition-transform duration-200 ease-out hover:translate-x-1 hover:text-[var(--bohr-shell-fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/25 dark:text-neutral-200 dark:hover:text-[#fafafa] dark:focus-visible:ring-white/30"
+                  href={item.href}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-500 sm:text-[11px]">Docs</p>
+          <ul class="mt-5 space-y-3 text-[12px] sm:text-[13px]" role="list">
+            {docsLinks.map((item) => (
+              <li>
+                <a
+                  class="text-neutral-700 transition-transform duration-200 ease-out hover:translate-x-1 hover:text-[var(--bohr-shell-fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/25 dark:text-neutral-200 dark:hover:text-[#fafafa] dark:focus-visible:ring-white/30"
+                  href={item.href}
+                  target={item.external ? "_blank" : undefined}
+                  rel={item.external ? "noopener noreferrer" : undefined}
+                >
+                  {item.label}
+                  {item.external ? <span class="sr-only"> (opens in new tab)</span> : null}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-500 sm:text-[11px]">Colophon</p>
+          <ul class="mt-5 space-y-3 text-[12px] text-neutral-800 sm:text-[13px] dark:text-neutral-200" role="list">
+            <li class="tabular-nums">v{BOHR_SEMVER}</li>
+            <li>
+              <a
+                class="text-sky-700 underline decoration-sky-600/45 underline-offset-[5px] transition-colors hover:text-sky-900 hover:decoration-sky-700/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-600/40 dark:text-sky-400/90 dark:decoration-sky-500/40 dark:hover:text-sky-300 dark:hover:decoration-sky-400/60 dark:focus-visible:ring-sky-500/40"
+                href="https://opensource.org/licenses/MIT"
+                rel="noopener noreferrer"
+              >
+                MIT licensed
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="border-t border-[color:var(--bohr-shell-border)]">
+    <div
+      class="mx-auto flex w-full max-w-none flex-row flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-6 font-[family-name:var(--font-cli)] sm:px-5 sm:py-7 md:px-6 lg:px-8 xl:px-10"
+    >
+      <p class="min-w-0 text-left text-[10px] uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-600">
+        COPYRIGHT {yearRoman} - Bohr Laboratory
+      </p>
+      <p class="min-w-0 text-right text-[10px] leading-relaxed text-neutral-600 dark:text-neutral-400">
+        <span class="uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-500">Made by</span>
+        <span class="mx-1.5 text-neutral-400 dark:text-neutral-600" aria-hidden="true">|</span>
+        <span class="font-medium text-[var(--bohr-shell-fg)]">Dhruvil Patel</span>
+      </p>
     </div>
   </div>
 </footer>

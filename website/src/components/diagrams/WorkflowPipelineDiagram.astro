@@ -253,10 +253,10 @@ const stages = diagram.columns.map((c) => c.stage)
     --wf-node-fill: oklch(1 0 0);
     --wf-node-stroke: oklch(0.85 0 0);
     --wf-node-text: oklch(0.22 0 0);
-    --wf-hero-fill: oklch(0.18 0 0);
-    --wf-hero-stroke: oklch(0.18 0 0);
-    --wf-hero-title: oklch(0.99 0 0);
-    --wf-hero-sub: oklch(0.82 0 0);
+    --wf-hero-fill: color-mix(in oklab, var(--card) 88%, var(--bohr-shell-bg));
+    --wf-hero-stroke: color-mix(in oklab, var(--bohr-shell-fg) 18%, var(--border));
+    --wf-hero-title: var(--bohr-shell-fg);
+    --wf-hero-sub: var(--bohr-shell-muted);
   }
 
   :global(.dark) .wf-dev-pipeline {

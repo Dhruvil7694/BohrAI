@@ -1,0 +1,39 @@
+---
+import {
+  BookOpenText,
+  Bot,
+  CodeXml,
+  Download,
+  House,
+  Moon,
+  Route,
+  SquareTerminal,
+  Sun,
+  Workflow,
+} from "lucide-react"
+
+interface Props {
+  name: "home" | "agents" | "workflows" | "process" | "commands" | "docs" | "install" | "github" | "sun" | "moon"
+  class?: string
+}
+
+const { name, class: className } = Astro.props
+const cls = ["size-4 shrink-0", className].filter(Boolean).join(" ")
+
+const icons = {
+  home: House,
+  agents: Bot,
+  workflows: Workflow,
+  process: Route,
+  commands: SquareTerminal,
+  docs: BookOpenText,
+  install: Download,
+  github: CodeXml,
+  sun: Sun,
+  moon: Moon,
+} as const
+
+const Icon = icons[name]
+---
+
+<Icon className={cls} size={16} strokeWidth={1.85} aria-hidden="true" />

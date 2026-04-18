@@ -2,7 +2,7 @@
 title: Quick Start
 description: Get up and running with Bohr AI in under five minutes.
 section: Getting Started
-order: 2
+order: 3
 ---
 
 This guide assumes you have already [installed Bohr AI](/docs/getting-started/installation) and run `bohr setup`. If not, start there first.

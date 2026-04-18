@@ -8,6 +8,7 @@ export const docsSidebarSections: DocNavSection[] = [
     title: "Getting started",
     items: [
       { label: "Installation", slug: "getting-started/installation" },
+      { label: "Why Bohr?", slug: "getting-started/why-bohr" },
       { label: "Quick start", slug: "getting-started/quickstart" },
       { label: "Setup", slug: "getting-started/setup" },
       { label: "Configuration", slug: "getting-started/configuration" },
@@ -104,6 +105,8 @@ export const docsSidebarSections: DocNavSection[] = [
       { label: "CLI commands", slug: "reference/cli-commands" },
       { label: "Slash commands", slug: "reference/slash-commands" },
       { label: "Package stack", slug: "reference/package-stack" },
+      { label: "Token optimization", slug: "reference/token-optimization" },
+      { label: "Cost & token estimation", slug: "reference/cost-token-estimation" },
     ],
   },
 ]

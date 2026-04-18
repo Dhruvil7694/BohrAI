@@ -37,13 +37,15 @@ const navSections = docsSidebarSections.map((section) => {
         <a
           href="/docs"
           class:list={[
-            "text-[13px] font-semibold tracking-tight transition-colors hover:text-foreground",
-            Astro.url.pathname === "/docs" ? "text-foreground" : "text-muted-foreground",
+            "font-[family-name:var(--font-cli)] text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors hover:text-[var(--bohr-shell-fg)]",
+            Astro.url.pathname === "/docs" ? "text-[var(--bohr-shell-fg)]" : "text-muted-foreground",
           ]}
         >
           Documentation
         </a>
-        <p class="mt-0.5 text-[11px] leading-snug text-muted-foreground/90">Guides &amp; reference</p>
+        <p class="mt-1 font-[family-name:var(--font-cli)] text-[10px] uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">
+          Guides &amp; reference
+        </p>
       </div>
 
       <nav class="flex flex-1 flex-col gap-0">

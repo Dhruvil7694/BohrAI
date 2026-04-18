@@ -11,17 +11,22 @@ const modules = entries.filter((e) => e.data.category === "module")
 ---
 
 <Layout
-  title="Workflows — Bohr AI"
+  title="Workflows - Bohr AI"
   description="Research pipelines and workflow modules: slash commands, flow diagrams, and deep-dive pages."
   active="explore"
 >
-  <div class="page-gutter-x pb-16 pt-8 sm:pt-10">
-    <header class="mb-10 max-w-3xl">
-      <p class="hub-kicker mb-2">Explore</p>
-      <h1 class="text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Workflows</h1>
-      <p class="mt-4 text-base leading-relaxed text-muted-foreground">
-        Each card opens a detail page with a flow diagram and short guide. Slash commands run in the REPL;{" "}
-        <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-sm">bohr …</code> maps to the same pipeline from the shell.
+  <div class="page-gutter-x pb-16 pt-10 sm:pt-12">
+    <header class="mb-12 max-w-3xl">
+      <p class="hub-kicker mb-2">- EXPLORE | WORKFLOWS</p>
+      <h1
+        class="mt-6 text-balance font-['Cormorant_Garamond',Georgia,'Times_New_Roman',serif] text-[clamp(1.85rem,3.8vw,2.75rem)] font-normal italic leading-[1.12] tracking-tight text-[var(--bohr-shell-fg)]"
+      >
+        Workflows
+      </h1>
+      <p class="mt-5 max-w-3xl font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-neutral-700 sm:text-[13px] dark:text-neutral-300">
+        Each card opens a detail page with a flow diagram and short guide. Slash commands run in the REPL;
+        <code class="rounded-[2px] border border-[color:var(--bohr-shell-border)] bg-muted/50 px-1.5 py-0.5 text-[11px] text-[var(--bohr-shell-fg)]">bohr ...</code>
+        maps to the same pipeline from the shell.
       </p>
     </header>
 
@@ -31,17 +36,18 @@ const modules = entries.filter((e) => e.data.category === "module")
         id="workflow-filter"
         class="wf-hub-search"
         type="search"
-        placeholder="Filter by name, slash command, or keyword…"
+        placeholder="Filter by name, slash command, or keyword..."
         autocomplete="off"
       />
     </div>
 
     <section class="mb-14" aria-labelledby="pipelines-heading">
+      <p class="wf-hub-kicker">- PIPELINES</p>
       <h2 id="pipelines-heading" class="wf-hub-section-title">End-to-end pipelines</h2>
-      <p class="mb-6 max-w-2xl text-sm text-muted-foreground">
-        Full research flows—literature, paper, audit, replication, and more.
+      <p class="mb-6 max-w-2xl font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-neutral-600 dark:text-neutral-400">
+        Full research flows - literature, paper, audit, replication, and more.
       </p>
-      <ul class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3" id="workflow-grid-pipelines">
+      <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4" id="workflow-grid-pipelines">
         {
           pipelines.map((e) => {
             const blob = `${e.data.title} ${e.data.summary} ${e.data.slashCommand} ${e.data.cliName} pipeline`.toLowerCase()
@@ -62,11 +68,12 @@ const modules = entries.filter((e) => e.data.category === "module")
     </section>
 
     <section aria-labelledby="modules-heading">
+      <p class="wf-hub-kicker">- MODULES</p>
       <h2 id="modules-heading" class="wf-hub-section-title">Workflow modules</h2>
-      <p class="mb-6 max-w-2xl text-sm text-muted-foreground">
-        Focused stages you can compose—hypothesis, graphs, citation checks, iteration, and more.
+      <p class="mb-6 max-w-2xl font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-neutral-600 dark:text-neutral-400">
+        Focused stages you can compose - hypothesis, graphs, citation checks, iteration, and more.
       </p>
-      <ul class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3" id="workflow-grid-modules">
+      <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4" id="workflow-grid-modules">
         {
           modules.map((e) => {
             const blob = `${e.data.title} ${e.data.summary} ${e.data.slashCommand} ${e.data.cliName} module`.toLowerCase()
@@ -89,10 +96,75 @@ const modules = entries.filter((e) => e.data.category === "module")
     <p class="mt-14 text-center text-sm text-muted-foreground">
       See how everything connects in{" "}
       <a class="font-medium text-primary underline underline-offset-2" href="/how-it-works">How it works</a>
-      {" · "}
+      {" | "}
       <a class="font-medium text-primary underline underline-offset-2" href="/docs/reference/slash-commands">Slash command reference</a>
     </p>
   </div>
+
+  <script>
+    import { gsap } from "gsap"
+
+    type WorkflowMotionWindow = Window & {
+      __bohrWorkflowMotionBound?: boolean
+      __bohrWorkflowMotionCleanup?: () => void
+      __bohrWorkflowMotionFrame?: number
+    }
+
+    const workflowMotionWindow = window as WorkflowMotionWindow
+
+    function clearCardStyles(cards: HTMLElement[]) {
+      cards.forEach((card) => {
+        card.removeAttribute("style")
+      })
+    }
+
+    function initWorkflowMotion() {
+      workflowMotionWindow.__bohrWorkflowMotionCleanup?.()
+      workflowMotionWindow.__bohrWorkflowMotionCleanup = undefined
+
+      const cards = gsap.utils.toArray<HTMLElement>(".wf-card")
+      if (cards.length === 0) return
+
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        clearCardStyles(cards)
+        return
+      }
+
+      let tween: gsap.core.Tween | undefined
+      const frame = window.requestAnimationFrame(() => {
+        tween = gsap.fromTo(
+          cards,
+          { autoAlpha: 0, y: 18 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.45,
+            ease: "power2.out",
+            overwrite: true,
+            clearProps: "opacity,visibility,transform",
+          },
+        )
+      })
+      workflowMotionWindow.__bohrWorkflowMotionFrame = frame
+
+      workflowMotionWindow.__bohrWorkflowMotionCleanup = () => {
+        if (workflowMotionWindow.__bohrWorkflowMotionFrame) {
+          window.cancelAnimationFrame(workflowMotionWindow.__bohrWorkflowMotionFrame)
+          workflowMotionWindow.__bohrWorkflowMotionFrame = undefined
+        }
+        tween?.kill()
+        clearCardStyles(cards)
+      }
+    }
+
+    initWorkflowMotion()
+
+    if (!workflowMotionWindow.__bohrWorkflowMotionBound) {
+      document.addEventListener("astro:page-load", initWorkflowMotion)
+      document.addEventListener("astro:after-swap", initWorkflowMotion)
+      workflowMotionWindow.__bohrWorkflowMotionBound = true
+    }
+  </script>
 
   <script is:inline>
     ;(function () {

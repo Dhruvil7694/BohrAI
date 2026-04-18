@@ -10,6 +10,11 @@ const highlights = [
     href: "/docs/getting-started/installation",
   },
   {
+    title: "Why Bohr?",
+    description: "Versus generic AI writers—grounding, workflows, savings.",
+    href: "/docs/getting-started/why-bohr",
+  },
+  {
     title: "Slash commands",
     description: "Every REPL command in one place.",
     href: "/docs/reference/slash-commands",
@@ -26,20 +31,38 @@ const highlights = [
   <DocsChrome>
     <article class="min-w-0 w-full max-w-none pb-12 lg:pb-16">
       <nav class="docs-breadcrumb mb-8" aria-label="Breadcrumb">
-        <span class="text-foreground">Docs</span>
+        <span class="text-[var(--bohr-shell-fg)]">Docs</span>
       </nav>
 
       <header class="mb-12">
-        <h1 class="docs-page-title">Docs</h1>
-        <p class="mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
-          Guides and reference for Bohr. For a visual overview, see{" "}
-          <a class="text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground" href="/explore">Explore</a>
+        <p class="hub-kicker mb-2">— DOCS · REFERENCE</p>
+        <h1 class="docs-page-title mt-6">Docs</h1>
+        <p class="docs-page-lede mt-5 max-w-xl">
+          Guides and reference for Bohr—including{" "}
+          <a
+            class="font-medium text-[var(--bohr-shell-fg)] underline decoration-neutral-400 underline-offset-4 transition-colors hover:decoration-neutral-600 dark:decoration-neutral-600 dark:hover:decoration-neutral-400"
+            href="/docs/getting-started/why-bohr">why Bohr isn&apos;t a generic paper writer</a
+          >
+          . For a visual overview, see{" "}
+          <a
+            class="font-medium text-[var(--bohr-shell-fg)] underline decoration-neutral-400 underline-offset-4 transition-colors hover:decoration-neutral-600 dark:decoration-neutral-600 dark:hover:decoration-neutral-400"
+            href="/explore">Explore</a
+          >
           {" · "}
-          <a class="text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground" href="/agents">Agents</a>
+          <a
+            class="font-medium text-[var(--bohr-shell-fg)] underline decoration-neutral-400 underline-offset-4 transition-colors hover:decoration-neutral-600 dark:decoration-neutral-600 dark:hover:decoration-neutral-400"
+            href="/agents">Agents</a
+          >
           {" · "}
-          <a class="text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground" href="/workflows">Workflows</a>
+          <a
+            class="font-medium text-[var(--bohr-shell-fg)] underline decoration-neutral-400 underline-offset-4 transition-colors hover:decoration-neutral-600 dark:decoration-neutral-600 dark:hover:decoration-neutral-400"
+            href="/workflows">Workflows</a
+          >
           {" · "}
-          <a class="text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground" href="/how-it-works">How it works</a>.
+          <a
+            class="font-medium text-[var(--bohr-shell-fg)] underline decoration-neutral-400 underline-offset-4 transition-colors hover:decoration-neutral-600 dark:decoration-neutral-600 dark:hover:decoration-neutral-400"
+            href="/how-it-works">How it works</a
+          >.
         </p>
       </header>
 
@@ -48,13 +71,13 @@ const highlights = [
           <h2 id="popular-heading" class="docs-hub-section-label">
             Start here
           </h2>
-          <ul class="grid gap-3 sm:grid-cols-3">
+          <ul class="grid list-none gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5 lg:items-stretch">
             {
               highlights.map((h) => (
-                <li>
-                  <a href={h.href} class="docs-hub-card group no-underline">
-                    <span class="text-sm font-medium text-foreground group-hover:text-foreground">{h.title}</span>
-                    <span class="text-[13px] leading-snug text-muted-foreground">{h.description}</span>
+                <li class="flex min-h-0">
+                  <a href={h.href} class="docs-hub-card group w-full min-w-0 no-underline">
+                    <span class="docs-hub-card-title">{h.title}</span>
+                    <span class="docs-hub-card-desc">{h.description}</span>
                   </a>
                 </li>
               ))
@@ -66,14 +89,14 @@ const highlights = [
           <h2 id="all-topics-heading" class="docs-hub-section-label">
             All topics
           </h2>
-          <p class="mb-8 max-w-xl text-[13px] leading-relaxed text-muted-foreground">
+          <p class="docs-page-lede mb-8 max-w-xl">
             Use the sidebar to jump to a page, or open a section below.
           </p>
           <div class="space-y-10">
             {
               docsSidebarSections.map((section) => (
                 <div>
-                  <h3 class="mb-3 text-[13px] font-semibold text-foreground">{section.title}</h3>
+                  <h3 class="docs-topic-group-title">{section.title}</h3>
                   <ul class="grid gap-x-8 gap-y-1 sm:grid-cols-2">
                     {section.items.map((item) => (
                       <li>

@@ -2,7 +2,7 @@
 title: Setup
 description: Walk through the guided setup wizard to configure Bohr AI.
 section: Getting Started
-order: 3
+order: 4
 ---
 
 The `bohr setup` wizard configures your model provider, API keys, and optional packages. It runs automatically on first launch, but you can re-run it at any time to change your configuration.

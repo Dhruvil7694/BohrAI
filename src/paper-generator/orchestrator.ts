@@ -237,8 +237,7 @@ export class AgentExecutor {
         outputFile,
         context,
         clarify: false,
-        async: false,
-        cavemanMode: 'ultra'
+        async: false
       },
       appRoot,
       workingDir,

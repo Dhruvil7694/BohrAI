@@ -16,6 +16,7 @@ export interface SubagentExecutionOptions {
   context?: Record<string, any>;
   clarify?: boolean;
   async?: boolean;
+  /** When omitted, resolved from ENABLE_TOKEN_OPTIMIZATION and CAVEMAN_MODE_DEFAULT (see resolveDefaultCavemanMode). */
   cavemanMode?: 'lite' | 'full' | 'ultra';
 }
 
@@ -24,6 +25,21 @@ export interface SubagentResult {
   output: string;
   tokens: number;
   error?: string;
+}
+
+/**
+ * Default caveman intensity for Pi subagent runs when callers omit `cavemanMode`.
+ * Honors `ENABLE_TOKEN_OPTIMIZATION` and `CAVEMAN_MODE_DEFAULT` from the environment (after dotenv loads in CLI).
+ */
+export function resolveDefaultCavemanMode(): 'lite' | 'full' | 'ultra' {
+  if (process.env.ENABLE_TOKEN_OPTIMIZATION === 'false') {
+    return 'lite';
+  }
+  const raw = process.env.CAVEMAN_MODE_DEFAULT?.trim().toLowerCase();
+  if (raw === 'lite' || raw === 'full' || raw === 'ultra') {
+    return raw;
+  }
+  return 'ultra';
 }
 
 /**
@@ -42,8 +58,10 @@ export async function executeSubagent(
     context = {},
     clarify = false,
     async = false,
-    cavemanMode = 'ultra'
+    cavemanMode: cavemanModeOpt
   } = options;
+
+  const cavemanMode = cavemanModeOpt ?? resolveDefaultCavemanMode();
 
   try {
     // Build caveman-optimized prompt

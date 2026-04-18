@@ -43,52 +43,85 @@ const sessionPipelineDiagram: PipelineDiagramInput = {
 
 const steps = [
   {
+    index: "01",
+    stage: "Machine setup",
     title: "Install and configure",
     body: "Install the Bohr CLI, copy `.env.example` to `.env`, and add model provider keys. See Installation for OS-specific notes.",
     href: "/docs/getting-started/installation",
+    hrefLabel: "Installation guide",
+    visualLabel: "Prepare the shell",
+    visualTokens: ["bohr install", ".env", "provider keys"],
   },
   {
+    index: "02",
+    stage: "Start a session",
     title: "Open a session",
     body: "Run `bohr` (or your wrapper). You land in the Pi-powered REPL where slash commands map to full workflows.",
     href: "/docs/getting-started/quickstart",
+    hrefLabel: "Quickstart",
+    visualLabel: "Enter the REPL",
+    visualTokens: ["terminal", "bohr", "session ready"],
   },
   {
+    index: "03",
+    stage: "Pick an outcome",
     title: "Choose a workflow",
-    body: "Pick by outcome: `/deepresearch` for cited briefs, `/lit` or `/lit-review` for surveys, `/paper` for manuscripts, `/audit` for claim-vs-code checks — see Workflows.",
+    body: "Pick by outcome: `/deepresearch` for cited briefs, `/lit` or `/lit-review` for surveys, `/paper` for manuscripts, `/audit` for claim-vs-code checks - see Workflows.",
     href: "/workflows",
+    hrefLabel: "Browse workflows",
+    visualLabel: "Dispatch a command",
+    visualTokens: ["/deepresearch", "/lit-review", "/paper"],
   },
   {
+    index: "04",
+    stage: "Orchestration",
     title: "Let orchestration run",
-    body: "The orchestrator sequences agents (researcher, writer, verifier, …), runs tools, and writes intermediate files under your workspace conventions.",
+    body: "The orchestrator sequences agents (researcher, writer, verifier, and more), runs tools, and writes intermediate files under your workspace conventions.",
     href: "/agents",
+    hrefLabel: "Meet the agents",
+    visualLabel: "Fan out work",
+    visualTokens: ["planner", "agents", "tools"],
   },
   {
+    index: "05",
+    stage: "Inspect outputs",
     title: "Review artifacts",
     body: "Outputs land as markdown and sidecars (e.g. provenance). Use `/preview` when configured, or open files in your editor.",
     href: "/docs/tools/preview",
+    hrefLabel: "Preview docs",
+    visualLabel: "Audit the result",
+    visualTokens: ["brief.md", "provenance", "notes"],
   },
 ] as const
 
 const picks = [
   {
     goal: "I need a cited brief on a messy topic",
-    cmd: "/deepresearch",
+    commands: ["/deepresearch"],
     href: "/docs/workflows/deep-research",
+    artifact: "Cited brief",
+    when: "Start here when the question is broad, the sources are mixed, and you need a defensible answer with references.",
   },
   {
     goal: "I need a literature survey with gaps and disagreements",
-    cmd: "/lit-review",
+    commands: ["/lit-review"],
     href: "/docs/workflows/lit-review",
+    artifact: "Survey map",
+    when: "Use this when the goal is field coverage: themes, contradictions, consensus, and missing work.",
   },
   {
     goal: "I need a paper-style draft with compliance checks",
-    cmd: "/paper",
+    commands: ["/paper"],
     href: "/docs/workflows/paper",
+    artifact: "Manuscript draft",
+    when: "Best when you already know the paper you want and need drafting, figures, compliance, and verification passes.",
   },
   {
     goal: "I need to challenge conclusions against evidence",
-    cmd: "/contradict · /reasoning-validate",
+    commands: ["/contradict", "/reasoning-validate"],
     href: "/docs/workflows/contradict",
+    artifact: "Adversarial check",
+    when: "Run this when the claim exists already and you want the strongest counter-evidence, gaps, or reasoning failures.",
   },
 ] as const
 ---
@@ -98,37 +131,103 @@ const picks = [
   description="From install to artifacts: session flow, a deep-research pipeline diagram, and how to pick a workflow."
   active="explore"
 >
-  <article class="page-gutter-x pb-24 pt-10">
-    <header class="mb-10">
-      <p class="hub-kicker mb-2">Process</p>
-      <h1 class="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">How it works</h1>
-      <p class="mt-4 text-lg text-muted-foreground">
-        Bohr is <strong class="text-foreground">CLI-first</strong>: you drive everything from the REPL with slash commands. Orchestration coordinates{" "}
-        <a class="text-primary underline underline-offset-2" href="/agents">agents</a> and external{" "}
-        <a class="text-primary underline underline-offset-2" href="/docs/tools/alphaxiv">tools</a>; nothing depends on a proprietary web dashboard.
+  <article data-how-it-works-root class="page-gutter-x pb-24 pt-10">
+    <header class="mb-12">
+      <p class="hub-kicker mb-2">— PROCESS · OVERVIEW</p>
+      <h1
+        class="mt-6 font-['Cormorant_Garamond',Georgia,'Times_New_Roman',serif] text-[clamp(1.85rem,3.8vw,2.75rem)] font-normal italic leading-[1.12] tracking-tight text-[var(--bohr-shell-fg)]"
+      >
+        How it works
+      </h1>
+      <p class="mt-5 max-w-3xl font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-neutral-700 sm:text-[13px] dark:text-neutral-300">
+        Bohr is <strong class="font-medium text-[var(--bohr-shell-fg)]">CLI-first</strong>: you drive everything from the REPL with slash commands. Orchestration coordinates{" "}
+        <a class="font-medium text-[var(--bohr-shell-fg)] underline underline-offset-4 decoration-neutral-400 hover:decoration-neutral-600 dark:decoration-neutral-600 dark:hover:decoration-neutral-400" href="/agents">agents</a>{" "}
+        and external{" "}
+        <a class="font-medium text-[var(--bohr-shell-fg)] underline underline-offset-4 decoration-neutral-400 hover:decoration-neutral-600 dark:decoration-neutral-600 dark:hover:decoration-neutral-400" href="/docs/tools/alphaxiv">tools</a>; nothing depends on a proprietary web dashboard.
       </p>
     </header>
 
-    <section class="mb-14 space-y-4" aria-labelledby="steps-h">
-      <h2 id="steps-h" class="text-xl font-semibold text-foreground">
-        Steps
-      </h2>
-      <ol class="space-y-4">
-        {
-          steps.map((s, i) => (
-            <li class="rounded-xl border border-border bg-card/60 px-5 py-4">
-              <p class="text-xs font-semibold uppercase tracking-wider text-primary">
-                Step {i + 1}
-              </p>
-              <h3 class="mt-1 text-lg font-semibold text-foreground">{s.title}</h3>
-              <p class="mt-2 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
-              <a href={s.href} class="mt-3 inline-flex text-sm font-medium text-primary underline underline-offset-2">
-                Read more
-              </a>
-            </li>
-          ))
-        }
-      </ol>
+    <section class="mb-14" aria-labelledby="steps-h" data-process-shell>
+      <div class="process-shell">
+        <div class="grid gap-8 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:gap-10">
+          <header class="lg:sticky lg:top-24 lg:self-start">
+            <p class="hub-kicker mb-2">- PROCESS RAIL</p>
+            <h2
+              id="steps-h"
+              class="font-['Cormorant_Garamond',Georgia,'Times_New_Roman',serif] text-[clamp(1.5rem,3.4vw,2.3rem)] font-normal italic leading-[1.14] tracking-tight text-[var(--bohr-shell-fg)]"
+            >
+              Five visible stages from setup to artifacts
+            </h2>
+            <p class="mt-4 font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-neutral-700 sm:text-[13px] dark:text-neutral-300">
+              This should feel like a workflow, not a checklist. Each step shows the handoff happening in the shell: setup, dispatch, orchestration, and files on disk.
+            </p>
+            <div class="mt-5 flex flex-wrap gap-2 font-[family-name:var(--font-cli)] text-[10px] uppercase tracking-[0.12em] text-neutral-600 sm:text-[11px]">
+              <span class="process-chip">CLI first</span>
+              <span class="process-chip">Agents + tools</span>
+              <span class="process-chip">Artifacts on disk</span>
+            </div>
+          </header>
+
+          <div class="process-rail">
+            <span class="process-progress-track" aria-hidden="true">
+              <span data-process-progress class="process-progress-fill"></span>
+            </span>
+
+            <ol class="space-y-4 sm:space-y-5">
+              {
+                steps.map((s) => (
+                  <li class="process-step-card" data-process-step>
+                    <div class="process-step-marker-wrap">
+                      <span class="process-step-marker" aria-hidden="true">{s.index}</span>
+                    </div>
+
+                    <div class="min-w-0">
+                      <div class="flex flex-col gap-2 border-b border-border/45 pb-3 sm:flex-row sm:items-center sm:justify-between">
+                        <p class="font-[family-name:var(--font-cli)] text-[10px] uppercase tracking-[0.16em] text-neutral-500 sm:text-[11px]">
+                          {s.stage}
+                        </p>
+                        <a
+                          href={s.href}
+                          class="font-[family-name:var(--font-cli)] text-[11px] uppercase tracking-[0.12em] text-[var(--bohr-shell-fg)] underline decoration-neutral-400 underline-offset-4 transition-colors hover:decoration-neutral-700 dark:hover:decoration-neutral-500"
+                        >
+                          {s.hrefLabel} ->
+                        </a>
+                      </div>
+
+                      <div class="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(14rem,0.8fr)] xl:items-start">
+                        <div>
+                          <h3 class="text-[1.05rem] font-semibold tracking-tight text-[var(--bohr-shell-fg)] sm:text-[1.12rem]">
+                            {s.title}
+                          </h3>
+                          <p class="mt-2 font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-neutral-700 sm:text-[13px] dark:text-neutral-300">
+                            {s.body}
+                          </p>
+                        </div>
+
+                        <div class="process-step-visual">
+                          <p class="font-[family-name:var(--font-cli)] text-[10px] uppercase tracking-[0.16em] text-neutral-500 sm:text-[11px]">
+                            {s.visualLabel}
+                          </p>
+                          <div class="process-token-row">
+                            {s.visualTokens.map((token, tokenIndex) => (
+                              <>
+                                {tokenIndex > 0 && <span class="process-token-link" aria-hidden="true" />}
+                                <span class="process-token" data-process-token>
+                                  {token}
+                                </span>
+                              </>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                ))
+              }
+            </ol>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="mb-14" aria-labelledby="diagrams-h">
@@ -172,38 +271,62 @@ const picks = [
       </div>
     </section>
 
-    <section class="mb-14" aria-labelledby="pick-h">
-      <h2 id="pick-h" class="mb-4 text-xl font-semibold text-foreground">
-        Which workflow should I use?
-      </h2>
-      <p class="mb-4 text-sm text-muted-foreground">
-        “Company” here means your environment: Bohr runs locally (or in your Docker/VM). Pick by the artifact you want — not by vendor.
-      </p>
-      <div class="overflow-x-auto rounded-xl border border-border">
-        <table class="w-full text-left text-sm">
-          <thead class="border-b border-border bg-muted/40">
-            <tr>
-              <th class="px-4 py-3 font-semibold text-foreground">Goal</th>
-              <th class="px-4 py-3 font-semibold text-foreground">Command</th>
-              <th class="px-4 py-3 font-semibold text-foreground">Doc</th>
-            </tr>
-          </thead>
-          <tbody>
+    <section class="mb-14" aria-labelledby="pick-h" data-workflow-chooser>
+      <div class="rounded-[24px] border border-border/50 bg-[linear-gradient(180deg,color-mix(in_oklab,var(--card)_90%,white_10%),color-mix(in_oklab,var(--background)_86%,var(--card)_14%))] p-6 shadow-[0_22px_64px_-44px_rgba(15,23,42,0.42)] sm:p-8 lg:p-10 dark:bg-[linear-gradient(180deg,rgba(16,16,16,0.95),rgba(10,10,10,0.92))] dark:shadow-[0_28px_90px_-52px_rgba(0,0,0,0.88)]">
+        <div class="grid gap-8 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:gap-10">
+          <header class="lg:sticky lg:top-24 lg:self-start">
+            <p class="hub-kicker mb-2">- DECISION GUIDE</p>
+            <h2
+              id="pick-h"
+              class="font-['Cormorant_Garamond',Georgia,'Times_New_Roman',serif] text-[clamp(1.5rem,3.4vw,2.3rem)] font-normal italic leading-[1.14] tracking-tight text-[var(--bohr-shell-fg)]"
+            >
+              Which workflow should I use?
+            </h2>
+            <p class="mt-4 font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-neutral-700 sm:text-[13px] dark:text-neutral-300">
+              Pick by the artifact you want, not by vendor. Bohr runs in your environment; the command choice is really an output choice.
+            </p>
+            <div class="mt-5 grid gap-2 font-[family-name:var(--font-cli)] text-[10px] uppercase tracking-[0.12em] text-neutral-600 sm:text-[11px]">
+              <span class="process-chip w-fit">brief</span>
+              <span class="process-chip w-fit">survey</span>
+              <span class="process-chip w-fit">manuscript</span>
+              <span class="process-chip w-fit">stress test</span>
+            </div>
+          </header>
+
+          <div class="grid gap-4 md:grid-cols-2">
             {
-              picks.map((row) => (
-                <tr class="border-b border-border/80 last:border-0">
-                  <td class="px-4 py-3 text-muted-foreground">{row.goal}</td>
-                  <td class="px-4 py-3 font-mono text-xs text-foreground">{row.cmd}</td>
-                  <td class="px-4 py-3">
-                    <a class="text-primary underline underline-offset-2" href={row.href}>
-                      Guide
-                    </a>
-                  </td>
-                </tr>
+              picks.map((row, index) => (
+                <article class="workflow-choice-card" data-choice-card>
+                  <div class="flex items-start justify-between gap-3">
+                    <span class="workflow-choice-index">{String(index + 1).padStart(2, "0")}</span>
+                    <span class="workflow-choice-artifact">{row.artifact}</span>
+                  </div>
+
+                  <h3 class="mt-5 text-[1.02rem] font-semibold leading-snug tracking-tight text-[var(--bohr-shell-fg)] sm:text-[1.08rem]">
+                    {row.goal}
+                  </h3>
+                  <p class="mt-3 font-[family-name:var(--font-cli)] text-[12px] leading-relaxed text-neutral-700 sm:text-[13px] dark:text-neutral-300">
+                    {row.when}
+                  </p>
+
+                  <div class="mt-5 flex flex-wrap gap-2">
+                    {row.commands.map((command) => (
+                      <code class="workflow-choice-command">{command}</code>
+                    ))}
+                  </div>
+
+                  <a
+                    class="mt-6 inline-flex items-center gap-2 font-[family-name:var(--font-cli)] text-[11px] uppercase tracking-[0.12em] text-[var(--bohr-shell-fg)] underline decoration-neutral-400 underline-offset-4 transition-colors hover:decoration-neutral-700 dark:hover:decoration-neutral-500"
+                    href={row.href}
+                  >
+                    Open guide
+                    <span aria-hidden="true">-></span>
+                  </a>
+                </article>
               ))
             }
-          </tbody>
-        </table>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -222,4 +345,156 @@ const picks = [
       </ul>
     </section>
   </article>
+
+  <script>
+    import { gsap } from "gsap"
+    import { ScrollTrigger } from "gsap/ScrollTrigger"
+
+    gsap.registerPlugin(ScrollTrigger)
+
+    type HowItWorksMotionWindow = Window & {
+      __bohrHowItWorksMotionBound?: boolean
+      __bohrHowItWorksMotionCleanup?: () => void
+    }
+
+    const howItWorksMotionWindow = window as HowItWorksMotionWindow
+
+    function clearHowItWorksMotion(root: Element) {
+      root
+        .querySelectorAll<HTMLElement>("[data-process-step], [data-process-token], [data-choice-card], [data-process-progress]")
+        .forEach((element) => element.removeAttribute("style"))
+
+      root.querySelectorAll<HTMLElement>("[data-process-step]").forEach((step, index) => {
+        step.classList.toggle("is-active", index === 0)
+      })
+    }
+
+    function initHowItWorksMotion() {
+      howItWorksMotionWindow.__bohrHowItWorksMotionCleanup?.()
+      howItWorksMotionWindow.__bohrHowItWorksMotionCleanup = undefined
+
+      const root = document.querySelector("[data-how-it-works-root]")
+      if (!root) return
+
+      const processShell = root.querySelector<HTMLElement>("[data-process-shell]")
+      const processProgress = root.querySelector<HTMLElement>("[data-process-progress]")
+      const processSteps = gsap.utils.toArray<HTMLElement>("[data-process-step]", root)
+      const choiceCards = gsap.utils.toArray<HTMLElement>("[data-choice-card]", root)
+
+      processSteps.forEach((step, index) => {
+        step.classList.toggle("is-active", index === 0)
+      })
+
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        clearHowItWorksMotion(root)
+        return
+      }
+
+      const ctx = gsap.context(() => {
+        if (processSteps.length > 0) {
+          gsap.fromTo(
+            processSteps,
+            { autoAlpha: 0, y: 28 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.7,
+              ease: "power3.out",
+              stagger: 0.08,
+              clearProps: "opacity,visibility,transform",
+              scrollTrigger: {
+                trigger: processShell,
+                start: "top 72%",
+                once: true,
+              },
+            },
+          )
+
+          processSteps.forEach((step, index) => {
+            const tokens = step.querySelectorAll<HTMLElement>("[data-process-token]")
+
+            if (tokens.length > 0) {
+              gsap.fromTo(
+                tokens,
+                { autoAlpha: 0, x: -12 },
+                {
+                  autoAlpha: 1,
+                  x: 0,
+                  duration: 0.45,
+                  ease: "power2.out",
+                  stagger: 0.06,
+                  clearProps: "opacity,visibility,transform",
+                  scrollTrigger: {
+                    trigger: step,
+                    start: "top 76%",
+                    once: true,
+                  },
+                },
+              )
+            }
+
+            ScrollTrigger.create({
+              trigger: step,
+              start: "top center+=50",
+              end: "bottom center",
+              onToggle: (self) => {
+                if (!self.isActive) return
+                processSteps.forEach((entry, entryIndex) => entry.classList.toggle("is-active", entryIndex === index))
+              },
+            })
+          })
+        }
+
+        if (processShell && processProgress) {
+          gsap.fromTo(
+            processProgress,
+            { scaleY: 0 },
+            {
+              scaleY: 1,
+              ease: "none",
+              scrollTrigger: {
+                trigger: processShell,
+                start: "top 26%",
+                end: "bottom bottom-=14%",
+                scrub: true,
+              },
+            },
+          )
+        }
+
+        if (choiceCards.length > 0) {
+          gsap.fromTo(
+            choiceCards,
+            { autoAlpha: 0, y: 24 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.65,
+              ease: "power3.out",
+              stagger: 0.1,
+              clearProps: "opacity,visibility,transform",
+              scrollTrigger: {
+                trigger: "[data-workflow-chooser]",
+                start: "top 74%",
+                once: true,
+              },
+            },
+          )
+        }
+      }, root)
+
+      howItWorksMotionWindow.__bohrHowItWorksMotionCleanup = () => {
+        ctx.revert()
+        clearHowItWorksMotion(root)
+      }
+    }
+
+    initHowItWorksMotion()
+
+    if (!howItWorksMotionWindow.__bohrHowItWorksMotionBound) {
+      document.addEventListener("astro:page-load", initHowItWorksMotion)
+      document.addEventListener("astro:after-swap", initHowItWorksMotion)
+      howItWorksMotionWindow.__bohrHowItWorksMotionBound = true
+    }
+  </script>
 </Layout>

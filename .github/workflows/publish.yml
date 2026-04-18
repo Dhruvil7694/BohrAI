@@ -10,7 +10,7 @@ on:
 
 jobs:
   version-check:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
       should_release: ${{ steps.version.outputs.should_release }}
@@ -40,15 +40,15 @@ jobs:
       matrix:
         include:
           - id: linux-x64
-            os: blacksmith-4vcpu-ubuntu-2404
+            os: ubuntu-latest
           - id: linux-arm64
             os: ubuntu-24.04-arm
           - id: darwin-x64
-            os: macos-15-intel
+            os: macos-13
           - id: darwin-arm64
             os: macos-14
           - id: win32-x64
-            os: blacksmith-4vcpu-windows-2025
+            os: windows-latest
           - id: win32-arm64
             os: windows-11-arm
     runs-on: ${{ matrix.os }}
@@ -90,7 +90,7 @@ jobs:
       - version-check
       - build-native-bundles
     if: needs.version-check.outputs.should_release == 'true' && needs.build-native-bundles.result == 'success'
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:

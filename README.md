@@ -115,7 +115,9 @@ Ask naturally or use slash commands as shortcuts.
 | `/deepresearch <topic>` | Source-heavy multi-agent investigation |
 | `/lit <topic>` | Literature review from paper search and primary sources |
 | `/lit-review <topic>` | Full literature pipeline with themes, contradictions, gaps, and validator pass |
+| `/visuals <topic>` | Data-backed charts, comparison tables, and conceptual generated image assets |
 | `/paper <topic-or-artifact>` | Publication-grade paper pipeline with method, figures, and compliance |
+| `/paper-pro <topic-or-artifact>` | Professional paper pipeline with evidence map, adversarial checks, citations, and provenance |
 | `/review <artifact>` | Simulated peer review with severity and revision plan |
 | `/audit <item>` | Paper vs. codebase mismatch audit |
 | `/replicate <paper>` | Replicate experiments on local or cloud GPUs |
@@ -173,6 +175,7 @@ Ten bundled research agents, dispatched automatically.
 - **[AlphaXiv](https://www.alphaxiv.org/)** — paper search, Q&A, code reading, annotations (via `alpha` CLI)
 - **Docker** — isolated container execution for safe experiments on your machine
 - **Web search** — Gemini or Perplexity, zero-config default
+- **Visual generation** — Gemini Nano Banana / Nano Banana Pro or OpenAI image models for conceptual assets, with data-backed charts and tables for factual comparisons
 - **Session search** — indexed recall across prior research sessions
 - **Preview** — browser and PDF export of generated artifacts
 - **Modal** — serverless GPU compute for burst training and inference

@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 
-import { resolveExecutable } from "./executables";
+import { resolveExecutable } from "./executables.js";
 
 type ResolveExecutableFn = (name: string, fallbackPaths?: string[]) => string | undefined;
 
@@ -15,9 +15,11 @@ export function getOpenUrlCommand(
 	resolveCommand: ResolveExecutableFn = resolveExecutable,
 ): OpenUrlCommand | undefined {
 	if (platform === "win32") {
+		// Avoid `cmd /c start` — query strings contain `&`, which cmd treats as a
+		// command separator, so OAuth URLs (e.g. Claude) open without `client_id`.
 		return {
-			command: "cmd",
-			args: ["/c", "start", "", url],
+			command: "rundll32",
+			args: ["url.dll,FileProtocolHandler", url],
 		};
 	}
 

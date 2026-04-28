@@ -7,9 +7,13 @@ import Footer from "../components/Footer.astro"
 interface Props {
   title?: string
   description?: string
-  active?: "home" | "docs" | "explore"
+  active?: "home" | "docs" | "explore" | "prototype"
   /** Terminal-style shell (homepage). Other pages use default theme tokens. */
   shell?: "default" | "cli"
+  /** Hide footer (used for docs pages) */
+  hideFooter?: boolean
+  /** Optional page-specific body classes. */
+  bodyClass?: string
 }
 
 const {
@@ -17,6 +21,8 @@ const {
   description = "A private AI research system that helps teams discover, analyze, and synthesize technical knowledge.",
   active = "home",
   shell = "default",
+  hideFooter = false,
+  bodyClass = "",
 } = Astro.props
 ---
 
@@ -49,6 +55,7 @@ const {
   <body
     class:list={[
       "flex min-h-screen flex-col antialiased bg-background text-foreground",
+      bodyClass,
       shell === "cli"
         ? "overflow-x-clip selection:bg-neutral-900/15 selection:text-foreground dark:bg-[#050505] dark:text-neutral-300 dark:selection:bg-[#e5e5e5] dark:selection:text-neutral-950"
         : "",
@@ -67,8 +74,10 @@ const {
     >
       <slot />
     </main>
-    <div transition:persist="site-footer">
-      <Footer />
-    </div>
+    {hideFooter ? null : (
+      <div transition:persist="site-footer">
+        <Footer />
+      </div>
+    )}
   </body>
 </html>

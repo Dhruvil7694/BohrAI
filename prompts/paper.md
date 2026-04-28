@@ -13,7 +13,7 @@ Derive a short slug from the topic (lowercase, hyphens, no filler words, <=5 wor
 2. Evidence base via `deepresearch` or `lit-review` (depending on prompt)
 3. Draft via `writer` -> `papers/<slug>-draft.md`
 4. Formal methods pass via `method-math` -> `papers/<slug>-method-math.md`
-5. Visual assets pass via `figures-tables` -> `papers/<slug>-figures-tables.md`
+5. Visual assets pass via `figures-tables` -> `papers/<slug>-figures-tables.md`; factual charts/tables must come from structured data files, while image models may create only conceptual visuals.
 6. Citation integrity + verifier pass -> `papers/<slug>-cited.md`
 7. Paper review pass via `reviewer` -> `papers/<slug>-review.md`
 8. Compliance pass via `paper-compliance` -> `papers/<slug>-compliance.md`
@@ -33,3 +33,5 @@ Derive a short slug from the topic (lowercase, hyphens, no filler words, <=5 wor
 ## Rules
 - Do not claim submission readiness unless compliance pass is clean or issues are explicitly documented.
 - If compliance has fatal issues, fix and rerun compliance once.
+- If any chart or comparison table includes numbers, write the source data to `papers/<slug>.assets/data.json` and `papers/<slug>.assets/data.csv`, and record the chart/table in `papers/<slug>.assets/manifest.json`.
+- Do not use image models to invent numeric figures, market claims, benchmark values, or factual labels.

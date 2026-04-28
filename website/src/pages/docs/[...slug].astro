@@ -18,7 +18,13 @@ const currentSlug = entry.slug
 const isInstallationPage = currentSlug === "getting-started/installation"
 ---
 
-<Layout title={`${entry.data.title} — Bohr AI Docs`} description={entry.data.description} active="docs">
+<Layout
+  title={`${entry.data.title} — Bohr AI Docs`}
+  description={entry.data.description}
+  active="docs"
+  hideFooter
+  bodyClass="docs-body-locked"
+>
   <DocsChrome currentSlug={currentSlug}>
     <article class="min-w-0 w-full max-w-none pb-12 lg:pb-16">
       <nav class="docs-breadcrumb mb-8" aria-label="Breadcrumb">

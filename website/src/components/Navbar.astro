@@ -5,7 +5,7 @@ import NavIcon from "@/components/NavIcon.astro"
 
 interface Props {
   /** Reserved for future active-route styling; layout still passes it. */
-  active?: "home" | "docs" | "explore"
+  active?: "home" | "docs" | "explore" | "prototype"
 }
 const path = Astro.url.pathname
 
@@ -16,6 +16,7 @@ function match(href: string): boolean {
 
 const exploreLinks = [
   { href: "/", label: "home", icon: "home" as const },
+  { href: "/prototype", label: "prototype", icon: "prototype" as const },
   { href: "/agents", label: "agents", icon: "agents" as const },
   { href: "/workflows", label: "workflows", icon: "workflows" as const },
   { href: "/how-it-works", label: "process", icon: "process" as const },

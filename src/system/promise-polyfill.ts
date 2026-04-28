@@ -7,6 +7,8 @@ type PromiseWithResolvers<T> = {
 declare global {
 	interface PromiseConstructor {
 		withResolvers?<T>(): PromiseWithResolvers<T>;
+		/** Stage-4 ES2026; required by unpdf/pdf.js on Node < 23. */
+		try?<T>(fn: () => T | PromiseLike<T>): Promise<Awaited<T>>;
 	}
 }
 
@@ -19,6 +21,14 @@ if (typeof Promise.withResolvers !== "function") {
 			reject = rej;
 		});
 		return { promise, resolve, reject };
+	};
+}
+
+if (typeof Promise.try !== "function") {
+	Promise.try = function tryPoly<T>(fn: () => T | PromiseLike<T>): Promise<Awaited<T>> {
+		return new Promise<Awaited<T>>((resolve) => {
+			resolve(fn() as Awaited<T>);
+		});
 	};
 }
 

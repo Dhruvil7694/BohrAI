@@ -632,8 +632,25 @@
     @apply mb-3 text-[clamp(1.15rem,2.2vw,1.35rem)] font-semibold italic leading-snug tracking-tight text-[var(--bohr-shell-fg)];
   }
 
+  @media (min-width: 1024px) {
+    body.docs-body-locked {
+      overflow-y: hidden;
+    }
+  }
+
   .docs-breadcrumb {
     @apply font-[family-name:var(--font-cli)] text-[11px] uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400;
+  }
+
+  /* Mobile improvements for docs */
+  @media (max-width: 1023px) {
+    .docs-main-scroll {
+      @apply px-4;
+    }
+
+    .docs-page-title {
+      @apply leading-[1.15];
+    }
   }
 
   .docs-breadcrumb a {
@@ -658,6 +675,7 @@
   /** Scrollable doc body — pad here so chrome stays fixed */
   .docs-main-scroll {
     @apply p-5 sm:p-6 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-y-contain lg:p-8;
+    @apply max-w-[68rem] mx-auto;
   }
 
   /** Doc article body — editorial section titles like marketing pages */

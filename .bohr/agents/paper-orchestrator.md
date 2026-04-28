@@ -111,7 +111,7 @@ When possible, run independent agents in parallel:
 - literature-quality + literature-contradiction in parallel
 - figures-tables + method-math in parallel (if independent)
 
-Use subagent concurrency parameter: `concurrency: 4` for broad sweeps.
+Use subagent concurrency parameter: `concurrency: 2` for broad sweeps. If the user or environment indicates rate limits, use `concurrency: 1` and run multiple targeted waves instead of one large burst.
 
 ## Output Format
 

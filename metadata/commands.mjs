@@ -108,6 +108,10 @@ export const cliCommandSections = [
 			{ usage: "bohr search status", description: "Show Pi web-access status and config path." },
 			{ usage: "bohr search set <provider> [api-key]", description: "Set the web search provider and optionally save its API key." },
 			{ usage: "bohr search clear", description: "Reset web search provider to auto while preserving API keys." },
+			{ usage: "bohr visual status", description: "Show visual provider status and default image model." },
+			{ usage: "bohr visual set <provider> <api-key>", description: "Save a Gemini or OpenAI image-generation API key." },
+			{ usage: "bohr visual default <provider> [model]", description: "Set the default image provider and optional model." },
+			{ usage: "bohr visual clear [provider]", description: "Clear one visual provider or all visual configuration." },
 			{ usage: "bohr update [package]", description: "Update installed packages, or a specific package." },
 		],
 	},
@@ -128,7 +132,7 @@ export const legacyFlags = [
 	{ usage: "--setup-preview", description: "Alias for `bohr setup preview`." },
 ];
 
-export const topLevelCommandNames = ["alpha", "chat", "doctor", "help", "model", "packages", "search", "setup", "status", "update"];
+export const topLevelCommandNames = ["alpha", "chat", "doctor", "help", "model", "packages", "search", "setup", "status", "update", "visual"];
 
 export function formatSlashUsage(command) {
 	return `/${command.name}${command.args ? ` ${command.args}` : ""}`;

@@ -2,10 +2,10 @@
  * API endpoints for paper generation UI
  */
 
-import { PaperOrchestrator, PaperGenerationConfig, OrchestrationState } from './orchestrator';
-import { exportToWord, exportToPDF } from './exporters';
+import { PaperOrchestrator, PaperGenerationConfig, OrchestrationState } from './orchestrator.js';
+import { exportToWord, exportToPDF } from './exporters.js';
 
-export interface APIResponse<T = any> {
+export interface APIResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;

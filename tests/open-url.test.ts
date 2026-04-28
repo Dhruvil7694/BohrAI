@@ -29,12 +29,12 @@ test("getOpenUrlCommand uses xdg-open on Linux when available", () => {
 	});
 });
 
-test("getOpenUrlCommand uses cmd start on Windows", () => {
-	const command = getOpenUrlCommand("https://example.com", "win32");
+test("getOpenUrlCommand uses rundll32 on Windows (URLs may contain &)", () => {
+	const command = getOpenUrlCommand("https://example.com/oauth?client_id=x&scope=y", "win32");
 
 	assert.deepEqual(command, {
-		command: "cmd",
-		args: ["/c", "start", "", "https://example.com"],
+		command: "rundll32",
+		args: ["url.dll,FileProtocolHandler", "https://example.com/oauth?client_id=x&scope=y"],
 	});
 });
 

@@ -5,9 +5,9 @@
 
 import { spawn } from 'child_process';
 import { resolve } from 'path';
-import { writeFileSync, readFileSync, existsSync } from 'fs';
-import { buildPiArgs, buildPiEnv, resolvePiPaths, type PiRuntimeOptions } from '../pi/runtime';
-import { getBohrAgentDir } from '../config/paths';
+import { writeFileSync, readFileSync, existsSync, readdirSync } from 'fs';
+import { buildPiArgs, buildPiEnv, resolvePiPaths, type PiRuntimeOptions } from '../pi/runtime.js';
+import { getBohrAgentDir } from '../config/paths.js';
 
 export interface SubagentExecutionOptions {
   agent: string;
@@ -40,6 +40,46 @@ export function resolveDefaultCavemanMode(): 'lite' | 'full' | 'ultra' {
     return raw;
   }
   return 'ultra';
+}
+
+function parsePositiveInteger(value: string | number | undefined): number | undefined {
+  if (value === undefined || value === '') {
+    return undefined;
+  }
+
+  const parsed = typeof value === 'number' ? value : Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    return undefined;
+  }
+
+  return Math.floor(parsed);
+}
+
+function isEnabled(value: string | undefined): boolean {
+  if (!value) {
+    return false;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  return normalized === '1' || normalized === 'true' || normalized === 'yes' || normalized === 'on';
+}
+
+/**
+ * Resolve subagent batch size from environment and caller preferences.
+ * BOHR_SUBAGENT_CONCURRENCY is the explicit override.
+ * BOHR_RATE_LIMIT_MODE=true falls back to one-at-a-time execution when no override is set.
+ */
+export function resolveSubagentConcurrency(requested?: number): number {
+  const envConcurrency = parsePositiveInteger(process.env.BOHR_SUBAGENT_CONCURRENCY);
+  if (envConcurrency !== undefined) {
+    return envConcurrency;
+  }
+
+  if (isEnabled(process.env.BOHR_RATE_LIMIT_MODE)) {
+    return 1;
+  }
+
+  return parsePositiveInteger(requested) ?? 2;
 }
 
 /**
@@ -258,13 +298,14 @@ export async function executeSubagentsParallel(
   appRoot: string,
   workingDir: string,
   sessionDir: string,
-  maxConcurrency: number = 4
+  maxConcurrency?: number
 ): Promise<SubagentResult[]> {
   const results: SubagentResult[] = [];
+  const resolvedConcurrency = resolveSubagentConcurrency(maxConcurrency);
   
   // Execute in batches
-  for (let i = 0; i < agents.length; i += maxConcurrency) {
-    const batch = agents.slice(i, i + maxConcurrency);
+  for (let i = 0; i < agents.length; i += resolvedConcurrency) {
+    const batch = agents.slice(i, i + resolvedConcurrency);
     const batchResults = await Promise.all(
       batch.map(agent => executeSubagent(agent, appRoot, workingDir, sessionDir))
     );
@@ -291,7 +332,6 @@ export function listSubagents(appRoot: string): string[] {
     return [];
   }
   
-  const { readdirSync } = require('fs');
   return readdirSync(agentsDir)
     .filter((file: string) => file.endsWith('.md'))
     .map((file: string) => file.replace('.md', ''));

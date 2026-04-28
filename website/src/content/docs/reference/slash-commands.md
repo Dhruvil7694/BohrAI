@@ -14,7 +14,9 @@ Slash commands are available inside the Bohr AI REPL. They map to research workf
 | `/deepresearch <topic>` | Run a thorough, source-heavy investigation and produce a research brief with inline citations |
 | `/lit <topic>` | Run a structured literature review with consensus, disagreements, and open questions |
 | `/lit-review <topic>` | Run a full literature-review pipeline with themes, contradictions, gaps, and validation |
+| `/visuals <topic>` | Generate data-backed charts, source-linked tables, and conceptual image assets |
 | `/paper <topic-or-artifact>` | Build a publication-grade manuscript pipeline with method, figures, and compliance checks |
+| `/paper-pro <topic-or-artifact>` | Run the professional paper workflow with architecture mapping, adversarial review, citation verification, and provenance |
 | `/review <artifact>` | Simulate a peer review with severity-graded feedback and inline annotations |
 | `/audit <item>` | Compare a paper's claims against its public codebase for mismatches and reproducibility risks |
 | `/replicate <paper>` | Plan or execute a replication workflow for a paper, claim, or benchmark |
@@ -60,7 +62,9 @@ All research workflow slash commands can also be run directly from the command l
 bohr deepresearch "topic"
 bohr lit "topic"
 bohr lit-review "topic"
+bohr visuals "topic"
 bohr paper "topic"
+bohr paper-pro "topic"
 bohr review artifact.md
 bohr audit 2401.12345
 bohr replicate "claim"

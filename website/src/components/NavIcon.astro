@@ -1,5 +1,6 @@
 ---
 import {
+  Beaker,
   BookOpenText,
   Bot,
   CodeXml,
@@ -13,7 +14,7 @@ import {
 } from "lucide-react"
 
 interface Props {
-  name: "home" | "agents" | "workflows" | "process" | "commands" | "docs" | "install" | "github" | "sun" | "moon"
+  name: "home" | "agents" | "workflows" | "process" | "prototype" | "commands" | "docs" | "install" | "github" | "sun" | "moon"
   class?: string
 }
 
@@ -25,6 +26,7 @@ const icons = {
   agents: Bot,
   workflows: Workflow,
   process: Route,
+  prototype: Beaker,
   commands: SquareTerminal,
   docs: BookOpenText,
   install: Download,

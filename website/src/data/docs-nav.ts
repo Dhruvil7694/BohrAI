@@ -21,6 +21,7 @@ export const docsSidebarSections: DocNavSection[] = [
       { label: "Literature review", slug: "workflows/literature-review" },
       { label: "Lit review pipeline", slug: "workflows/lit-review" },
       { label: "Paper", slug: "workflows/paper" },
+      { label: "Visuals", slug: "workflows/visuals" },
       { label: "Peer review", slug: "workflows/review" },
       { label: "Code audit", slug: "workflows/audit" },
       { label: "Replication", slug: "workflows/replication" },
@@ -95,6 +96,7 @@ export const docsSidebarSections: DocNavSection[] = [
     items: [
       { label: "AlphaXiv", slug: "tools/alphaxiv" },
       { label: "Web search", slug: "tools/web-search" },
+      { label: "Visuals", slug: "tools/visuals" },
       { label: "Session search", slug: "tools/session-search" },
       { label: "Preview", slug: "tools/preview" },
     ],

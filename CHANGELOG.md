@@ -15,6 +15,24 @@ Use this file to track chronology, not release notes. Keep entries short, factua
 - Blockers: ...
 - Next: ...
 
+### 2026-04-19 17:20 +05:30 - release-docs-install-verification
+
+- Objective: Verify installation docs and release-readiness for the first deployment, then fix any concrete blockers discovered during the pass.
+- Changed: Patched `website/src/data/site-urls.ts` so build-time install URLs honor deployment env overrides via `process.env` fallback; fixed ESM import-path mismatches across `src/paper-generator/*`, `src/pi/*`, and `src/system/open-url.ts`; updated `tests/node-version.test.ts` to match current default installer URLs and to assert explicit override behavior.
+- Verified: `cmd /c npm run build` succeeds at the repo root; `cmd /c npm test` passes with 75/75 tests; `cmd /c npm run typecheck` and `cmd /c npm run build` succeed in `website/`; rebuilding the website with `PUBLIC_BOHR_INSTALL_BASE_URL=https://downloads.example.test/bohr` rewrites the generated install commands in both `website/dist/docs/getting-started/installation/index.html` and `website/dist/index.html`.
+- Failed / learned: `cmd /c npm run build:native-bundle` did not complete within the verification window and left a zero-byte `dist/release/bohr-0.2.18-win32-x64.zip`, so the native bundle artifact path is not yet verified end-to-end.
+- Blockers: Release bundle generation still needs a successful full run plus a smoke check on the produced archive before the installer flow can be called fully release-ready.
+- Next: Re-run `npm run build:native-bundle` to completion, confirm the archive is non-empty, and smoke-test the generated bundle or installer before publishing.
+
+### 2026-04-19 18:10 +05:30 - release-bundle-smoke-test
+
+- Objective: Close the last release blocker by proving the native Windows bundle exists and launches.
+- Changed: Ran a full `npm run build:native-bundle`; extracted `dist/release/bohr-0.2.18-win32-x64.zip` into `dist/release-smoke/` using `tar -xf` after `Expand-Archive` proved too slow for the verification loop.
+- Verified: `dist/release/bohr-0.2.18-win32-x64.zip` now exists at `149796059` bytes; SHA-256 is `9C23A8628673CC785EA25E5C2CC71BC0C99D448707379EA76980E1FE2EB209CA`; the extracted bundle runs `bohr.cmd --help` successfully when `BOHR_HOME` is pointed at a workspace-local directory.
+- Failed / learned: `Expand-Archive` was not a practical smoke-test path for this artifact size in the current environment, but `tar -xf` completed quickly and produced a runnable bundle.
+- Blockers: None for the verified Windows bundle path in this workspace.
+- Next: Publish the first deployment, then optionally do one post-publish remote installer check against the hosted URL as a final production sanity check.
+
 ### 2026-04-18 23:55 +05:30 - install-doc-host-overrides
 
 - Objective: Make installation docs and commands work cleanly across supported platforms and custom-host deployments.
@@ -33,7 +51,7 @@ Use this file to track chronology, not release notes. Keep entries short, factua
 - Blockers: None for source changes; browser feel still needs human eyeballing for motion pacing.
 - Next: Spot-check the homepage and workflows hub in a browser, then tune motion timing only if any section feels too eager or too busy.
 
-### 2026-04-18 23:00 +05:30 â€” workflow-detail-docs-shell
+### 2026-04-18 23:00 local — workflow-detail-docs-shell
 
 - Objective: Rework workflow detail pages into a cleaner documentation shell with a fixed sidebar and independent content scrolling.
 - Changed: Replaced `website/src/pages/workflows/[slug].astro` with a two-panel docs layout: richer sidebar briefing, section-map navigation, related-doc links, copy actions, internal-scroll TOC syncing, and a desktop-only fixed-height shell where the article pane scrolls independently from the navigation.
@@ -46,7 +64,7 @@ Use this file to track chronology, not release notes. Keep entries short, factua
 
 - Objective: Run an unattended deep-research workflow for the question "What is the capital of France?"
 - Changed: Created plan artifact at `outputs/.plans/capital-france.md`; scoped the workflow as a narrow fact-verification run with direct lead-agent evidence gathering instead of researcher subagents.
-- Verified: Read existing `CHANGELOG.md` and recalled prior saved plan memory for `capital-france` before finalizing the new run plan.
+- Verified: Read `CHANGELOG.md` and recalled prior saved plan memory for `capital-france` before finalizing the new run plan.
 - Failed / learned: None yet.
 - Blockers: Need at least two current independent authoritative sources and a quick ambiguity check before drafting.
 - Next: Collect current official/public sources, resolve any legal nuance, then draft and verify the brief.
@@ -177,123 +195,90 @@ Use this file to track chronology, not release notes. Keep entries short, factua
 - Blockers: None in the repo; publishing still depends on the GitHub workflow running on the bumped version.
 - Next: Push the `0.2.16` release bump and monitor npm/GitHub release publication.
 
-### 2026-03-31 10:45 PDT — pi-maintenance-issues-prs
+### 2026-04-19 20:05 +05:30 — citation-verification-research
 
-- Objective: Triage open Pi-related issues/PRs, fix the concrete package update regression, and refresh Pi dependencies against current upstream releases.
-- Changed: Pinned direct package-manager operations (`bohr update`, `bohr packages install`) to Bohr's npm prefix by exporting `BOHR_NPM_PREFIX`, `NPM_CONFIG_PREFIX`, and `npm_config_prefix` before invoking Pi's `DefaultPackageManager`; bumped `@mariozechner/pi-ai` and `@mariozechner/pi-coding-agent` from `0.62.0` to `0.64.0`; adapted `src/model/registry.ts` to the new `ModelRegistry.create(...)` factory; integrated PR #15's `/bohr-model` command on top of current `main`.
-- Verified: Ran `npm test`, `npm run typecheck`, and `npm run build` successfully after the dependency bump and PR integration; confirmed upstream `pi-coding-agent@0.64.0` still uses `npm install -g` for user-scope package updates, so the Bohr-side prefix fix is still required.
-- Failed / learned: PR #14 is a stale branch with no clean merge path against current `main`; the only user-facing delta is the ValiChord prompt/skill addition, and the branch also carries unrelated release churn plus demo-style material, so it was not merged in this pass.
-- Blockers: None in the local repo state; remote merge/push still depends on repository credentials and branch policy.
-- Next: If remote write access is available, commit and push the validated maintenance changes, then close issue #22 and resolve PR #15 as merged while leaving PR #14 unmerged pending a cleaned-up, non-promotional resubmission.
+- Objective: Finalize the paper-style manuscript for `notes/citation-verification-research-notes.md` using the existing local evidence base and matching near-slug artifacts.
 
-### 2026-03-31 12:05 PDT — pi-backlog-cleanup-round-2
+### 2026-04-26 00:00 local — silent-pipeline-semantic-drift
 
-- Objective: Finish the remaining high-confidence open tracker items after the Pi 0.64.0 upgrade instead of leaving the issue list half-reconciled.
-- Changed: Added a Windows extension-loader patch helper so Bohr rewrites Pi extension imports to `file://` URLs on Windows before interactive startup; added `/commands`, `/tools`, and `/capabilities` discovery commands and surfaced `/hotkeys` plus `/service-tier` in help metadata; added explicit service-tier support via `bohr model tier`, `--service-tier`, status/doctor output, and a provider-payload hook that passes `service_tier` only to supported OpenAI/OpenAI Codex/Anthropic models; added Exa provider recognition to Bohr's web-search status layer and vendored `pi-web-access`.
-- Verified: Ran `npm test`, `npm run typecheck`, and `npm run build`; smoke-imported the modified vendored `pi-web-access` modules with `node --import tsx`.
-- Failed / learned: The remaining ValiChord PR is still stale and mixes a real prompt/skill update with unrelated branch churn; it is a review/triage item, not a clean merge candidate.
-- Blockers: No local build blockers remain; issue/PR closure still depends on the final push landing on `main`.
-- Next: Push the verified cleanup commit, then close issues fixed by the dependency bump plus the new discoverability/service-tier/Windows patches, and close the stale ValiChord PR explicitly instead of leaving it open indefinitely.
+- Objective: Build a professional paper-style manuscript on contract-aware detection and attribution of silent semantic drift in production ML pipelines.
+- Changed: Scanned local near-slug artifacts and found no reusable prior draft; created `outputs/.plans/silent-pipeline-semantic-drift-paper-pro.md`, gathered external evidence into `notes/silent-pipeline-semantic-drift-research.md`, and generated the manuscript architecture memo at `outputs/.plans/silent-pipeline-semantic-drift-architecture.md`.
+- Verified: Confirmed the local alpha paper tool is unavailable in this session because login is missing, so the evidence base currently relies on accessible proceedings/arXiv pages and official docs; architecture memo explicitly narrows claims to a design/position paper rather than an empirically validated new method.
+- Failed / learned: There was no existing near-slug local evidence to resume from, so this run is a fresh synthesis rather than a finalization pass.
+- Blockers: Need draft, citation audit, review pass, compliance pass, and final manuscript promotion.
+- Next: Use the local plan/research/architecture artifacts to draft the manuscript, then run citation-integrity, reviewer, and paper-compliance before final promotion.
 
-### 2026-04-09 09:37 PDT — windows-startup-import-specifiers
+### 2026-04-26 00:45 local — silent-pipeline-semantic-drift
 
-- Objective: Fix Windows startup failures where `bohr` exits before the Pi child process initializes.
-- Changed: Converted the Node preload module paths passed via `node --import` in `src/pi/launch.ts` to `file://` specifiers using a new `toNodeImportSpecifier(...)` helper in `src/pi/runtime.ts`; expanded `scripts/patch-embedded-pi.mjs` so it also patches the bundled workspace copy of Pi's extension loader when present.
-- Verified: Added a regression test in `tests/pi-runtime.test.ts` covering absolute-path to `file://` conversion for preload imports; ran `npm test`, `npm run typecheck`, and `npm run build`.
-- Failed / learned: The raw Windows `ERR_UNSUPPORTED_ESM_URL_SCHEME` stack is more consistent with Node rejecting the child-process `--import C:\\...` preload before Pi starts than with a normal in-app extension load failure.
-- Blockers: Windows runtime execution was not available locally, so the fix is verified by code path inspection and automated tests rather than an actual Windows shell run.
-- Next: Ask the affected user to reinstall or update to the next published package once released, and confirm the Windows REPL now starts from a normal PowerShell session.
+- Objective: Complete the manuscript checks, apply the final reframing, and promote the canonical paper artifact with provenance.
+- Changed: Drafted `papers/silent-pipeline-semantic-drift-draft.md`; ran `citation-integrity`, `reviewer`, and `paper-compliance` into their respective memos; revised the manuscript to reframe it explicitly as a position/design paper, added a taxonomy table, added illustrative incident archetypes, added a claim/evidence-strength table, promoted the final manuscript to `papers/silent-pipeline-semantic-drift.md`, and wrote `papers/silent-pipeline-semantic-drift.provenance.md`.
+- Verified: `paper-compliance` reported the revised draft as section-complete and topic-aligned; the final canonical paper path and provenance sidecar now both exist on disk.
+- Failed / learned: Reviewer judged the first draft to overpromise detection/attribution relative to the evidence; the salvage path was explicit reframing rather than pretending the paper was an evaluated method.
+- Blockers: None for artifact completion; empirical validation remains future work and is stated as such in the manuscript.
+- Next: Optional only — render or preview the final paper if a formatted export is desired.
 
-### 2026-04-09 11:02 PDT — tracker-hardening-pass
+### 2026-04-26 00:52 local — silent-pipeline-semantic-drift
 
-- Objective: Triage the open repo backlog, land the highest-signal fixes locally, and add guardrails against stale promotional workflow content.
-- Changed: Hardened Windows launch paths in `bin/bohr.js`, `scripts/build-native-bundle.mjs`, and `scripts/install/install.ps1`; set npm prefix overrides earlier in `scripts/patch-embedded-pi.mjs`; added a `pi-web-access` runtime patch helper plus `BOHR_WEB_SEARCH_CONFIG` env wiring so bundled web search reads the same `~/.bohr/web-search.json` that doctor/status report; taught `src/pi/web-access.ts` to honor the legacy `route` key; fixed bundled skill references and expanded the skills-only installers/docs to ship the prompt and guidance files those skills reference; added regression tests for config paths, catalog snapshot edges, skill-path packaging, `pi-web-access` patching, and blocked promotional content.
-- Verified: Ran `npm test`, `npm run typecheck`, and `npm run build` successfully after the full maintenance pass.
-- Failed / learned: The skills-only install issue was not just docs drift; the shipped `SKILL.md` files referenced prompt paths that only made sense after installation, so the repo needed both path normalization and packaging changes.
-- Blockers: Remote issue/PR closure and merge actions still depend on the final reviewed branch state being pushed.
-- Next: Push the validated fixes, close the duplicate Windows/reporting issues they supersede, reject the promotional ValiChord PR explicitly, and then review whether the remaining docs-only or feature PRs should be merged separately.
+- Objective: Close the workflow with a final compliance re-check after promotion.
+- Changed: Re-ran `paper-compliance` against `papers/silent-pipeline-semantic-drift.md` and `papers/silent-pipeline-semantic-drift.provenance.md`, overwriting the compliance memo with the final PASS state.
+- Verified: The canonical final paper, plan artifacts, and provenance sidecar now satisfy the requested artifact contract with no remaining compliance issues.
+- Failed / learned: The first compliance memo was accurate at the time of draft-only review but was obsolete after promotion, so a final pass was necessary to leave an honest end-state record.
+- Blockers: None.
+- Next: Optional only — preview/export the manuscript if a rendered version is needed.
+- Changed: Read the local evidence notes, verified excerpts, prior verification log, and architecture memo; rewrote the manuscript in `papers/citation-verification-proof-draft.md` as a narrow biomedical perspective with explicit provenance caveats; kept de Lacey historical-only, ICMJE high-level only, and anchored the quantitative spine on Mogull, Greenberg, and Tatsioni.
+- Verified: New draft includes the required sections, a direct-URL Sources section, bounded biomedical scope, and explicit statements that the evidence does not validate a citation-verification intervention or generalize across all disciplines.
+- Failed / learned: The local evidence bundle supports a stronger historical-context note for de Lacey than the prior manuscript used, but not a stronger current-run verification claim; direct URL liveness could not be rechecked for every source within the same pass.
+- Blockers: Draft still needed independent citation-integrity / verifier review before promotion or final user delivery.
+- Next: Run the verification pass against the revised draft and record whether any unsupported claims remain.
 
-### 2026-04-09 10:28 PDT — verification-and-security-pass
+### 2026-04-19 20:12 +05:30 — citation-verification-research
 
-- Objective: Run a deeper install/security verification pass against the post-cleanup `0.2.17` tree instead of assuming the earlier targeted fixes covered the shipped artifacts.
-- Changed: Reworked `extensions/research-tools/header.ts` to use `@mariozechner/pi-tui` width-aware helpers for truncation/wrapping so wide Unicode text does not overflow custom header rows; changed `src/pi/launch.ts` to stop mirroring child crash signals back onto the parent process and instead emit a conventional exit code; added `Bohr_INSTALL_SKILLS_ARCHIVE_URL` overrides to the skills installers for pre-release smoke testing; aligned root and website dependency trees with patched transitive versions using npm `overrides`; fixed `src/pi/web-access.ts` so `search status` respects `Bohr_HOME` semantics instead of hardcoding the current shell home directory; added `tests/pi-launch.test.ts`.
-- Verified: Ran `npm test`, `npm run typecheck`, `npm run build`, `cd website && npm run build`, `npm run build:native-bundle`; smoke-tested `scripts/install/install.sh` against a locally served `dist/release/bohr-0.2.17-darwin-arm64.tar.gz`; smoke-tested `scripts/install/install-skills.sh` against a local source archive; confirmed installed `bohr --version`, `bohr --help`, `bohr doctor`, and packaged `bohr search status` work from the installed bundle; `npm audit --omit=dev` is clean in the root app and website after overrides.
-- Failed / learned: The first packaged `search status` smoke test still showed the user home path because the native bundle had been built before the `Bohr_HOME` path fix; rebuilding the native bundle resolved that mismatch.
-- Blockers: PowerShell runtime was unavailable locally, so Windows installer execution remained code-path validated rather than actually executed.
-- Next: Push the second-pass hardening commit, then keep issue `#46` and issue `#47` open until users on the affected Linux/CJK environments confirm whether the launcher/header fixes fully resolve them.
+- Objective: Audit the revised biomedical citation-verification manuscript for citation integrity and provenance discipline.
+- Changed: Re-read `papers/citation-verification-proof-draft.md` against the local evidence notes, verified excerpts, prior verification log, and architecture memo; wrote the fresh verification memo to `notes/citation-verification-proof-verification.md`.
+- Verified: The revised draft fixes the material provenance issues: de Lacey remains historical-only with explicit caveat, ICMJE stays high-level only, Mogull/Greenberg/Tatsioni carry the core empirical spine, and no fatal or major unsupported factual claims were found.
+- Failed / learned: A few recommendation sentences remain synthesis-level inferences rather than direct intervention evidence, but they are clearly bounded and not overstated enough to count as material verification failures.
+- Blockers: None for the requested verification memo.
+- Next: If requested, tighten a few practice-recommendation sentences further or promote the manuscript with the verification memo as the audit record.
 
-### 2026-04-09 10:36 PDT — remaining-tracker-triage-pass
+### 2026-04-19 20:20 +05:30 — citation-verification-proof
 
-- Objective: Reduce the remaining open tracker items by landing the lowest-risk missing docs/catalog updates and a targeted Cloud Code Assist compatibility patch instead of only hand-triaging them.
-- Changed: Added MiniMax M2.7 recommendation preferences in `src/model/catalog.ts`; documented model switching, authenticated-provider visibility, and `/bohr-model` subagent overrides in `website/src/content/docs/getting-started/configuration.md` and `website/src/content/docs/reference/slash-commands.md`; added a runtime patch helper in `scripts/lib/pi-google-legacy-schema-patch.mjs` and wired `scripts/patch-embedded-pi.mjs` to normalize JSON Schema `const` into `enum` for the legacy `parameters` field used by Cloud Code Assist Claude models.
-- Verified: Ran `npm test`, `npm run typecheck`, `npm run build`, and `cd website && npm run build` after the patch/helper/docs changes.
-- Failed / learned: The MiniMax provider catalog in Pi already uses canonical IDs like `MiniMax-M2.7`, so the only failure during validation was a test assertion using the wrong casing rather than a runtime bug.
-- Blockers: The Cloud Code Assist fix is validated by targeted patch tests and code-path review rather than an end-to-end Google account repro in this environment.
-- Next: Push the tracker-triage commit, close the docs/MiniMax PRs as superseded by main, close the support-style model issues against the new docs, and decide whether the remaining feature requests should be left open or closed as not planned/upstream-dependent.
+- Objective: Complete the fresh paper-production workflow for the `citation-verification-proof` slug and deliver the final manuscript plus provenance sidecar.
+- Changed: Ran citation-integrity, review, verifier, and compliance passes; revised `papers/citation-verification-proof-draft.md` to sharpen the distinction between citation mismatch, selective citation, and persistence after contradiction; promoted the revised draft to `papers/citation-verification-proof.md`; wrote `papers/citation-verification-proof.provenance.md`; updated the plan ledger in `outputs/.plans/citation-verification-proof-paper-pro.md`.
+- Verified: `papers/citation-verification-proof.md` contains all required manuscript sections and a direct-URL Sources section; `papers/citation-verification-proof.provenance.md` records the evidence files used, agent passes, and what was and was not directly re-verified in this run.
+- Failed / learned: The final pass relied on the supplied local evidence package and fresh manuscript audits rather than a new end-to-end web retrieval loop for every cited URL, so provenance wording had to stay explicit about inherited verification status.
+- Blockers: None for the requested deliverables.
+- Next: Optional only — render or export the paper if a formatted preview or PDF is needed.
+### 2026-04-19 20:43 +05:30 � paper-pro-docs-and-reliability
+- Objective: Surface `paper-pro` and `paper-architect` in the docs, add a real end-to-end sample page, and remove the manuscript-workflow reliability caveat caused by wrong-provider subagent execution and blank output-path writes.
+- Changed: Added `website/src/content/docs/workflows/paper-pro.md`, `website/src/content/workflowPages/paper-pro.md`, `website/src/content/docs/agents/paper-architect.md`, and `website/src/content/docs/reference/paper-pro-sample-run.md`; updated `scripts/test-paper-pro-workflow.mjs` to force a fresh slug-specific proof run and assert non-blank intermediate artifacts plus OpenAI-backed subagent telemetry; patched the vendored `pi-subagents` runtime so subagents inherit the active parent model when no override is set and blank changed output files no longer silently win; removed the stale Gemini model pins from `.pi/agents/{paper-architect,writer,citation-integrity,reviewer,verifier,paper-compliance}.md`.
+- Verified: Fresh `node scripts/test-paper-pro-workflow.mjs` passed and wrote `notes/citation-verification-proof-paper-pro-session.txt`; the proof run created fresh architecture, draft, citation-integrity, review, verifier, compliance, final paper, and provenance artifacts for slug `citation-verification-proof`; manuscript subagent telemetry showed `openai/gpt-5.4` for all required manuscript agents with recorded subagent totals of `133875` input tokens, `37594` output tokens, and `$0.99469` cost; `npm run build` passed at repo root; `cd website && npm run build` passed and generated the new docs routes.
+- Failed / learned: Earlier failures were not random filesystem brittleness; they came from project-level `.pi/agents` overrides pinning manuscript agents to quota-exhausted Gemini models, plus the subagent runtime treating error-bearing zero-exit attempts and blank changed output files as acceptable success cases.
+- Blockers: None for the requested docs and workflow reliability work.
+- Next: Optional only � render the proof paper into a preview/PDF, or upstream the local `pi-subagents` runtime fixes if you want the same behavior outside this bundled workspace.
 
-### 2026-04-10 10:22 PDT — web-access-stale-override-fix
+### 2026-04-20 20:42 +05:30 � paper-prototype-page
 
-- Objective: Fix the new `ctx.modelRegistry.getApiKeyAndHeaders is not a function` / stale `search-filter.js` report without reintroducing broad vendor drift.
-- Changed: Removed the stale `.bohr/vendor-overrides/pi-web-access/*` files and removed `syncVendorOverride` from `scripts/patch-embedded-pi.mjs`; kept the targeted `pi-web-access` runtime config-path patch; added `bohr search set <provider> [api-key]` and `bohr search clear` commands with a shared save path in `src/pi/web-access.ts`.
-- Verified: Ran `npm test`, `npm run typecheck`, `npm run build`; ran `node scripts/patch-embedded-pi.mjs`, confirmed the installed `pi-web-access/index.ts` has no `search-filter` / condense helper references, and smoke-imported `./.bohr/npm/node_modules/pi-web-access/index.ts`; ran `npm pack --dry-run` and confirmed stale `vendor-overrides` files are no longer in the package tarball.
-- Failed / learned: The public Linux installer Docker test was attempted but Docker Desktop became unresponsive even for simple `docker run node:22-bookworm node -v` commands; the earlier Linux npm-artifact container smoke remains valid, but this specific public-installer run is blocked by the local Docker daemon.
-- Blockers: Issue `#54` is too underspecified to fix directly without logs; public Linux installer behavior still needs a stable Docker daemon or a real Linux shell to reproduce the user's exact npm errors.
-- Next: Push the stale-override fix, close PR `#52` and PR `#53` as superseded/merged-by-main once pushed, and ask for logs on issue `#54` instead of guessing.
+- Objective: Turn the `paper-pro` sample into a first-class client-facing prototype page instead of leaving the sample buried only in docs/reference.
+- Changed: Added `website/src/pages/prototype/index.astro`, a top-level showcase page that reads the live sample artifacts from `papers/` and `notes/`, renders the full generated paper inline, explains the end-to-end agent workflow with Mermaid diagrams, and documents the proof-run prompt, artifact contract, provenance highlights, and token-optimization model.
+- Verified: `cd website && npm run build` passed after fixing the prototype page to resolve artifact paths from the repo root, and the build generated `/prototype/index.html` successfully alongside the existing docs/workflow routes.
+- Failed / learned: Using `import.meta.url` for build-time artifact reads was brittle after Astro compilation because the generated chunk location no longer matched the source-tree depth; switching to `process.cwd()` plus repo-root resolution made the page stable in static builds.
+- Blockers: None for the prototype page itself; the only remaining follow-up would be optional visual QA in a browser or deployment preview.
+- Next: If desired, deploy the site or run browser-level visual QA on `/prototype` before the first public/internal release.
 
-### 2026-04-10 10:49 PDT — rpc-and-website-verification-pass
+### 2026-04-20 21:51 +05:30 � paper-prototype-page-savings
 
-- Objective: Exercise the Bohr wrapper's RPC mode and the website quality gates that were not fully covered by the prior passes.
-- Changed: Added `--mode <text|json|rpc>` pass-through support in the Bohr wrapper and skipped terminal clearing in RPC mode; added `@astrojs/check` to the website dev dependencies, fixed React Refresh lint violations in the generated UI components by exporting only components, and added safe website dependency overrides for dev-audit findings.
-- Verified: Ran a JSONL RPC smoke test through `node bin/bohr.js --mode rpc` with `get_state`; ran `npm test`, `npm run typecheck`, `npm run build`, `cd website && npm run lint`, `cd website && npm run typecheck`, `cd website && npm run build`, full root `npm audit`, full website `npm audit`, and `npm run build:native-bundle`.
-- Failed / learned: Website typecheck was previously a no-op prompt because `@astrojs/check` was missing; installing it exposed dev-audit findings that needed explicit overrides before the full website audit was clean.
-- Blockers: Docker Desktop remained unreliable after restart attempts, so this pass still does not include a second successful public-installer Linux Docker run.
-- Next: Push the RPC/website verification commit and keep future Docker/public-installer validation separate from repo correctness unless Docker is stable.
+- Objective: Add explicit caveman token and spend-savings data to the client-facing /prototype page without overstating certainty.
+- Changed: Updated website/src/pages/prototype/index.astro to compute the measured run totals from the recorded proof telemetry, show a three-card savings block for measured usage, modeled caveman output-token avoidance, and approximate spend implication, and normalize the savings cards into the page's card system.
+- Verified: cd website && npm run build passed and regenerated /prototype/index.html successfully after the savings-model changes.
+- Failed / learned: Exact caveman dollar savings are still modeled rather than directly measured because this repo has a single observed successful run, not an instrumented verbose-vs-caveman A/B comparison with provider-billed splits.
+- Blockers: None for the requested prototype-page savings disclosure.
+- Next: Optional only � do a browser-level visual QA pass on /prototype if you want to tune the wording or card density before deployment.
 
-### 2026-04-12 09:32 PDT — pi-0.66.1-upgrade-pass
+### 2026-04-26 00:20 local — silent-pipeline-semantic-drift
 
-- Objective: Update Bohr from Pi `0.64.0` to the current `0.66.1` packages and absorb any downstream SDK/runtime compatibility changes instead of leaving the repo pinned behind upstream.
-- Changed: Bumped `@mariozechner/pi-ai` and `@mariozechner/pi-coding-agent` to `0.66.1` plus `@companion-ai/alpha-hub` to `0.1.3` in `package.json` and `package-lock.json`; updated `extensions/research-tools.ts` to stop listening for the removed `session_switch` extension event and rely on `session_start`, which now carries startup/reload/new/resume/fork reasons in Pi `0.66.x`.
-- Verified: Ran `npm test`, `npm run typecheck`, and `npm run build` successfully after the upgrade; smoke-ran `node bin/bohr.js --version`, `node bin/bohr.js doctor`, and `node bin/bohr.js status` successfully; checked upstream package diffs and confirmed the breaking change that affected this repo was the typed extension lifecycle change in `pi-coding-agent`, while `pi-ai` mainly brought refreshed provider/model catalog code including Bedrock/OpenAI provider updates and new generated model entries.
-- Failed / learned: `ctx7` resolved Pi correctly to `/badlogic/pi-mono`, but its docs snapshot was not release-note oriented; the concrete downstream-impact analysis came from the actual `0.64.0` → `0.66.1` package diffs and local validation, not from prose docs alone.
-- Failed / learned: The first post-upgrade CLI smoke test failed before Bohr startup because `@companion-ai/alpha-hub@0.1.2` shipped a zero-byte `src/lib/auth.js`; bumping to `0.1.3` fixed that adjacent runtime blocker.
-- Blockers: `npm install` reports two high-severity vulnerabilities remain in the dependency tree; this pass focused on the Pi upgrade and did not remediate unrelated audit findings.
-- Next: Push the Pi upgrade, then decide whether to layer the pending model-command fixes on top of this branch or land them separately to keep the dependency bump easy to review.
-
-### 2026-04-12 13:00 PDT — model-command-and-bedrock-fix-pass
-
-- Objective: Finish the remaining user-facing model-management regressions instead of stopping at the Pi dependency bump.
-- Changed: Updated `src/model/commands.ts` so `bohr model login <provider>` resolves both OAuth and API-key providers; `bohr model logout <provider>` clears either auth mode; `bohr model set` accepts both `provider/model` and `provider:model`; ambiguous bare model IDs now prefer explicitly configured providers from auth storage; added an `amazon-bedrock` setup path that validates the AWS credential chain with the AWS SDK and stores Pi's `<authenticated>` sentinel so Bedrock models appear in `model list`; synced `src/cli.ts`, `metadata/commands.mjs`, `README.md`, and the website docs to the new behavior.
-- Verified: Added regression tests in `tests/model-harness.test.ts` for `provider:model`, API-key provider resolution, and ambiguous bare-ID handling; ran `npm test`, `npm run typecheck`, `npm run build`, and `cd website && npm run build`; exercised command-level flows against throwaway `BOHR_HOME` directories: interactive `node bin/bohr.js model login google`, `node bin/bohr.js model set google:gemini-3-pro-preview`, `node bin/bohr.js model set gpt-5.4` with only OpenAI configured, and `node bin/bohr.js model login amazon-bedrock`; confirmed `model list` shows Bedrock models after the new setup path; ran a live one-shot prompt `node bin/bohr.js --prompt "Reply with exactly OK"` and got `OK`.
-- Failed / learned: The website build still emits duplicate-id warnings for a handful of docs pages, but it completes successfully; those warnings predate this pass and were not introduced by the model-command edits.
-- Blockers: The Bedrock path is verified with the current shell's AWS credential chain, not with a fresh machine lacking AWS config; broader upstream Pi behavior around IMDS/default-profile autodiscovery without the sentinel is still outside this repo.
-- Next: Commit and push the combined Pi/model/docs maintenance branch, then decide whether to tackle the deeper search/deepresearch hang issues separately or leave them for focused repro work.
-
-### 2026-04-12 13:35 PDT — workflow-unattended-and-search-curator-fix-pass
-
-- Objective: Fix the remaining workflow deadlocks instead of leaving `deepresearch` and terminal web search half-functional after the maintenance push.
-- Changed: Updated the built-in research workflow prompts (`deepresearch`, `lit`, `review`, `audit`, `compare`, `draft`, `watch`) so they present the plan and continue automatically rather than blocking for approval; extended the `pi-web-access` runtime patch so Bohr rewrites its default workflow from browser-based `summary-review` to `none`; added explicit `workflow: "none"` persistence in `src/search/commands.ts` and `src/pi/web-access.ts`, plus surfaced the workflow in doctor/status-style output.
-- Verified: Reproduced the original `deepresearch` failure mode in print mode, where the run created `outputs/.plans/capital-france.md` and then stopped waiting for user confirmation; after the prompt changes, reran `deepresearch "What is the capital of France?"` and confirmed it progressed beyond planning and produced `outputs/.drafts/capital-france-draft.md`; inspected `pi-web-access@0.10.6` and confirmed the exact `waiting for summary approval...` string and `summary-review` default live in that package; added regression tests for the new `pi-web-access` patch and workflow-none status handling; reran `npm test`, `npm run typecheck`, and `npm run build`; smoke-tested `bohr search set exa exa_test_key` under a throwaway `BOHR_HOME` and confirmed it writes `"workflow": "none"` to `web-search.json`.
-- Failed / learned: The long-running deepresearch session still spends substantial time in later reasoning/writing steps for even a narrow query, but the plan-confirmation deadlock itself is resolved; the remaining slowness is model/workflow behavior, not the original stop-after-plan bug.
-- Blockers: I did not install and execute the full optional `pi-session-search` package locally, so the terminal `summary approval` fix is validated by source inspection plus the Bohr patch path and config persistence rather than a local end-to-end package install.
-- Next: Commit and push the workflow/search fix pass, then close or answer the remaining deepresearch/search issues with the specific root causes and shipped fixes.
-
-### 2026-04-12 14:05 PDT — final-artifact-hardening-pass
-
-- Objective: Reduce the chance of unattended research workflows stopping at intermediate artifacts like `<slug>-brief.md` without promoting the final deliverable and provenance sidecar.
-- Changed: Tightened `prompts/deepresearch.md` so the agent must verify on disk that the plan, draft, cited brief, promoted final output, and provenance sidecar all exist before stopping; tightened `prompts/lit.md` so it explicitly checks for the final output plus provenance sidecar instead of stopping at an intermediate cited draft.
-- Verified: Cross-read the current deepresearch/lit deliver steps after the earlier unattended-run reproductions and confirmed the missing enforcement point was the final on-disk artifact check, not the naming convention itself.
-- Failed / learned: This is still prompt-level enforcement rather than a deterministic post-processing hook, so it improves completion reliability but does not provide the same guarantees as a dedicated artifact-finalization wrapper.
-- Blockers: I did not rerun a full broad deepresearch workflow end-to-end after this prompt-only hardening because those runs are materially longer and more expensive than the narrow reproductions already used to isolate the earlier deadlocks.
-- Next: Commit and push the prompt hardening, then, if needed, add a deterministic wrapper around final artifact promotion instead of relying only on prompt adherence.
-
-### 2026-04-12 13:20 PDT — capital-france (citation verification brief)
-
-- Objective: Verify citations in the capital-of-France draft and produce a cited verifier brief.
-- Changed: Read `outputs/.drafts/capital-france-draft.md`, `notes/capital-france-research-web.md`, and `notes/capital-france-legal-context.md`; fetched the three draft URLs directly; wrote `notes/capital-france-brief.md` with inline numbered citations and a numbered direct-URL sources list.
-- Verified: Confirmed the Insee, Sénat, and Élysée URLs were reachable on 2026-04-12; confirmed Insee and Sénat support the core claim that Paris is the capital of France; marked the Élysée homepage as contextual-only support.
-- Failed / learned: The Élysée homepage does not explicitly state the core claim, so it should not be used as sole evidence for capital status.
-- Blockers: None for the verifier brief; any stronger legal memo would still need a more direct constitutional/statutory basis if that specific question is asked.
-- Next: Promote the brief into the final output or downgrade/remove any claim that leans on the Élysée URL alone.
-
-
-
+- Objective: Run the paper-compliance pass on `papers/silent-pipeline-semantic-drift-draft.md`.
+- Changed: Wrote `papers/silent-pipeline-semantic-drift-compliance.md` after checking manuscript sections, topic alignment, artifact completeness, and provenance status against the slug plan and current paper artifacts.
+- Verified: The draft contains all required manuscript sections and remains aligned with the run's scoped position/design-paper objective.
+- Failed / learned: The remaining blockers are workflow-completeness issues rather than manuscript-body defects.
+- Blockers: `papers/silent-pipeline-semantic-drift.md` and `papers/silent-pipeline-semantic-drift.provenance.md` do not yet exist.
+- Next: Promote the draft to the canonical final paper path and write the provenance sidecar with the standard run-accounting fields.

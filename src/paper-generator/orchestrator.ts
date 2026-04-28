@@ -227,7 +227,7 @@ export class AgentExecutor {
     sessionDir: string
   ): Promise<{ output: string; tokens: number }> {
     // Import Pi integration
-    const { executeSubagent } = await import('./pi-integration');
+    const { executeSubagent } = await import('./pi-integration.js');
     
     // Execute via Pi subagent system
     const result = await executeSubagent(

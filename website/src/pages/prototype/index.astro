@@ -1,0 +1,1176 @@
+---
+import { readFileSync } from "node:fs"
+import { resolve } from "node:path"
+import MainLayout from "@/layouts/main.astro"
+import WorkflowPipelineDiagram from "@/components/diagrams/WorkflowPipelineDiagram.astro"
+import type { PipelineDiagramInput } from "@/lib/workflow-pipeline-layout"
+
+const samplePrompt =
+  "/paper-pro notes/citation-verification-research-notes.md. Use slug citation-verification-proof. Primary local evidence files are notes/citation-verification-research-notes.md, notes/citation-verification-research-verified-excerpts.md, and notes/citation-verification-research-verification.md. Do not reuse draft, review, citation, compliance, or provenance artifacts from any other slug. Create fresh architecture, draft, citation-integrity, review, and compliance artifacts for this slug before finalizing."
+
+const workspaceRoot = resolve(process.cwd(), "..")
+
+const paperMarkdown = normalizeMojibake(readFileSync(resolve(workspaceRoot, "papers/citation-verification-proof.md"), "utf8")).trim()
+
+const provenanceMarkdown = normalizeMojibake(
+  readFileSync(resolve(workspaceRoot, "papers/citation-verification-proof.provenance.md"), "utf8"),
+).trim()
+
+const sessionTranscript = normalizeMojibake(
+  readFileSync(resolve(workspaceRoot, "notes/citation-verification-proof-paper-pro-session.txt"), "utf8"),
+).trim()
+
+const measuredInputTokens = 133875
+const measuredOutputTokens = 37594
+const measuredSubagentCost = 0.99469
+const measuredTotalTokens = measuredInputTokens + measuredOutputTokens
+const modeledVerboseOutput = Math.round(measuredOutputTokens / 0.25)
+const modeledOutputSaved = modeledVerboseOutput - measuredOutputTokens
+const modeledVerboseTotalTokens = measuredInputTokens + modeledVerboseOutput
+const blendedObservedCostPerToken = measuredSubagentCost / measuredTotalTokens
+const modeledVerboseSpend = blendedObservedCostPerToken * modeledVerboseTotalTokens
+const modeledSpendSaved = modeledVerboseSpend - measuredSubagentCost
+
+const metrics = [
+  {
+    label: "Validated run",
+    value: "20 Apr 2026",
+    note: "Strict smoke workflow pass for the sample paper",
+  },
+  {
+    label: "Input tokens",
+    value: measuredInputTokens.toLocaleString(),
+    note: "Measured across manuscript subagents in the passing proof run",
+  },
+  {
+    label: "Output tokens",
+    value: measuredOutputTokens.toLocaleString(),
+    note: "Compressed handoffs plus one final manuscript expansion",
+  },
+  {
+    label: "Subagent cost",
+    value: `$${measuredSubagentCost.toFixed(5)}`,
+    note: "Measured subagent-only telemetry; lead orchestration cost is slightly higher",
+  },
+] as const
+
+const agentCards = [
+  {
+    name: "Bohr lead agent",
+    role: "Orchestrates the entire paper lane.",
+    detail:
+      "Scopes the run, selects the slug, coordinates artifact paths, hands the right context to each specialist, reconciles critiques, and promotes the final manuscript plus provenance sidecar.",
+  },
+  {
+    name: "paper-architect",
+    role: "Designs the paper before prose starts.",
+    detail:
+      "Turns a raw topic and evidence pack into a manuscript architecture: thesis boundary, section plan, evidence map, argument order, and the constraints that keep the writer honest.",
+  },
+  {
+    name: "writer",
+    role: "Expands the architecture into a complete draft.",
+    detail:
+      "Writes the actual paper from the architecture memo and evidence files, keeping claims bounded to what the local evidence package can really support.",
+  },
+  {
+    name: "citation-integrity",
+    role: "Audits citation-to-claim fidelity.",
+    detail:
+      "Checks whether each claim is supported at the right granularity, whether source-status labels are honest, and whether weaker sources are clearly marked instead of silently promoted.",
+  },
+  {
+    name: "reviewer",
+    role: "Acts like a skeptical peer reviewer.",
+    detail:
+      "Looks for overclaiming, missing caveats, weak transitions, false confidence, and places where the prose sounds stronger than the evidence base actually is.",
+  },
+  {
+    name: "verifier",
+    role: "Runs the evidence-truth pass.",
+    detail:
+      "Checks the revised manuscript against the local evidence bundle and records the honest status: pass, inferred, blocked, or still unverified.",
+  },
+  {
+    name: "paper-compliance",
+    role: "Confirms the paper contract is complete.",
+    detail:
+      "Checks that the required sections exist, the run produced the expected artifacts, and the manuscript is promotable into a final paper plus provenance file.",
+  },
+] as const
+
+const qualityChecks = [
+  "Fresh architecture, draft, citation-integrity, review, verifier, compliance, final paper, and provenance artifacts were all created for the `citation-verification-proof` slug.",
+  "The verifier memo reported no fatal or major unsupported claims in the revised manuscript.",
+  "Citation-integrity issues were revised before final promotion, instead of being hidden in post-hoc cleanup.",
+  "The sample remains intentionally narrow: biomedical evidence only, with weaker de Lacey support kept as historical context rather than central proof.",
+] as const
+
+const artifacts = [
+  {
+    label: "Final paper",
+    path: "papers/citation-verification-proof.md",
+    detail: "The complete sample manuscript rendered below on this page.",
+  },
+  {
+    label: "Provenance sidecar",
+    path: "papers/citation-verification-proof.provenance.md",
+    detail: "Honest source accounting, verification scope, and unresolved weaknesses.",
+  },
+  {
+    label: "Session transcript",
+    path: "notes/citation-verification-proof-paper-pro-session.txt",
+    detail: "Raw workflow run transcript from the successful sample generation.",
+  },
+  {
+    label: "Architecture memo",
+    path: "outputs/.plans/citation-verification-proof-architecture.md",
+    detail: "The paper blueprint used to control scope before drafting.",
+  },
+] as const
+
+const provenanceHighlights = [
+  "Mogull 2017 and Greenberg 2009 were treated as directly re-fetched PMCID-backed support in the local evidence package.",
+  "Tatsioni et al. 2007 was treated as directly re-fetched PubMed abstract support.",
+  "ICMJE was used only for broad normative context, not as proof of a line-by-line citation-checking mandate.",
+  "de Lacey 1985 remained explicitly weaker-support historical context in the final paper and provenance record.",
+] as const
+
+const optimizationLanes = [
+  {
+    title: "Cheap planning lane",
+    detail:
+      "Architecture, critique, and compliance passes stay short. They exchange memos and path references instead of pasting full papers back into parent context.",
+  },
+  {
+    title: "Expensive prose lane",
+    detail:
+      "Only the writer and final lead synthesis spend big on long-form prose. That keeps most agents in compressed reasoning mode and reserves expansion for the manuscript itself.",
+  },
+  {
+    title: "File-based handoffs",
+    detail:
+      "Artifacts land on disk, then later agents read the exact files they need. This avoids repeated transcript inflation and stabilizes resumability for long research runs.",
+  },
+  {
+    title: "Caveman mode",
+    detail:
+      "Short `[CAVEMAN MODE: ...]` prefixes and minimal context objects reduce chatty output. In this repo, the caveman skill cites roughly 75% output-token reduction as a design goal, not as a measured guarantee for every run.",
+  },
+] as const
+
+const workflowDiagram: PipelineDiagramInput = {
+  columns: [
+    {
+      stage: "01 · BRIEF",
+      nodes: [{ variant: "outline", lines: ["prompt / artifact", "slug + scope"] }],
+    },
+    {
+      stage: "02 · PLAN",
+      nodes: [{ variant: "dark", lines: ["plan", "evidence map"] }],
+    },
+    {
+      stage: "03 · DRAFT",
+      nodes: [{ variant: "hero", lines: ["architecture", "manuscript"] }],
+    },
+    {
+      stage: "04 · CHECKS",
+      nodes: [{ lines: ["citation audit"] }, { lines: ["reviewer"] }, { lines: ["verifier"] }],
+    },
+    {
+      stage: "05 · SHIP",
+      nodes: [{ lines: ["compliance"] }, { lines: ["final paper"] }, { lines: ["provenance"] }],
+    },
+  ],
+}
+
+const tokenDiagram: PipelineDiagramInput = {
+  columns: [
+    {
+      stage: "01 · INPUT",
+      nodes: [{ variant: "outline", lines: ["topic", "local evidence"] }],
+    },
+    {
+      stage: "02 · SMALL",
+      nodes: [{ lines: ["architecture memo"] }, { lines: ["path refs"] }],
+    },
+    {
+      stage: "03 · LARGE",
+      nodes: [{ variant: "hero", lines: ["writer", "manuscript draft"] }],
+    },
+    {
+      stage: "04 · SMALL",
+      nodes: [{ lines: ["review memo"] }, { lines: ["citation memo"] }, { lines: ["verifier memo"] }],
+    },
+    {
+      stage: "05 · FINAL",
+      nodes: [{ lines: ["lead synthesis"] }, { lines: ["paper + provenance"] }],
+    },
+  ],
+  loopCaption: "Cheap critique lanes stay file-based while the main prose cost is paid once.",
+}
+
+const transcriptPreview = sessionTranscript.split(/\r?\n/).slice(0, 48).join("\n")
+const renderedPaper = renderMarkdown(paperMarkdown)
+const renderedProvenance = renderMarkdown(provenanceMarkdown)
+
+function normalizeMojibake(text: string): string {
+  return text
+    .replaceAll("Ã¢â‚¬Å“", "â€œ")
+    .replaceAll("Ã¢â‚¬Â", "â€")
+    .replaceAll("Ã¢â‚¬Ëœ", "â€˜")
+    .replaceAll("Ã¢â‚¬â„¢", "â€™")
+    .replaceAll("Ã¢â‚¬â€", "â€”")
+    .replaceAll("Ã¢â‚¬â€œ", "â€“")
+    .replaceAll("Ã¢â‚¬Â¦", "â€¦")
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+}
+
+function renderInline(text: string): string {
+  let html = escapeHtml(text)
+  html = html.replace(/`([^`]+)`/g, "<code>$1</code>")
+  html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+  html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>")
+  html = html.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noreferrer">$1</a>')
+  return html
+}
+
+function renderMarkdown(markdown: string): string {
+  const lines = markdown.split(/\r?\n/)
+  const html: string[] = []
+  let paragraph: string[] = []
+  let listType: "ul" | "ol" | null = null
+  let listItems: string[] = []
+  let inCode = false
+  let codeLines: string[] = []
+
+  const flushParagraph = () => {
+    if (!paragraph.length) return
+    html.push(`<p>${renderInline(paragraph.join(" "))}</p>`)
+    paragraph = []
+  }
+
+  const flushList = () => {
+    if (!listType || !listItems.length) return
+    html.push(`<${listType}>${listItems.map((item) => `<li>${item}</li>`).join("")}</${listType}>`)
+    listType = null
+    listItems = []
+  }
+
+  const flushCode = () => {
+    if (!codeLines.length) return
+    html.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`)
+    codeLines = []
+  }
+
+  for (const rawLine of lines) {
+    const line = rawLine.replace(/\t/g, "  ")
+    const trimmed = line.trim()
+
+    if (trimmed.startsWith("```")) {
+      flushParagraph()
+      flushList()
+      if (inCode) {
+        flushCode()
+        inCode = false
+      } else {
+        inCode = true
+      }
+      continue
+    }
+
+    if (inCode) {
+      codeLines.push(line)
+      continue
+    }
+
+    if (!trimmed) {
+      flushParagraph()
+      flushList()
+      continue
+    }
+
+    const headingMatch = trimmed.match(/^(#{1,6})\s+(.*)$/)
+    if (headingMatch) {
+      flushParagraph()
+      flushList()
+      const level = headingMatch[1].length
+      html.push(`<h${level}>${renderInline(headingMatch[2])}</h${level}>`)
+      continue
+    }
+
+    if (/^---+$/.test(trimmed)) {
+      flushParagraph()
+      flushList()
+      html.push("<hr />")
+      continue
+    }
+
+    const unorderedMatch = trimmed.match(/^[-*]\s+(.*)$/)
+    if (unorderedMatch) {
+      flushParagraph()
+      if (listType && listType !== "ul") flushList()
+      listType = "ul"
+      listItems.push(renderInline(unorderedMatch[1]))
+      continue
+    }
+
+    const orderedMatch = trimmed.match(/^\d+\.\s+(.*)$/)
+    if (orderedMatch) {
+      flushParagraph()
+      if (listType && listType !== "ol") flushList()
+      listType = "ol"
+      listItems.push(renderInline(orderedMatch[1]))
+      continue
+    }
+
+    const quoteMatch = trimmed.match(/^>\s?(.*)$/)
+    if (quoteMatch) {
+      flushParagraph()
+      flushList()
+      html.push(`<blockquote><p>${renderInline(quoteMatch[1])}</p></blockquote>`)
+      continue
+    }
+
+    paragraph.push(trimmed)
+  }
+
+  flushParagraph()
+  flushList()
+  flushCode()
+
+  return html.join("\n")
+}
+---
+
+<MainLayout
+  title="Prototype | Paper-Pro Research Workflow"
+  description="A client-facing prototype page for the paper-pro research workflow, including the full generated sample manuscript, agent flow, proof telemetry, and token-optimization model."
+  active="prototype"
+  shell="default"
+>
+  <section class="prototype-hero">
+    <div class="page-gutter-x py-8 sm:py-10 lg:py-14">
+      <div class="prototype-hero-shell">
+        <div class="prototype-hero-copy">
+          <div class="prototype-kicker">Prototype | Paper-Pro workflow</div>
+          <h1 class="prototype-title">
+            The strongest end-to-end research paper workflow in this tool right now.
+          </h1>
+          <p class="prototype-lede">
+            <code>paper-pro</code> is the production-style paper lane for Bohr: one lead agent, a specialized manuscript
+            architecture pass, adversarial review, citation-integrity checking, evidence verification, compliance checks,
+            and a final provenance sidecar. This page shows the exact sample paper, the agent graph behind it, and the
+            cost discipline that keeps the workflow usable before it becomes expensive.
+          </p>
+
+          <div class="prototype-actions">
+            <a class="prototype-primary-link" href="#sample-paper">Read the full sample paper</a>
+            <a class="prototype-secondary-link" href="/docs/workflows/paper-pro">Open the technical workflow docs</a>
+          </div>
+        </div>
+
+        <aside class="prototype-proof-panel">
+          <div class="prototype-terminal-head">
+            <span class="prototype-terminal-dot"></span>
+            <span class="prototype-terminal-dot"></span>
+            <span class="prototype-terminal-dot"></span>
+            <span class="prototype-terminal-label">validated proof run</span>
+          </div>
+          <div class="prototype-terminal-body">
+            <p><span class="text-neutral-500">$</span> <span>node .\scripts\test-paper-pro-workflow.mjs</span></p>
+            <p class="mt-3 text-neutral-500">Status</p>
+            <p>Paper-pro workflow validation passed.</p>
+            <p class="mt-3 text-neutral-500">Artifacts</p>
+            <p>Paper generated: <code>papers/citation-verification-proof.md</code></p>
+            <p>Provenance: <code>papers/citation-verification-proof.provenance.md</code></p>
+            <p class="mt-3 text-neutral-500">Telemetry</p>
+            <p>Input <strong>133,875</strong></p>
+            <p>Output <strong>37,594</strong></p>
+            <p>Subagent cost <strong>$0.99469</strong></p>
+            <p class="mt-3 text-[11px] leading-6 text-neutral-500">
+              This cost figure is the measured subagent telemetry from the passing sample run. Lead-agent orchestration
+              adds a little more on top.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-gutter-x pb-8 sm:pb-10 lg:pb-14">
+    <div class="prototype-metric-grid">
+      {
+        metrics.map((metric) => (
+          <article class="prototype-metric-card">
+            <p class="prototype-label">{metric.label}</p>
+            <p class="prototype-metric-value">{metric.value}</p>
+            <p class="prototype-metric-note">{metric.note}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="page-gutter-x pb-10 lg:pb-14">
+    <div class="prototype-section-shell">
+      <div class="prototype-section-head">
+        <p class="prototype-kicker">Agent flow</p>
+        <h2 class="prototype-section-title">How the paper moves from topic to final manuscript</h2>
+        <p class="prototype-section-copy">
+          The design principle is simple: only one stage should spend heavily on long-form prose at a time. Everything
+          else stays short, explicit, and artifact-driven so the workflow remains debuggable and cheaper to operate.
+        </p>
+      </div>
+
+      <div class="prototype-diagram-stack">
+        <section aria-label="Paper-pro orchestration diagram">
+          <div class="prototype-flow-header">
+            <p class="prototype-label">Diagram 01</p>
+            <p class="prototype-flow-caption">Paper-pro orchestration map</p>
+          </div>
+          <WorkflowPipelineDiagram
+            diagram={workflowDiagram}
+            instanceId="paper-pro-prototype-flow"
+            label="Paper-pro orchestration flow"
+          />
+        </section>
+
+        <section aria-label="Token bifurcation diagram">
+          <div class="prototype-flow-header">
+            <p class="prototype-label">Diagram 02</p>
+            <p class="prototype-flow-caption">Token bifurcation map</p>
+          </div>
+          <WorkflowPipelineDiagram
+            diagram={tokenDiagram}
+            instanceId="paper-pro-prototype-token-flow"
+            label="Paper-pro token bifurcation flow"
+          />
+        </section>
+      </div>
+
+      <div class="prototype-agent-grid">
+        {
+          agentCards.map((agent) => (
+            <article class="prototype-agent-card">
+              <p class="prototype-label">{agent.name}</p>
+              <h3>{agent.role}</h3>
+              <p>{agent.detail}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="page-gutter-x pb-10 lg:pb-14">
+    <div class="prototype-dual-grid">
+      <article class="prototype-section-shell prototype-equal-shell">
+        <div class="prototype-section-head">
+          <p class="prototype-kicker">Prompt used</p>
+          <h2 class="prototype-section-title">The exact sample invocation</h2>
+          <p class="prototype-section-copy">
+            This sample page is not based on a vague demo pitch. It comes from a real workflow test using the prompt
+            below.
+          </p>
+        </div>
+        <pre class="prototype-code-block prototype-scroll-block"><code>{samplePrompt}</code></pre>
+      </article>
+
+      <article class="prototype-section-shell prototype-equal-shell">
+        <div class="prototype-section-head">
+          <p class="prototype-kicker">Artifact contract</p>
+          <h2 class="prototype-section-title">What the workflow is required to produce</h2>
+        </div>
+        <div class="prototype-artifact-list prototype-fill-block">
+          {
+            artifacts.map((artifact) => (
+              <div class="prototype-artifact-row">
+                <div>
+                  <p class="prototype-label">{artifact.label}</p>
+                  <p class="prototype-artifact-path">{artifact.path}</p>
+                </div>
+                <p class="prototype-artifact-detail">{artifact.detail}</p>
+              </div>
+            ))
+          }
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="page-gutter-x pb-10 lg:pb-14">
+    <div class="prototype-section-shell">
+      <div class="prototype-section-head">
+        <p class="prototype-kicker">Cost optimization</p>
+        <h2 class="prototype-section-title">How token bifurcation and caveman mode keep the paper lane practical</h2>
+        <p class="prototype-section-copy">
+          The workflow does not treat every agent as a full essay writer. It splits work into cheap reasoning lanes and
+          expensive prose lanes, then uses file-based handoffs to avoid re-paying for the same context over and over.
+        </p>
+      </div>
+
+      <div class="prototype-optimization-grid">
+        {
+          optimizationLanes.map((lane) => (
+            <article class="prototype-optimization-card">
+              <h3>{lane.title}</h3>
+              <p>{lane.detail}</p>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="prototype-savings-shell">
+        <article class="prototype-savings-card">
+          <p class="prototype-label">Measured on this sample run</p>
+          <p class="prototype-savings-value">{measuredOutputTokens.toLocaleString()} output tokens</p>
+          <p class="prototype-savings-copy">
+            The passing paper-pro proof run used {measuredInputTokens.toLocaleString()} input tokens,
+            {measuredOutputTokens.toLocaleString()} output tokens, and recorded ${measuredSubagentCost.toFixed(5)} in
+            subagent spend.
+          </p>
+        </article>
+        <article class="prototype-savings-card">
+          <p class="prototype-label">Illustrative caveman design model</p>
+          <p class="prototype-savings-value">~{modeledOutputSaved.toLocaleString()} output tokens avoided</p>
+          <p class="prototype-savings-copy">
+            The caveman skill documents roughly 75% output-token reduction as a design goal. If that target held for
+            this run, a verbose equivalent would be about {modeledVerboseOutput.toLocaleString()} output tokens. That is
+            a modeled comparison, not an instrumented A/B measurement.
+          </p>
+          <p class="prototype-savings-meta">
+            Modeled verbose output: ~{modeledVerboseOutput.toLocaleString()} tokens
+          </p>
+        </article>
+        <article class="prototype-savings-card">
+          <p class="prototype-label">Approximate spend implication</p>
+          <p class="prototype-savings-value">~${modeledSpendSaved.toFixed(2)} avoided</p>
+          <p class="prototype-savings-copy">
+            Using the observed run as a blended cost baseline, the same workflow without caveman-style compression would
+            trend toward roughly ${modeledVerboseSpend.toFixed(2)} in subagent spend instead of ${measuredSubagentCost.toFixed(2)}.
+            This is a run-level model, not provider-billed A/B telemetry.
+          </p>
+          <p class="prototype-savings-meta">
+            Why it saves: short planning memos, file-based handoffs, and only one expensive long-form writer lane
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-gutter-x pb-10 lg:pb-14">
+    <div class="prototype-dual-grid">
+      <article class="prototype-section-shell prototype-equal-shell">
+        <div class="prototype-section-head">
+          <p class="prototype-kicker">Quality gates</p>
+          <h2 class="prototype-section-title">Why this workflow is strong professionally</h2>
+        </div>
+        <ul class="prototype-check-list">
+          {
+            qualityChecks.map((item) => (
+              <li>{item}</li>
+            ))
+          }
+        </ul>
+      </article>
+
+      <article class="prototype-section-shell prototype-equal-shell">
+        <div class="prototype-section-head">
+          <p class="prototype-kicker">Source-status honesty</p>
+          <h2 class="prototype-section-title">What the provenance record says explicitly</h2>
+        </div>
+        <ul class="prototype-check-list">
+          {
+            provenanceHighlights.map((item) => (
+              <li>{item}</li>
+            ))
+          }
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="page-gutter-x pb-10 lg:pb-14">
+    <div class="prototype-dual-grid prototype-dual-grid-wide">
+      <article class="prototype-section-shell prototype-equal-shell">
+        <div class="prototype-section-head">
+          <p class="prototype-kicker">Session trace</p>
+          <h2 class="prototype-section-title">Proof-run transcript excerpt</h2>
+          <p class="prototype-section-copy">
+            This excerpt comes from the successful session transcript saved to
+            <code>notes/citation-verification-proof-paper-pro-session.txt</code>.
+          </p>
+        </div>
+        <pre class="prototype-code-block prototype-scroll-block prototype-transcript-block"><code>{transcriptPreview}</code></pre>
+      </article>
+
+      <article class="prototype-section-shell prototype-equal-shell">
+        <div class="prototype-section-head">
+          <p class="prototype-kicker">Provenance sidecar</p>
+          <h2 class="prototype-section-title">The workflow ships paper plus evidence accounting</h2>
+        </div>
+        <div class="prototype-scroll-panel prose prototype-prose max-w-none" set:html={renderedProvenance}></div>
+      </article>
+    </div>
+  </section>
+
+  <section id="sample-paper" class="page-gutter-x pb-16 lg:pb-24">
+    <div class="prototype-section-shell prototype-paper-shell">
+      <div class="prototype-section-head">
+        <p class="prototype-kicker">Sample output</p>
+        <h2 class="prototype-section-title">Full paper generated by the workflow</h2>
+        <p class="prototype-section-copy">
+          The manuscript below is rendered from the actual sample artifact at
+          <code>papers/citation-verification-proof.md</code>.
+        </p>
+      </div>
+      <article class="prose prototype-prose prototype-paper-body max-w-none" set:html={renderedPaper}></article>
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .prototype-hero {
+    position: relative;
+    overflow: clip;
+  }
+
+  .prototype-hero::before,
+  .prototype-hero::after {
+    content: "";
+    position: absolute;
+    inset: auto;
+    pointer-events: none;
+    filter: blur(40px);
+    opacity: 0.65;
+  }
+
+  .prototype-hero::before {
+    top: 3rem;
+    right: 5%;
+    width: min(26rem, 42vw);
+    height: min(26rem, 42vw);
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(185, 133, 61, 0.18), transparent 72%);
+  }
+
+  .prototype-hero::after {
+    left: 2%;
+    bottom: 0;
+    width: min(22rem, 38vw);
+    height: min(18rem, 32vw);
+    background: radial-gradient(circle, rgba(25, 74, 92, 0.12), transparent 70%);
+  }
+
+  .prototype-hero-shell {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 1.5rem;
+    border: 1px solid color-mix(in oklab, var(--border) 85%, transparent);
+    border-radius: 2rem;
+    padding: clamp(1.25rem, 2.5vw, 2rem);
+    background:
+      linear-gradient(135deg, color-mix(in oklab, var(--card) 92%, white 8%), color-mix(in oklab, var(--background) 86%, var(--card) 14%));
+    box-shadow: 0 28px 90px -54px rgba(30, 41, 59, 0.42);
+  }
+
+  .prototype-hero-copy {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .prototype-kicker,
+  .prototype-label {
+    font-family: var(--font-cli);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  .prototype-title,
+  .prototype-section-title,
+  .prototype-agent-card h3,
+  .prototype-optimization-card h3 {
+    font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    letter-spacing: -0.02em;
+    color: var(--bohr-shell-fg);
+  }
+
+  .prototype-title {
+    font-size: clamp(2.4rem, 5vw, 4.9rem);
+    line-height: 0.98;
+    font-style: italic;
+    max-width: 14ch;
+    text-wrap: balance;
+  }
+
+  .prototype-lede,
+  .prototype-section-copy,
+  .prototype-agent-card p,
+  .prototype-optimization-card p,
+  .prototype-metric-note,
+  .prototype-artifact-detail,
+  .prototype-savings-copy,
+  .prototype-flow-caption,
+  .prototype-prose p,
+  .prototype-prose li {
+    font-size: 0.98rem;
+    line-height: 1.78;
+    color: var(--muted-foreground);
+    text-wrap: pretty;
+    text-align: justify !important;
+    text-justify: inter-word;
+    hyphens: auto;
+  }
+
+  .prototype-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-top: 0.35rem;
+  }
+
+  .prototype-primary-link,
+  .prototype-secondary-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.9rem;
+    padding: 0.8rem 1rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+    transition:
+      transform 180ms ease,
+      background-color 180ms ease,
+      color 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .prototype-primary-link {
+    background: var(--bohr-shell-fg);
+    color: var(--bohr-shell-bg);
+    border: 1px solid transparent;
+  }
+
+  .prototype-secondary-link {
+    border: 1px solid color-mix(in oklab, var(--border) 86%, transparent);
+    color: var(--bohr-shell-fg);
+    background: color-mix(in oklab, var(--background) 82%, var(--card) 18%);
+  }
+
+  .prototype-primary-link:hover,
+  .prototype-secondary-link:hover {
+    transform: translateY(-1px);
+  }
+
+  .prototype-proof-panel,
+  .prototype-section-shell,
+  .prototype-metric-card,
+  .prototype-agent-card,
+  .prototype-optimization-card {
+    border: 1px solid color-mix(in oklab, var(--border) 88%, transparent);
+    background: color-mix(in oklab, var(--card) 94%, white 6%);
+    box-shadow: 0 18px 48px -40px rgba(15, 23, 42, 0.45);
+  }
+
+  .prototype-proof-panel {
+    border-radius: 1.5rem;
+    overflow: hidden;
+    align-self: stretch;
+  }
+
+  .prototype-terminal-head {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid color-mix(in oklab, var(--border) 75%, transparent);
+    background: #111111;
+    color: #f7f7f7;
+    font-family: var(--font-cli);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .prototype-terminal-dot {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 999px;
+    background: #555;
+  }
+
+  .prototype-terminal-dot:nth-child(1) {
+    background: #d97757;
+  }
+
+  .prototype-terminal-dot:nth-child(2) {
+    background: #c7a445;
+  }
+
+  .prototype-terminal-dot:nth-child(3) {
+    background: #4ba46b;
+  }
+
+  .prototype-terminal-label {
+    margin-left: 0.35rem;
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  .prototype-terminal-body {
+    padding: 1rem;
+    background: linear-gradient(180deg, #131313, #090909);
+    color: #ececec;
+    font-family: var(--font-cli);
+    font-size: 0.84rem;
+    line-height: 1.85;
+  }
+
+  .prototype-terminal-body code {
+    color: #f1f1f1;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.12rem 0.32rem;
+    border-radius: 0.3rem;
+  }
+
+  .prototype-metric-grid,
+  .prototype-agent-grid,
+  .prototype-optimization-grid,
+  .prototype-dual-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .prototype-metric-grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  .prototype-metric-card,
+  .prototype-agent-card,
+  .prototype-optimization-card,
+  .prototype-section-shell {
+    border-radius: 1.4rem;
+  }
+
+  .prototype-metric-card {
+    padding: 1.1rem 1rem;
+  }
+
+  .prototype-metric-value,
+  .prototype-savings-value {
+    margin-top: 0.4rem;
+    font-size: clamp(1.55rem, 3vw, 2.35rem);
+    line-height: 1.05;
+    font-weight: 700;
+    color: var(--bohr-shell-fg);
+  }
+
+  .prototype-section-shell,
+  .prototype-agent-card,
+  .prototype-optimization-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    padding: clamp(1.2rem, 2.2vw, 1.75rem);
+  }
+
+  .prototype-section-head {
+    display: grid;
+    gap: 0.55rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .prototype-section-title {
+    font-size: clamp(1.8rem, 3vw, 3rem);
+    line-height: 1.02;
+    font-style: italic;
+    text-wrap: balance;
+  }
+
+  .prototype-diagram-stack {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .prototype-flow-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .prototype-agent-grid,
+  .prototype-optimization-grid {
+    margin-top: 1.4rem;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  .prototype-agent-card,
+  .prototype-optimization-card {
+    padding: 1rem;
+  }
+
+  .prototype-agent-card h3,
+  .prototype-optimization-card h3 {
+    margin-top: 0.55rem;
+    font-size: 1.45rem;
+    line-height: 1.08;
+  }
+
+  .prototype-artifact-list {
+    display: grid;
+    gap: 0.85rem;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .prototype-artifact-row {
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+    padding: 0.9rem 0.95rem;
+    border-radius: 1rem;
+    border: 1px solid color-mix(in oklab, var(--border) 88%, transparent);
+    background: color-mix(in oklab, var(--background) 85%, var(--card) 15%);
+  }
+
+  .prototype-artifact-path {
+    margin-top: 0.35rem;
+    font-family: var(--font-cli);
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: var(--bohr-shell-fg);
+    word-break: break-word;
+  }
+
+  .prototype-code-block {
+    overflow-x: auto;
+    padding: 1rem;
+    border-radius: 1rem;
+    background: #101010;
+    color: #f3f3f3;
+    font-family: var(--font-cli);
+    font-size: 0.84rem;
+    line-height: 1.85;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .prototype-fill-block {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .prototype-scroll-block,
+  .prototype-scroll-panel {
+    overflow: auto;
+  }
+
+  .prototype-transcript-block {
+    max-height: min(68vh, 44rem);
+  }
+
+  .prototype-savings-shell {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.4rem;
+    padding: 1rem;
+    border-radius: 1.25rem;
+    background: linear-gradient(135deg, rgba(185, 133, 61, 0.08), rgba(25, 74, 92, 0.05));
+    border: 1px solid color-mix(in oklab, var(--border) 78%, transparent);
+  }
+
+  .prototype-savings-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    min-height: 100%;
+    padding: 1rem;
+    border-radius: 1rem;
+    background: rgba(8, 8, 8, 0.58);
+    border: 1px solid color-mix(in oklab, var(--border) 72%, transparent);
+  }
+
+  .prototype-savings-meta {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: color-mix(in oklab, var(--muted-foreground) 88%, white 12%);
+    text-align: justify !important;
+    text-justify: inter-word;
+    hyphens: auto;
+  }
+
+  .prototype-check-list {
+    display: grid;
+    gap: 0.85rem;
+    padding-left: 1.1rem;
+    color: var(--muted-foreground);
+  }
+
+  .prototype-check-list li {
+    line-height: 1.72;
+    text-align: justify !important;
+    text-justify: inter-word;
+    hyphens: auto;
+  }
+
+  .prototype-paper-shell {
+    background:
+      linear-gradient(180deg, color-mix(in oklab, var(--card) 96%, white 4%), color-mix(in oklab, var(--background) 92%, var(--card) 8%));
+  }
+
+  .prototype-prose {
+    color: var(--muted-foreground);
+  }
+
+  .prototype-paper-body {
+    width: 100%;
+    max-width: none;
+    text-align: justify;
+  }
+
+  .prototype-scroll-panel {
+    flex: 0 0 auto;
+    min-height: 0;
+    max-height: min(68vh, 44rem);
+    padding-right: 0.55rem;
+  }
+
+  .prototype-prose ul,
+  .prototype-prose ol,
+  .prototype-prose li,
+  .prototype-prose li p,
+  .prototype-prose p {
+    text-align: justify !important;
+    text-justify: inter-word;
+    hyphens: auto;
+  }
+
+  .prototype-paper-body p,
+  .prototype-paper-body li,
+  .prototype-paper-body li p {
+    text-align: justify !important;
+    text-align-last: left;
+    text-justify: inter-word;
+    text-wrap: wrap;
+    hyphens: auto;
+  }
+
+  .prototype-prose h1 {
+    font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    font-size: clamp(2rem, 3vw, 3rem);
+    line-height: 1.02;
+    font-style: italic;
+    color: var(--bohr-shell-fg);
+  }
+
+  .prototype-prose p code,
+  .prototype-section-copy code {
+    font-size: 0.88em;
+  }
+
+  @media (min-width: 48rem) {
+    .prototype-metric-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .prototype-optimization-grid,
+    .prototype-dual-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: stretch;
+    }
+
+    .prototype-dual-grid .prototype-section-title {
+      font-size: clamp(1.65rem, 2.35vw, 2.5rem);
+      text-wrap: pretty;
+    }
+
+    .prototype-artifact-list {
+      grid-auto-rows: 1fr;
+    }
+
+    .prototype-savings-shell {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 72rem) {
+    .prototype-hero-shell {
+      grid-template-columns: minmax(0, 1.25fr) minmax(22rem, 0.75fr);
+      gap: 1.5rem;
+      padding: 1.8rem;
+    }
+
+    .prototype-metric-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .prototype-agent-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-auto-rows: 1fr;
+    }
+
+    .prototype-optimization-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-auto-rows: 1fr;
+    }
+
+    .prototype-savings-shell {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .prototype-dual-grid-wide {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+  }
+
+  .dark .prototype-hero-shell,
+  .dark .prototype-proof-panel,
+  .dark .prototype-section-shell,
+  .dark .prototype-metric-card,
+  .dark .prototype-agent-card,
+  .dark .prototype-optimization-card {
+    background: linear-gradient(180deg, rgba(18, 18, 18, 0.97), rgba(9, 9, 9, 0.95));
+    box-shadow: 0 28px 90px -54px rgba(0, 0, 0, 0.88);
+  }
+
+  .dark .prototype-artifact-row,
+  .dark .prototype-savings-shell {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .dark .prototype-savings-card {
+    background: linear-gradient(180deg, rgba(7, 7, 7, 0.96), rgba(14, 14, 14, 0.9));
+  }
+
+  .dark .prototype-secondary-link {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .prototype-primary-link,
+    .prototype-secondary-link {
+      transition: none;
+    }
+
+    .prototype-primary-link:hover,
+    .prototype-secondary-link:hover {
+      transform: none;
+    }
+  }
+</style>

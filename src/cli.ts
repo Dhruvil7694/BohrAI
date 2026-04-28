@@ -30,6 +30,7 @@ import {
 } from "./model/commands.js";
 import { clearSearchConfig, printSearchStatus, setSearchProvider } from "./search/commands.js";
 import type { PiWebSearchProvider } from "./pi/web-access.js";
+import { handleVisualCommand } from "./visuals/commands.js";
 import { runDoctor, runStatus } from "./setup/doctor.js";
 import { setupPreviewDependencies } from "./setup/preview.js";
 import { runSetup } from "./setup/setup.js";
@@ -460,6 +461,11 @@ export async function main(): Promise<void> {
 
 	if (command === "search") {
 		handleSearchCommand(rest[0], rest.slice(1));
+		return;
+	}
+
+	if (command === "visual") {
+		handleVisualCommand(rest[0], rest.slice(1));
 		return;
 	}
 

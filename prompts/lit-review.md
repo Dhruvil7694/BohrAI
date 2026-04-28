@@ -30,7 +30,10 @@ The final review must include:
 - Keep contradictions explicit; do not average them away.
 - Validate coverage completeness, logic flow, and missing perspectives before final delivery.
 - If validator reports fatal issues, fix and rerun validator once.
+- If the review includes quantitative comparisons, write structured data before charts/tables and preserve source links in both the table and provenance.
+- Image models may create only conceptual visuals; do not use them for numeric charts or factual comparison labels.
 
 ## Deliverables
 - Final: `outputs/<slug>.md`
 - Provenance sidecar: `outputs/<slug>.provenance.md`
+- Optional visual manifest: `outputs/<slug>.assets/manifest.json`

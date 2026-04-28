@@ -54,6 +54,10 @@ Use `bohr packages list` to see which optional packages are available and which 
 | Command | Description |
 | --- | --- |
 | `bohr search status` | Show Pi web-access status and config path |
+| `bohr visual status` | Show visual provider status and default image model |
+| `bohr visual set <gemini|openai> <api-key>` | Save an image-generation API key without printing it back |
+| `bohr visual default <gemini|openai> [model]` | Set the default image provider and optional model |
+| `bohr visual clear [provider]` | Clear one visual provider or all visual configuration |
 
 ## Workflow commands
 
@@ -63,7 +67,9 @@ All research workflow slash commands can also be invoked directly from the CLI:
 bohr deepresearch "topic"
 bohr lit "topic"
 bohr lit-review "topic"
+bohr visuals "topic"
 bohr paper "topic"
+bohr paper-pro "topic"
 bohr review artifact.md
 bohr audit 2401.12345
 bohr replicate "claim"

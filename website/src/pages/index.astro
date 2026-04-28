@@ -57,44 +57,50 @@ const workflowsShowcase = [
     desc: "Publication-grade manuscript with method, figures, citation & compliance passes.",
   },
   {
-    cmd: "/review",
+    cmd: "/visuals",
     index: "04",
+    slug: "visuals",
+    desc: "Data-backed charts, source-linked tables, and conceptual image assets.",
+  },
+  {
+    cmd: "/review",
+    index: "05",
     slug: "review",
     desc: "Simulated peer review with severity-graded feedback and revision guidance.",
   },
   {
     cmd: "/audit",
-    index: "05",
+    index: "06",
     slug: "audit",
     desc: "Compare a paper's claims against its public codebase for reproducibility.",
   },
   {
     cmd: "/replicate",
-    index: "06",
+    index: "07",
     slug: "replication",
     desc: "Replication plan or workflow for a paper, claim, or benchmark.",
   },
   {
     cmd: "/compare",
-    index: "07",
+    index: "08",
     slug: "compare",
     desc: "Agreement / disagreement matrix across sources on a topic.",
   },
   {
     cmd: "/autoresearch",
-    index: "08",
+    index: "09",
     slug: "autoresearch",
     desc: "Autonomous experiment loop that iteratively optimizes toward a stated goal.",
   },
   {
     cmd: "/draft",
-    index: "09",
+    index: "10",
     slug: "draft",
     desc: "Turn findings into a structured, multi-step manuscript draft.",
   },
   {
     cmd: "/watch",
-    index: "10",
+    index: "11",
     slug: "watch",
     desc: "Recurring monitoring on a topic or literature area.",
   },
@@ -153,6 +159,24 @@ const terminalSamples = [
       { kind: "status", label: "WRITE", text: "audit brief drafted with severity-graded evidence table" },
       { kind: "artifact", text: "outputs/repro-audit.md | claim/code agreement matrix" },
       { kind: "artifact", text: "outputs/repro-audit.provenance.md" },
+    ],
+  },
+  {
+    id: "visuals",
+    label: "Visuals",
+    workspace: "~/research/market-visuals",
+    pid: "18612",
+    model: "GPT-5.4",
+    tools: "28 TOOLS",
+    prompt: "/visuals AI agent market comparison charts and material board",
+    keywords: ["visuals", "chart", "table", "image", "market", "comparison"],
+    lines: [
+      { kind: "status", label: "PLAN", text: "visual package scoped: source data, chart, comparison table, concept image" },
+      { kind: "status", label: "DATA", text: "market rows normalized to data.json and data.csv before rendering" },
+      { kind: "status", label: "CHART", text: "data-backed SVG chart generated from structured rows" },
+      { kind: "status", label: "IMAGE", text: "concept visual routed to configured Nano Banana / OpenAI provider" },
+      { kind: "artifact", text: "outputs/ai-agent-market.assets/manifest.json" },
+      { kind: "artifact", text: "outputs/ai-agent-market.md | provenance included" },
     ],
   },
 ] as const
@@ -467,11 +491,11 @@ const defaultTerminalSample = terminalSamples[0]
                 id="workflows-heading"
                 class="mt-6 font-['Cormorant_Garamond',Georgia,'Times_New_Roman',serif] text-[clamp(1.85rem,4vw,2.65rem)] font-normal leading-[1.15] tracking-tight text-[var(--bohr-shell-fg)]"
               >
-                Ten slash commands, one shell.
+                Eleven slash commands, one shell.
               </h2>
               <p class="mt-5 font-['Inter',system-ui,sans-serif] text-[13px] leading-relaxed text-neutral-600 lg:text-[14px] dark:text-neutral-400">
-                Each command is a full pipeline - planner, researchers, scorer, validator, writer, verifier, reviewer -
-                with agents dispatched in the right order.
+                Each command is a full pipeline - planner, researchers, scorer, validator, visual asset builders, verifier, reviewer -
+                with agents and tools dispatched in the right order.
               </p>
               <a
                 class="mt-8 inline-flex items-center gap-2 font-[family-name:var(--font-cli)] text-[12px] uppercase tracking-[0.14em] text-[var(--bohr-shell-fg)] underline decoration-neutral-600 underline-offset-4 transition-colors hover:decoration-neutral-400"

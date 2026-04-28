@@ -73,10 +73,11 @@ Present the plan to the user, then continue automatically. Do not block the work
 |---|---|
 | Single fact or narrow question | Search directly yourself, no subagents, 3-10 tool calls |
 | Direct comparison (2-3 items) | 2 parallel `researcher` subagents |
-| Broad survey or multi-faceted topic | 3-4 parallel `researcher` subagents |
-| Complex multi-domain research | 4-6 parallel `researcher` subagents |
+| Broad survey or multi-faceted topic | 2 parallel `researcher` subagents, then a second targeted wave only if gaps remain |
+| Complex multi-domain research | 2-3 `researcher` subagents per wave; prefer sequential waves over 4+ simultaneous agents |
 
 Never spawn subagents for work you can do in 5 tool calls.
+If the environment or user indicates rate limits, use `concurrency: 1` and run subagents in waves.
 
 ## 3. Spawn researchers
 
@@ -95,7 +96,7 @@ Assign each researcher a clearly disjoint dimension — different source types, 
     { agent: "researcher", task: "...", output: "<slug>-research-web.md" },
     { agent: "researcher", task: "...", output: "<slug>-research-papers.md" }
   ],
-  concurrency: 4,
+  concurrency: 2,
   failFast: false
 }
 ```
@@ -151,7 +152,7 @@ Detailed findings organized by theme or question.
 Unresolved issues, disagreements between sources, gaps in evidence.
 ```
 
-When the research includes quantitative data (benchmarks, performance comparisons, trends), generate charts using `pi-charts`. Use Mermaid diagrams for architectures and processes. Every visual must have a caption and reference the underlying data.
+When the research includes quantitative data (benchmarks, performance comparisons, market analysis, trends), first write normalized source data to `outputs/<slug>.assets/data.json` and `outputs/<slug>.assets/data.csv`, then generate charts using `pi-charts` or deterministic SVG/Markdown generation. Use Mermaid diagrams for architectures and processes. Image models may be used only for conceptual presentation visuals, not numeric charts or factual comparison labels. Every visual must have a caption and reference the underlying data.
 
 Before finalizing the draft, do a claim sweep:
 - map each critical claim, number, and figure to its supporting source or artifact in the verification log
@@ -187,6 +188,8 @@ If the reviewer flags FATAL issues, fix them in the brief before delivering. MAJ
 After fixes, run at least one more review-style verification pass if any FATAL issues were found. Do not assume one fix solved everything.
 
 Before delivery, run one final `reasoning-validator` pass on `<slug>-brief.md`. If the validator reports invalid high-impact claim chains, resolve them before promotion.
+
+If the workflow created charts, tables, or generated images, write `outputs/<slug>.assets/manifest.json` with each artifact path, kind, source data path, provider/model when applicable, prompt when applicable, and verification state (`source-data`, `data-backed`, `generated-concept`, `blocked`, or `unverified`).
 
 ## 9. Deliver
 

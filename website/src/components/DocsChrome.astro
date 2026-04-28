@@ -23,17 +23,28 @@ const navSections = docsSidebarSections.map((section) => {
 })
 ---
 
-<div class="docs-page-gutter-x pb-8 pt-2 sm:pt-3 lg:pb-5 lg:pt-0">
+<div class="docs-page-gutter-x pb-8 pt-0 lg:pb-0 lg:pt-0">
     <aside
       id="docs-sidebar"
       class:list={[
-        "fixed inset-y-0 left-0 z-50 flex w-[min(21rem,93vw)] -translate-x-full flex-col overflow-y-auto border-r border-border/80 bg-background px-4 pb-10 pt-16 shadow-xl transition-[transform,box-shadow] duration-200 ease-out",
-        "lg:bottom-5 lg:left-4 lg:top-[calc(3.5rem+10px)] lg:z-30 lg:w-[15.5rem] lg:translate-x-0 lg:overflow-y-auto lg:rounded-2xl lg:border lg:border-border/40 lg:bg-card/70 lg:px-4 lg:pb-5 lg:pt-4 lg:shadow-[0_16px_48px_-8px_rgba(0,0,0,0.55)] lg:ring-1 lg:ring-border/35 lg:backdrop-blur-md",
+        "fixed inset-y-0 left-0 z-50 flex w-[min(20rem,90vw)] -translate-x-full flex-col overflow-y-auto border-r border-border/80 bg-background px-4 pb-10 pt-[calc(4.5rem+1rem)] shadow-xl transition-[transform,box-shadow] duration-200 ease-out",
+        "lg:bottom-5 lg:left-4 lg:top-[calc(4.5rem+0.75rem)] lg:z-30 lg:w-[15.5rem] lg:translate-x-0 lg:overflow-y-auto lg:rounded-2xl lg:border lg:border-border/40 lg:bg-card/70 lg:px-4 lg:pb-5 lg:pt-4 lg:shadow-[0_16px_48px_-8px_rgba(0,0,0,0.55)] lg:ring-1 lg:ring-border/35 lg:backdrop-blur-md",
         "xl:left-5 xl:w-[17.5rem] 2xl:left-6 2xl:w-80",
       ]}
       aria-label="Documentation navigation"
     >
-      <div class="mb-4 border-b border-border/50 pb-3 lg:mb-4 lg:border-border/35 lg:pb-3">
+      <!-- Mobile close button -->
+      <button
+        id="docs-mobile-close"
+        type="button"
+        class="absolute right-3 top-3 z-50 flex h-9 w-9 items-center justify-center rounded-full border border-border/60 bg-background/90 text-muted-foreground shadow-sm backdrop-blur-sm transition-all hover:bg-muted hover:text-foreground lg:hidden"
+        aria-label="Close navigation menu"
+      >
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <div class="mb-4 border-b border-border/50 pb-3 pt-8 lg:mb-4 lg:border-border/35 lg:pb-3 lg:pt-0">
         <a
           href="/docs"
           class:list={[
@@ -85,14 +96,14 @@ const navSections = docsSidebarSections.map((section) => {
       aria-hidden="true"
     />
 
-    <!-- Align with fixed sidebar top (main is only pt-14 = 3.5rem; sidebar adds +10px float gap) -->
-    <div class="flex flex-col lg:mt-[10px] lg:flex-row lg:items-stretch lg:gap-2.5">
+    <!-- Align with fixed sidebar top, proper viewport height calculation -->
+    <div class="flex flex-col lg:mt-7 lg:flex-row lg:items-stretch lg:gap-2.5">
       <div
         class="hidden shrink-0 lg:block lg:w-[15.5rem] xl:w-[17.5rem] 2xl:w-80"
         aria-hidden="true"
       />
       <div
-        class="min-w-0 flex-1 lg:flex lg:min-h-0 lg:flex-col lg:h-[calc(100vh-3.5rem-10px-1.25rem)] lg:max-h-[calc(100vh-3.5rem-10px-1.25rem)]"
+        class="min-w-0 flex-1 lg:flex lg:min-h-0 lg:flex-col lg:h-[calc(100dvh-6.5rem)] lg:max-h-[calc(100dvh-6.5rem)]"
       >
         <div class="docs-main-panel">
           <div class="docs-main-scroll">
@@ -105,7 +116,7 @@ const navSections = docsSidebarSections.map((section) => {
     <button
       id="docs-mobile-open"
       type="button"
-      class="fixed bottom-5 right-5 z-30 flex h-11 w-11 items-center justify-center rounded-full border border-border/80 bg-background/95 text-foreground shadow-md backdrop-blur-sm transition hover:bg-muted/60 lg:hidden"
+      class="fixed bottom-4 right-4 z-30 flex h-12 w-12 items-center justify-center rounded-full border border-border/80 bg-background/95 text-foreground shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:bg-muted/60 active:scale-95 lg:hidden"
       aria-controls="docs-sidebar"
       aria-expanded="false"
       aria-label="Open navigation menu"
@@ -122,6 +133,7 @@ const navSections = docsSidebarSections.map((section) => {
       var sidebar = document.getElementById("docs-sidebar")
       var overlay = document.getElementById("docs-sidebar-overlay")
       var openBtn = document.getElementById("docs-mobile-open")
+      var closeBtn = document.getElementById("docs-mobile-close")
 
       function setOpen(open) {
         if (!sidebar || !overlay || !openBtn) return
@@ -133,6 +145,7 @@ const navSections = docsSidebarSections.map((section) => {
           document.body.classList.remove("overflow-hidden")
           openBtn.setAttribute("aria-expanded", "false")
           openBtn.setAttribute("aria-label", "Open navigation menu")
+          if (closeBtn) closeBtn.style.opacity = "0"
           return
         }
         if (open) {
@@ -142,6 +155,7 @@ const navSections = docsSidebarSections.map((section) => {
           document.body.classList.add("overflow-hidden")
           openBtn.setAttribute("aria-expanded", "true")
           openBtn.setAttribute("aria-label", "Close navigation menu")
+          if (closeBtn) closeBtn.style.opacity = "1"
         } else {
           sidebar.classList.add("-translate-x-full")
           sidebar.classList.remove("docs-sidebar-open")
@@ -149,6 +163,7 @@ const navSections = docsSidebarSections.map((section) => {
           document.body.classList.remove("overflow-hidden")
           openBtn.setAttribute("aria-expanded", "false")
           openBtn.setAttribute("aria-label", "Open navigation menu")
+          if (closeBtn) closeBtn.style.opacity = "0"
         }
       }
 
@@ -166,6 +181,10 @@ const navSections = docsSidebarSections.map((section) => {
         openBtn.dataset.bound = "true"
         openBtn.addEventListener("click", toggle)
         overlay.addEventListener("click", close)
+        if (closeBtn && !closeBtn.dataset.bound) {
+          closeBtn.dataset.bound = "true"
+          closeBtn.addEventListener("click", close)
+        }
         sidebar.querySelectorAll("a").forEach(function (a) {
           a.addEventListener("click", function () {
             if (window.matchMedia("(max-width: 1023px)").matches) close()

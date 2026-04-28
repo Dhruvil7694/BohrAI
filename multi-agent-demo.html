@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bohr AI — Multi-Agent Research System</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Cormorant+Garamond:ital,wght@1,300;1,500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #07080A;
+  --surface: #0D0F13;
+  --border: #1C2029;
+  --border-mid: #252C38;
+  --text: #DDE1EC;
+  --dim: #4E5566;
+  --amber: #EFA030;
+  --cyan: #38BDF8;
+  --emerald: #34D399;
+  --rose: #FB7185;
+  --violet: #A78BFA;
+  --orange: #FB923C;
+}
+
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Mono', monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Subtle grid */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 64px 32px 96px;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.header {
+  text-align: center;
+  margin-bottom: 72px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--amber);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.eyebrow::before, .eyebrow::after {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: var(--amber);
+  opacity: 0.4;
+}
+
+h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(40px, 5.5vw, 68px);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: var(--dim);
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+/* ── Diagram shell ──────────────────────────────────────── */
+.diagram-wrap {
+  display: grid;
+  position: relative;
+}
+
+.diagram-wrap > * { grid-area: 1 / 1; }
+
+#canvas {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: 8px 0 8px;
+}
+
+/* ── Query node ─────────────────────────────────────────── */
+.query-node {
+  width: 380px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 18px 22px 20px;
+  margin-bottom: 44px;
+  transition: border-color 0.5s, box-shadow 0.5s;
+  position: relative;
+}
+
+.query-node.lit {
+  border-color: var(--cyan);
+  box-shadow: 0 0 28px rgba(56,189,248,0.08);
+}
+
+.q-label {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--cyan);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.query-node.lit .q-label { opacity: 1; }
+
+.q-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 17px;
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 26px;
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 17px;
+  background: var(--cyan);
+  vertical-align: text-bottom;
+  margin-left: 1px;
+  animation: blink 0.9s step-end infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ── Orchestrator ───────────────────────────────────────── */
+.orch {
+  width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--amber);
+  border-radius: 3px;
+  padding: 22px 26px;
+  margin-bottom: 48px;
+  position: relative;
+  transition: box-shadow 0.5s;
+}
+
+.orch.lit { box-shadow: 0 0 40px rgba(239,160,48,0.12); }
+
+.orch-tag {
+  position: absolute;
+  top: -1px; left: 18px;
+  background: var(--amber);
+  color: #000;
+  font-size: 8.5px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  padding: 3px 9px;
+  text-transform: uppercase;
+}
+
+.orch-name {
+  font-size: 15px;
+  color: var(--amber);
+  margin-top: 10px;
+  margin-bottom: 5px;
+  letter-spacing: 0.04em;
+}
+
+.orch-desc {
+  font-size: 11px;
+  color: var(--dim);
+  line-height: 1.65;
+}
+
+.orch-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 10px;
+  color: var(--dim);
+}
+
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--dim);
+  flex-shrink: 0;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.dot.working {
+  background: var(--amber);
+  animation: pulse 1.3s ease-in-out infinite;
+}
+
+.dot.done { background: var(--emerald); }
+
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(239,160,48,0.5); }
+  50% { box-shadow: 0 0 0 5px rgba(239,160,48,0); }
+}
+
+/* ── Agents ─────────────────────────────────────────────── */
+.agents {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.agent {
+  width: 152px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 15px 15px 14px;
+  transition: border-color 0.45s, box-shadow 0.45s, opacity 0.45s, transform 0.45s;
+  opacity: 0.28;
+  transform: translateY(6px);
+}
+
+.agent.lit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.agent[data-c="cyan"]   { --ac: #38BDF8; --ag: rgba(56,189,248,0.1); }
+.agent[data-c="rose"]   { --ac: #FB7185; --ag: rgba(251,113,133,0.1); }
+.agent[data-c="violet"] { --ac: #A78BFA; --ag: rgba(167,139,250,0.1); }
+.agent[data-c="orange"] { --ac: #FB923C; --ag: rgba(251,146,60,0.1); }
+.agent[data-c="emerald"]{ --ac: #34D399; --ag: rgba(52,211,153,0.1); }
+.agent[data-c="amber"]  { --ac: #EFA030; --ag: rgba(239,160,48,0.1); }
+
+.agent.lit {
+  border-color: var(--ac);
+  box-shadow: 0 0 20px var(--ag);
+}
+
+.agent-ico {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--ac, var(--dim));
+  text-transform: uppercase;
+  margin-bottom: 9px;
+  opacity: 0.7;
+}
+
+.agent-name {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ac, var(--text));
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+  line-height: 1.3;
+}
+
+.agent-desc {
+  font-size: 9.5px;
+  color: var(--dim);
+  line-height: 1.65;
+  margin-bottom: 11px;
+}
+
+.progress-track {
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--ac, #38BDF8);
+  width: 0%;
+  transition: width 80ms linear;
+  border-radius: 1px;
+}
+
+.agent-st {
+  font-size: 9px;
+  color: var(--dim);
+  margin-top: 5px;
+  letter-spacing: 0.1em;
+}
+
+/* ── Synthesizer ────────────────────────────────────────── */
+.synth {
+  width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 22px 26px;
+  margin-bottom: 48px;
+  transition: border-color 0.5s, box-shadow 0.5s;
+}
+
+.synth.lit {
+  border-color: var(--emerald);
+  box-shadow: 0 0 36px rgba(52,211,153,0.1);
+}
+
+.synth-label {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--dim);
+  text-transform: uppercase;
+  margin-bottom: 7px;
+  transition: color 0.4s;
+}
+
+.synth.lit .synth-label { color: var(--emerald); }
+
+.synth-name {
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: 6px;
+  transition: color 0.4s;
+}
+
+.synth.lit .synth-name { color: var(--emerald); }
+
+.synth-desc {
+  font-size: 11px;
+  color: var(--dim);
+  line-height: 1.65;
+}
+
+/* ── Output ─────────────────────────────────────────────── */
+.output {
+  width: 560px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 22px 26px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.7s, transform 0.7s, border-color 0.5s;
+}
+
+.output.lit {
+  opacity: 1;
+  transform: translateY(0);
+  border-color: var(--emerald);
+}
+
+.out-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.out-badge {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: var(--emerald);
+  color: #000;
+  padding: 3px 9px;
+  border-radius: 2px;
+}
+
+.out-meta {
+  font-size: 10px;
+  color: var(--dim);
+  letter-spacing: 0.06em;
+}
+
+.out-lines { display: flex; flex-direction: column; gap: 9px; }
+
+.out-line {
+  height: 9px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.output.lit .out-line { opacity: 1; }
+
+.out-line-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1E2535, #283044);
+  width: 0%;
+  transition: width 1.4s cubic-bezier(0.4,0,0.2,1);
+  border-radius: 2px;
+}
+
+.output.lit .out-line-fill { width: var(--w, 100%); }
+
+/* ── Stats ──────────────────────────────────────────────── */
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 56px;
+  flex-wrap: wrap;
+  margin-top: 64px;
+  padding-top: 56px;
+  border-top: 1px solid var(--border);
+}
+
+.stat { text-align: center; }
+
+.stat-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 44px;
+  color: var(--amber);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.stat-lbl {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--dim);
+  text-transform: uppercase;
+}
+
+/* ── Steps ──────────────────────────────────────────────── */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 28px;
+  margin-top: 60px;
+}
+
+.step { display: flex; gap: 14px; }
+
+.step-n {
+  font-size: 10px;
+  color: var(--amber);
+  letter-spacing: 0.1em;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+
+.step-t {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 0.05em;
+  margin-bottom: 7px;
+  text-transform: uppercase;
+}
+
+.step-b {
+  font-size: 10.5px;
+  color: var(--dim);
+  line-height: 1.75;
+}
+
+/* ── Replay ─────────────────────────────────────────────── */
+.replay-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 52px;
+}
+
+.replay-btn {
+  background: transparent;
+  border: 1px solid var(--border-mid);
+  color: var(--dim);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 11px 22px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: border-color 0.3s, color 0.3s;
+}
+
+.replay-btn:hover { border-color: var(--amber); color: var(--amber); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="eyebrow">Bohr AI · Architecture</div>
+    <h1>How multi-agent<br>research works</h1>
+    <p class="subtitle">One query. Six specialised agents running in parallel.<br>Every claim verified before delivery.</p>
+  </header>
+
+  <!-- Diagram -->
+  <div class="diagram-wrap">
+    <canvas id="canvas"></canvas>
+    <div class="diagram">
+
+      <!-- Query -->
+      <div class="query-node" id="qNode">
+        <div class="q-label">Research Query</div>
+        <div class="q-text" id="qText"></div>
+      </div>
+
+      <!-- Orchestrator -->
+      <div class="orch" id="oNode">
+        <div class="orch-tag">Orchestrator</div>
+        <div class="orch-name">Research Planner</div>
+        <div class="orch-desc">Decomposes the query, selects agents, sets evidence thresholds, and coordinates stop criteria before dispatching.</div>
+        <div class="orch-foot">
+          <div class="dot" id="oDot"></div>
+          <span id="oStatus">Waiting for query</span>
+        </div>
+      </div>
+
+      <!-- Agents -->
+      <div class="agents" id="agentsRow">
+        <div class="agent" data-c="cyan" id="a0">
+          <div class="agent-ico">AGT-01</div>
+          <div class="agent-name">Researcher</div>
+          <div class="agent-desc">Gathers evidence across papers, web, repos and docs.</div>
+          <div class="progress-track"><div class="progress-fill" id="p0"></div></div>
+          <div class="agent-st" id="s0">IDLE</div>
+        </div>
+        <div class="agent" data-c="rose" id="a1">
+          <div class="agent-ico">AGT-02</div>
+          <div class="agent-name">Contradiction</div>
+          <div class="agent-desc">Finds counter-evidence and stress-tests assumptions.</div>
+          <div class="progress-track"><div class="progress-fill" id="p1"></div></div>
+          <div class="agent-st" id="s1">IDLE</div>
+        </div>
+        <div class="agent" data-c="violet" id="a2">
+          <div class="agent-ico">AGT-03</div>
+          <div class="agent-name">Reviewer</div>
+          <div class="agent-desc">Simulated peer review with severity-graded feedback.</div>
+          <div class="progress-track"><div class="progress-fill" id="p2"></div></div>
+          <div class="agent-st" id="s2">IDLE</div>
+        </div>
+        <div class="agent" data-c="orange" id="a3">
+          <div class="agent-ico">AGT-04</div>
+          <div class="agent-name">Evid. Scorer</div>
+          <div class="agent-desc">Scores claim support with transparent rubric.</div>
+          <div class="progress-track"><div class="progress-fill" id="p3"></div></div>
+          <div class="agent-st" id="s3">IDLE</div>
+        </div>
+        <div class="agent" data-c="emerald" id="a4">
+          <div class="agent-ico">AGT-05</div>
+          <div class="agent-name">Verifier</div>
+          <div class="agent-desc">Validates citation integrity against source text.</div>
+          <div class="progress-track"><div class="progress-fill" id="p4"></div></div>
+          <div class="agent-st" id="s4">IDLE</div>
+        </div>
+        <div class="agent" data-c="amber" id="a5">
+          <div class="agent-ico">AGT-06</div>
+          <div class="agent-name">Writer</div>
+          <div class="agent-desc">Produces structured drafts from verified findings.</div>
+          <div class="progress-track"><div class="progress-fill" id="p5"></div></div>
+          <div class="agent-st" id="s5">IDLE</div>
+        </div>
+      </div>
+
+      <!-- Synthesizer -->
+      <div class="synth" id="sNode">
+        <div class="synth-label">Synthesis Layer</div>
+        <div class="synth-name">Output Assembler</div>
+        <div class="synth-desc">Merges findings from all agents, resolves conflicts, applies final verification pass, and structures the deliverable.</div>
+      </div>
+
+      <!-- Output -->
+      <div class="output" id="outNode">
+        <div class="out-head">
+          <div class="out-badge">Verified Output</div>
+          <div class="out-meta">12 sources · 6 agents · all citations checked</div>
+        </div>
+        <div class="out-lines">
+          <div class="out-line"><div class="out-line-fill" style="--w:91%"></div></div>
+          <div class="out-line"><div class="out-line-fill" style="--w:76%"></div></div>
+          <div class="out-line"><div class="out-line-fill" style="--w:88%"></div></div>
+          <div class="out-line"><div class="out-line-fill" style="--w:63%"></div></div>
+          <div class="out-line"><div class="out-line-fill" style="--w:84%"></div></div>
+          <div class="out-line"><div class="out-line-fill" style="--w:55%"></div></div>
+        </div>
+      </div>
+
+    </div><!-- /diagram -->
+  </div><!-- /diagram-wrap -->
+
+  <!-- Replay -->
+  <div class="replay-wrap">
+    <button class="replay-btn" id="replayBtn">↻ &nbsp;Replay animation</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat"><div class="stat-val">20+</div><div class="stat-lbl">Specialised agents</div></div>
+    <div class="stat"><div class="stat-val">∥</div><div class="stat-lbl">Parallel execution</div></div>
+    <div class="stat"><div class="stat-val">100%</div><div class="stat-lbl">Source-grounded</div></div>
+    <div class="stat"><div class="stat-val">0</div><div class="stat-lbl">Unverified claims</div></div>
+  </div>
+
+  <!-- Steps -->
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">01 —</div>
+      <div>
+        <div class="step-t">Query decomposition</div>
+        <div class="step-b">The Research Planner breaks your query into sub-tasks, selects the right agents, and sets evidence thresholds before dispatching.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">02 —</div>
+      <div>
+        <div class="step-t">Parallel investigation</div>
+        <div class="step-b">Agents run simultaneously — no bottleneck. Researcher gathers while Contradiction agent stress-tests in real time.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">03 —</div>
+      <div>
+        <div class="step-t">Adversarial review</div>
+        <div class="step-b">Every finding is challenged by the Contradiction agent and scored by Evidence Scorer before it moves forward.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">04 —</div>
+      <div>
+        <div class="step-t">Verified output</div>
+        <div class="step-b">The assembler merges results, resolves conflicts, and produces a grounded report — every claim linked to a source.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+const QUERY = "What do we know about emergent capabilities in large language models?";
+const ACCENT = ['#38BDF8','#FB7185','#A78BFA','#FB923C','#34D399','#EFA030'];
+const DURATIONS = [3600, 3100, 4100, 2900, 3300, 3900];
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+let particles = [];
+let intervals = [];
+let raf;
+
+// ── Node helpers ─────────────────────────────────────────
+function center(el) {
+  const wr = canvas.parentElement.getBoundingClientRect();
+  const r  = el.getBoundingClientRect();
+  return { x: r.left - wr.left + r.width/2, y: r.top - wr.top + r.height/2 };
+}
+
+function ac(i) { return center(document.getElementById('a' + i)); }
+
+// ── Particles ────────────────────────────────────────────
+function spawn(from, to, color, delay = 0) {
+  setTimeout(() => {
+    particles.push({ from, to, color, t: 0, speed: 0.0038 + Math.random()*0.003, done: false });
+  }, delay);
+}
+
+function burst(fromEl, toEl, color, n = 4) {
+  const f = center(fromEl), t = center(toEl);
+  for (let i = 0; i < n; i++) spawn(f, t, color, i * 190);
+}
+
+function burstToAgent(fromEl, i, n = 3) {
+  const f = center(fromEl), t = ac(i);
+  for (let j = 0; j < n; j++) spawn(f, t, ACCENT[i], j * 200);
+}
+
+function burstFromAgent(i, toEl, n = 4) {
+  const f = ac(i), t = center(toEl);
+  for (let j = 0; j < n; j++) spawn(f, t, ACCENT[i], j * 160);
+}
+
+// ── Canvas draw ──────────────────────────────────────────
+function ease(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+
+function hex2(n) { return Math.max(0,Math.min(255,Math.round(n))).toString(16).padStart(2,'0'); }
+
+function drawLine(a, b, color) {
+  ctx.beginPath();
+  ctx.moveTo(a.x, a.y);
+  ctx.lineTo(b.x, b.y);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.setLineDash([3, 8]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function tick() {
+  const wrap = canvas.parentElement;
+  canvas.width  = wrap.offsetWidth;
+  canvas.height = wrap.offsetHeight;
+
+  const oC = center(document.getElementById('oNode'));
+  const sC = center(document.getElementById('sNode'));
+  const qC = center(document.getElementById('qNode'));
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  drawLine(qC, oC, 'rgba(56,189,248,0.07)');
+  drawLine(oC, sC, 'rgba(239,160,48,0.07)');
+  for (let i = 0; i < 6; i++) {
+    const c = ac(i);
+    drawLine(oC, c, 'rgba(255,255,255,0.035)');
+    drawLine(c, sC, 'rgba(52,211,153,0.035)');
+  }
+
+  particles = particles.filter(p => !p.done);
+  for (const p of particles) {
+    p.t += p.speed;
+    if (p.t >= 1) { p.done = true; continue; }
+    const e = ease(p.t);
+    const x = p.from.x + (p.to.x - p.from.x) * e;
+    const y = p.from.y + (p.to.y - p.from.y) * e;
+    const alpha = Math.sin(p.t * Math.PI);
+    const col = p.color;
+
+    // core dot
+    ctx.beginPath();
+    ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = col + hex2(alpha * 255);
+    ctx.fill();
+
+    // glow halo
+    const g = ctx.createRadialGradient(x, y, 0, x, y, 9);
+    g.addColorStop(0, col + hex2(alpha * 80));
+    g.addColorStop(1, col + '00');
+    ctx.beginPath();
+    ctx.arc(x, y, 9, 0, Math.PI * 2);
+    ctx.fillStyle = g;
+    ctx.fill();
+  }
+
+  raf = requestAnimationFrame(tick);
+}
+
+// ── Agent UI ─────────────────────────────────────────────
+function agentLit(i, on) {
+  const el = document.getElementById('a' + i);
+  if (on) el.classList.add('lit'); else el.classList.remove('lit');
+}
+
+function agentStatus(i, txt) {
+  document.getElementById('s' + i).textContent = txt;
+}
+
+function runProgress(i, dur, cb) {
+  const fill = document.getElementById('p' + i);
+  const start = Date.now();
+  agentStatus(i, 'WORKING');
+  const iv = setInterval(() => {
+    const pct = Math.min(100, (Date.now() - start) / dur * 100);
+    fill.style.width = pct + '%';
+    if (pct >= 100) { clearInterval(iv); agentStatus(i, 'DONE ✓'); if (cb) cb(); }
+  }, 40);
+  intervals.push(iv);
+}
+
+// ── Type writer ──────────────────────────────────────────
+function type(el, text, cb) {
+  let i = 0;
+  el.innerHTML = '<span class="cursor"></span>';
+  const iv = setInterval(() => {
+    el.innerHTML = text.slice(0, i) + '<span class="cursor"></span>';
+    i++;
+    if (i > text.length) { clearInterval(iv); if (cb) setTimeout(cb, 500); }
+  }, 28);
+  intervals.push(iv);
+}
+
+// ── Main sequence ─────────────────────────────────────────
+function play() {
+  // Reset
+  [document.getElementById('qNode'),
+   document.getElementById('oNode'),
+   document.getElementById('sNode'),
+   document.getElementById('outNode')].forEach(n => n.classList.remove('lit'));
+  document.getElementById('qText').innerHTML = '';
+  document.getElementById('oDot').className = 'dot';
+  document.getElementById('oStatus').textContent = 'Waiting for query';
+  document.getElementById('sNode').classList.remove('lit');
+  for (let i = 0; i < 6; i++) {
+    agentLit(i, false);
+    agentStatus(i, 'IDLE');
+    document.getElementById('p' + i).style.width = '0%';
+  }
+  particles = [];
+  intervals.forEach(clearInterval);
+  intervals = [];
+
+  // 1 — Query types in (0.4s)
+  setTimeout(() => {
+    const qn = document.getElementById('qNode');
+    qn.classList.add('lit');
+    type(document.getElementById('qText'), QUERY, () => {
+
+      // 2 — Orchestrator wakes (after typing)
+      const on = document.getElementById('oNode');
+      on.classList.add('lit');
+      document.getElementById('oDot').className = 'dot working';
+      document.getElementById('oStatus').textContent = 'Analysing query…';
+      burst(document.getElementById('qNode'), on, '#38BDF8', 4);
+
+      // 3 — Dispatch agents (2s after orch)
+      setTimeout(() => {
+        document.getElementById('oStatus').textContent = 'Dispatching agents in parallel…';
+        for (let i = 0; i < 6; i++) {
+          const delay = i * 220;
+          setTimeout(() => {
+            agentLit(i, true);
+            agentStatus(i, 'DISPATCHED');
+            burstToAgent(document.getElementById('oNode'), i, 3);
+          }, delay);
+        }
+
+        // 4 — Progress bars start (0.8s after dispatch)
+        setTimeout(() => {
+          document.getElementById('oStatus').textContent = 'Agents running in parallel…';
+
+          // ambient particles during work
+          const ambient = setInterval(() => {
+            const alive = [0,1,2,3,4,5].filter(i => document.getElementById('s'+i).textContent === 'WORKING');
+            if (!alive.length) { clearInterval(ambient); return; }
+            const i = alive[Math.floor(Math.random() * alive.length)];
+            spawn(center(document.getElementById('oNode')), ac(i), ACCENT[i]);
+          }, 700);
+          intervals.push(ambient);
+
+          for (let i = 0; i < 6; i++) runProgress(i, DURATIONS[i]);
+
+          // 5 — Return bursts (after longest agent finishes ~4.2s)
+          setTimeout(() => {
+            document.getElementById('oStatus').textContent = 'Collecting results…';
+            for (let i = 0; i < 6; i++) {
+              setTimeout(() => burstFromAgent(i, document.getElementById('sNode'), 5), i * 230);
+            }
+
+            // 6 — Synthesizer lights (1.8s later)
+            setTimeout(() => {
+              document.getElementById('sNode').classList.add('lit');
+              document.getElementById('oDot').className = 'dot done';
+              document.getElementById('oStatus').textContent = 'Complete';
+
+              // 7 — Output (1.4s after synth)
+              setTimeout(() => {
+                document.getElementById('outNode').classList.add('lit');
+              }, 1400);
+
+            }, 1800);
+          }, 4300);
+
+        }, 800);
+      }, 2000);
+    });
+  }, 400);
+}
+
+// ── Boot ─────────────────────────────────────────────────
+tick();
+setTimeout(play, 600);
+document.getElementById('replayBtn').addEventListener('click', play);
+</script>
+</body>
+</html>

@@ -26,6 +26,8 @@ Optional environment variables (loaded via `dotenv` when using the CLI, see `.en
 | --- | --- |
 | `ENABLE_TOKEN_OPTIMIZATION` | If set to `false`, subagent caveman defaults to **`lite`** instead of your `CAVEMAN_MODE_DEFAULT`. |
 | `CAVEMAN_MODE_DEFAULT` | `lite`, `full`, or `ultra` when optimization is enabled (default **`ultra`** if unset or invalid). |
+| `BOHR_SUBAGENT_CONCURRENCY` | Explicit maximum number of subagents to run in one batch. Use `1` or `2` when API rate limits are tight. |
+| `BOHR_RATE_LIMIT_MODE` | When `true`, defaults subagent batches to one-at-a-time unless `BOHR_SUBAGENT_CONCURRENCY` is set. |
 
 Internal “token” figures in tooling often use a rough estimate (for example **characters ÷ 4**). Treat them as **order-of-magnitude tracking**, not billing-accurate counts.
 

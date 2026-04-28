@@ -1,6 +1,6 @@
 {
-  "name": "@companion-ai/bohr",
-  "version": "0.2.18",
+  "name": "@companionai/bohr",
+  "version": "0.2.19",
   "description": "Research-first CLI agent built on Pi and alphaXiv",
   "license": "UNLICENSED",
   "type": "module",
@@ -15,7 +15,6 @@
     "dist/",
     "metadata/",
     ".bohr/agents/",
-    ".bohr/runtime-workspace.tgz",
     ".bohr/settings.json",
     ".bohr/SYSTEM.md",
     ".bohr/themes/",
@@ -96,6 +95,9 @@
     "@types/xml2js": "^0.4.14",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "repository": {
     "type": "git",
